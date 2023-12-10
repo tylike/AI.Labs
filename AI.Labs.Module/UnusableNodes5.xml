@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <Views Id="Views">
+    <ListView Id="VoiceSolution_LookupListView">
+      <Columns Id="Columns">
+        <ColumnInfo Id="Name" Index="2" />
+      </Columns>
+    </ListView>
+  </Views>
+</Application>

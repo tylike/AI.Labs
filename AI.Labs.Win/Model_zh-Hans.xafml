@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <ActionDesign>
+    <Actions>
+      <Action Id="发送" ToolTip="发送消息给AI，快捷键CTRL+回车键" />
+      <Action Id="语音问AI" ToolTip="语音问 AI 快捷键Alt 第一次开始录音，第二次停止录音" />
+      <Action Id="About Info" Caption="关于..." />
+      <Action Id="AddFromFile" Caption="从文件填加..." />
+      <Action Id="ChooseSkin" Caption="选择皮肤" />
+      <Action Id="Close" Caption="关闭" />
+      <Action Id="ConfigureSkin" Caption="配置皮肤" />
+      <Action Id="CopyCellValue" Caption="复制单元格内容" />
+      <Action Id="EditModel" ToolTip="编辑模型" Caption="编辑模型" />
+      <Action Id="EditReportControllerV2.Edit" Caption="编辑" />
+      <Action Id="ExecuteReportV2" Caption="执行报表" />
+      <Action Id="Exit" Caption="退出" />
+      <Action Id="Export" Caption="导出到" />
+      <Action Id="ExportAnalysis" Caption="导出分析到" />
+      <Action Id="ExportDashboard" Caption="导出到" />
+      <Action Id="NestedViewInModel" Caption="查看视图模型" />
+      <Action Id="Office_Open" Caption="打开" />
+      <Action Id="Office_SaveAs" Caption="另存为" />
+      <Action Id="Open" Caption="打开..." />
+      <Action Id="OpenObject" Caption="打开关联记录" />
+      <Action Id="Print" Caption="打印..." />
+      <Action Id="PrintPreview" Caption="打印预览..." />
+      <Action Id="SaveTo" Caption="另存为..." />
+      <Action Id="ShowToolbar" Caption="显示工具栏" />
+      <Action Id="ViewInModel" Caption="查看视图模型" />
+    </Actions>
+  </ActionDesign>
+</Application>

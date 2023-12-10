@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <ActionDesign>
+    <Actions>
+      <Action Id="Diagnostic Info.Rules Info">
+        <ChoiceActionItems>
+          <ChoiceActionItem Id="Rules Info" Caption="规则信息" />
+        </ChoiceActionItems>
+      </Action>
+      <Action Id="ListViewShowObject" Caption="打开" />
+      <Action Id="Logon" Caption="登录" />
+      <Action Id="MyDetails" ToolTip="我的信息" Caption="我的信息" />
+      <Action Id="PreviewReportV2" ToolTip="预览" Caption="预览" />
+      <Action Id="Refresh" Caption="刷新" />
+      <Action Id="RefreshAction" Caption="刷新" />
+      <Action Id="RefreshNotifications" ToolTip="刷新" Caption="刷新" />
+      <Action Id="ReportViewerDialogControllerV2_Close" ShortCaption="关闭" Caption="关闭" />
+      <Action Id="ResetPassword" Caption="重置密码" />
+      <Action Id="ShowInReportV2" Caption="在报表中显示" />
+      <Action Id="ShowNotificationsAction" ToolTip="显示导航按钮" Caption="显示导航按钮" />
+    </Actions>
+    <ActionToContainerMapping>
+      <ActionContainer Id="Edit" Caption="编辑" />
+    </ActionToContainerMapping>
+  </ActionDesign>
+  <Views>
+    <DetailView Id="AboutInfo_DetailView">
+      <Items>
+        <StaticText Id="AboutText" Text="云梯人工智工融合实验室&lt;br&gt;Version 1.0.8722" />
+      </Items>
+    </DetailView>
+  </Views>
+</Application>

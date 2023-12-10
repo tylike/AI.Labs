@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application Title="AI.Labs" Logo="ExpressAppLogo">
+  <ActionDesign>
+    <Actions>
+      <Action Id="ReadMessage" ImageName="Electronics_Volume" />
+      <Action Id="SaveAndClose" Shortcut="Control+Alt+Enter" />
+    </Actions>
+  </ActionDesign>
+  <BOModel>
+    <Class Name="DevExpress.Persistent.BaseImpl.PermissionPolicy.PermissionPolicyUser" Caption="Base User" />
+  </BOModel>
+  <Localization>
+    <LocalizationGroup Name="AI.Labs.Define" IsNewNode="True">
+      <LocalizationItem Name="STTService.Started" Value="STT Service Started!" IsNewNode="True" />
+    </LocalizationGroup>
+  </Localization>
+  <NavigationItems NavigationStyle="Accordion" DefaultChildItemsDisplayStyle="List">
+    <Items>
+      <Item Id="设置">
+        <Items>
+          <Item Id="聊天记录" ViewId="ChatItem_ListView" IsNewNode="True" />
+          <Item Id="STT" Caption="Speech To Text" IsNewNode="True">
+            <Items IsNewNode="True">
+              <Item Id="STTModel_ListView" ViewId="STTModel_ListView" ObjectKey="" ToolTip="Speech To Text （STT）Model Config" IsNewNode="True" />
+              <Item Id="STTService" ViewId="STTService_DetailView" ObjectKey="Speech To Text Service" IsNewNode="True" />
+            </Items>
+          </Item>
+        </Items>
+      </Item>
+      <Item Id="STT">
+        <Items>
+          <Item Id="STTModel_ListView" Removed="True" />
+        </Items>
+      </Item>
+    </Items>
+  </NavigationItems>
+  <Options LookupSmallCollectionItemCount="1000">
+    <LayoutManagerOptions RequiredFieldMark="*" />
+  </Options>
+  <SchemaModules>
+    <SchemaModule Name="CloneObjectModule" Version="23.1.6.0" IsNewNode="True" />
+    <SchemaModule Name="SystemModule" Version="23.1.6.0" IsNewNode="True" />
+    <SchemaModule Name="SystemWindowsFormsModule" Version="23.1.6.0" IsNewNode="True" />
+  </SchemaModules>
+  <Templates>
+    <Template Id="DevExpress.ExpressApp.Win.Templates.Ribbon.DetailRibbonFormV2" IsNewNode="True" />
+    <Template Id="DevExpress.ExpressApp.Win.Templates.Ribbon.LightStyleMainRibbonForm" IsNewNode="True" />
+  </Templates>
+  <Views>
+    <ListView Id="AIModel_LookupListView">
+      <Columns>
+        <ColumnInfo Id="ApiUrlBase" PropertyName="ApiUrlBase" Index="1" Width="482" IsNewNode="True" />
+        <ColumnInfo Id="ApiKey" PropertyName="ApiKey" Index="2" Width="263" IsNewNode="True" />
+        <ColumnInfo Id="Description" PropertyName="Description" Index="3" Width="407" IsNewNode="True" />
+        <ColumnInfo Id="Default" PropertyName="Default" Index="4" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="ApplicationUser_ListView" Caption="Users" />
+    <DetailView Id="AudioBook_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main">
+          <TabbedGroup Id="Tabs">
+            <LayoutGroup Id="Content" Index="0" IsNewNode="True">
+              <LayoutGroup Id="R1" Index="0" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" IsNewNode="True" />
+                <LayoutItem Id="Name" ViewItem="Name" ShowCaption="" Index="1" IsNewNode="True" />
+                <LayoutItem Id="Narration" ViewItem="Narration" ShowCaption="" Index="2" IsNewNode="True" />
+                <LayoutItem Id="SimpleMode" ViewItem="SimpleMode" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutItem Id="Content" ViewItem="Content" ShowCaption="False" Index="1" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="SpreakItems" Index="2" />
+            <LayoutGroup Id="Roles" Index="3" />
+            <LayoutGroup Id="AudioItems" Index="4" />
+            <LayoutGroup Id="Description" IsNewNode="True">
+              <LayoutItem Id="Description" ViewItem="Description" ShowCaption="" Index="1" IsNewNode="True" />
+            </LayoutGroup>
+          </TabbedGroup>
+          <LayoutGroup Id="SimpleEditors" Removed="True">
+            <LayoutGroup Id="AudioBook" Removed="True">
+              <LayoutItem Id="Name" Removed="True" />
+              <LayoutItem Id="Narration" Removed="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="XPObject" Removed="True">
+              <LayoutItem Id="Oid" Removed="True" />
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutGroup Id="SizeableEditors" Removed="True">
+            <LayoutItem Id="Content" Removed="True" />
+            <LayoutItem Id="Description" Removed="True" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="AudioBook_Roles_ListView" AllowEdit="True" />
+    <ListView Id="AudioBook_SpreakItems_ListView" AllowEdit="True">
+      <Columns>
+        <ColumnInfo Id="Index" Width="117" />
+        <ColumnInfo Id="AudioRole" Width="221" />
+        <ColumnInfo Id="SpreakBefore" Index="4" />
+        <ColumnInfo Id="Spreaker" Width="380" Index="5" />
+        <ColumnInfo Id="SpreakContent" Index="6" />
+        <ColumnInfo Id="Emotion" Width="243" Index="7" />
+        <ColumnInfo Id="Volumn" Width="238" Index="8" />
+      </Columns>
+    </ListView>
+    <DetailView Id="Chat_DetailView">
+      <Items>
+        <ActionContainerViewItem Id="ChatAction" Caption="ChatAction(8)" IsNewNode="True" />
+      </Items>
+      <Layout>
+        <TabbedGroup Id="Tabs" Index="0" RelativeSize="100" IsNewNode="True">
+          <LayoutGroup Id="Main" Index="0" ShowCaption="True" RelativeSize="100" IsNewNode="True">
+            <LayoutItem Id="Items" ViewItem="Items" ShowCaption="False" Index="0" CaptionLocation="Top" RelativeSize="82.10463733650415" IsNewNode="True" />
+            <LayoutGroup Id="SizeableEditors" Index="1" ShowCaption="False" RelativeSize="17.89536266349584" IsNewNode="True">
+              <LayoutItem Id="SendMessage" ViewItem="SendMessage" ShowCaption="False" Index="0" CaptionLocation="Top" RelativeSize="83.38870431893687" IsNewNode="True" />
+              <LayoutGroup Id="R2" Direction="Horizontal" ShowCaption="False" Index="1" RelativeSize="16.611295681063122" IsNewNode="True">
+                <LayoutItem Id="Empty" Index="0" RelativeSize="90.66543438077635" IsNewNode="True" />
+                <LayoutItem Id="ChatAction" ViewItem="ChatAction" Index="1" RelativeSize="9.33456561922366" IsNewNode="True" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutGroup Id="Settings" ShowCaption="True" Index="1" RelativeSize="100" IsNewNode="True">
+            <LayoutGroup Id="R1" ShowCaption="True" Direction="Horizontal" Index="0" RelativeSize="5.410225921521998" IsNewNode="True">
+              <LayoutItem Id="Title" ViewItem="Title" Index="0" RelativeSize="33.333333333333336" IsNewNode="True" />
+              <LayoutItem Id="DateTime" ViewItem="DateTime" Index="1" RelativeSize="33.19327731092437" IsNewNode="True" />
+              <LayoutItem Id="Role" ViewItem="Role" Index="2" RelativeSize="33.4733893557423" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="Input" ShowCaption="True" Direction="Vertical" Index="1" RelativeSize="6.837098692033294" Caption="语音识别模型" IsNewNode="True">
+              <LayoutItem Id="STTModel" ViewItem="STTModel" Index="0" RelativeSize="50" IsNewNode="True" />
+              <LayoutItem Id="AutoSendSTT" ViewItem="AutoSendSTT" Index="1" RelativeSize="50" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="LLM" ShowCaption="True" Index="2" RelativeSize="8.739595719381688" IsNewNode="True">
+              <LayoutItem Id="Model" ViewItem="Model" Index="0" RelativeSize="35.714285714285715" IsNewNode="True" />
+              <LayoutItem Id="MultiRoundChat" ViewItem="MultiRoundChat" Index="1" RelativeSize="28.571428571428573" IsNewNode="True" />
+              <LayoutItem Id="StreamOut" ViewItem="StreamOut" Index="2" RelativeSize="35.714285714285715" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="Output" ShowCaption="True" Index="3" RelativeSize="79.01307966706302" IsNewNode="True">
+              <LayoutItem Id="ReadMessage" ViewItem="ReadMessage" Index="0" RelativeSize="3.1104199066874028" IsNewNode="True" />
+              <LayoutItem Id="ReadUseSystem" ViewItem="ReadUseSystem" Index="1" RelativeSize="2.488335925349922" IsNewNode="True" />
+              <LayoutItem Id="VoiceSolution" ViewItem="VoiceSolution" Index="2" RelativeSize="2.488335925349922" IsNewNode="True" />
+              <LayoutItem Id="SendMessageAfterClear" ViewItem="SendMessageAfterClear" Index="3" RelativeSize="91.91290824261276" IsNewNode="True" />
+            </LayoutGroup>
+          </LayoutGroup>
+        </TabbedGroup>
+        <LayoutGroup Id="Main" Removed="True">
+          <LayoutItem Id="Items" ViewItem="Items" ShowCaption="False" Index="0" CaptionLocation="Top" IsNewNode="True" />
+          <LayoutGroup Id="Items_Group" Index="1" RelativeSize="90" Removed="True">
+            <LayoutItem Id="Items" Removed="True" />
+          </LayoutGroup>
+          <LayoutGroup Id="SizeableEditors" Index="2" RelativeSize="10">
+            <LayoutItem Id="ChatAction" ViewItem="ChatAction" IsNewNode="True" />
+            <LayoutItem Id="SendMessage" ShowCaption="False" CaptionLocation="Top" />
+          </LayoutGroup>
+          <LayoutGroup Id="SimpleEditors" Removed="True">
+            <LayoutGroup Id="Chat" Removed="True" />
+            <LayoutGroup Id="XPObject" Removed="True" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="Chat_Items_ListView" PreviewColumnName="Message">
+      <Columns>
+        <ColumnInfo Id="Verb" Width="101" />
+        <ColumnInfo Id="MessageSource" Width="159" />
+        <ColumnInfo Id="DateTime" Width="192" />
+        <ColumnInfo Id="EndTime" Width="192" />
+        <ColumnInfo Id="ElapsedSeconds" Width="95" />
+        <ColumnInfo Id="User" Width="161" />
+      </Columns>
+    </ListView>
+    <ListView Id="ChatItem_ListView" AllowEdit="True">
+      <Columns>
+        <ColumnInfo Id="Verb" Width="101" />
+        <ColumnInfo Id="MessageSource" Width="159" />
+        <ColumnInfo Id="DateTime" Width="192" />
+        <ColumnInfo Id="EndTime" Width="192" />
+        <ColumnInfo Id="ElapsedSeconds" Width="95" />
+      </Columns>
+    </ListView>
+    <ListView Id="MeetingNotes_Attachments_ListView">
+      <Columns>
+        <ColumnInfo Id="Size" Width="149" />
+      </Columns>
+    </ListView>
+    <DetailView Id="MeetingNotes_DetailView" FreezeLayout="True">
+      <Layout IsNewNode="True" Removed="True">
+        <LayoutGroup Id="Main" Index="0" ShowCaption="False" RelativeSize="100" IsNewNode="True">
+          <TabbedGroup Id="Tabs" Index="0" RelativeSize="100" IsNewNode="True">
+            <LayoutGroup Id="Attachments" Index="0" ShowCaption="True" RelativeSize="100" IsNewNode="True">
+              <LayoutGroup Id="R1" ShowCaption="False" Direction="Horizontal" Index="0" IsNewNode="True">
+                <LayoutItem Id="Title" ViewItem="Title" Index="0" IsNewNode="True" />
+                <LayoutItem Id="Chairperson" ViewItem="Chairperson" Index="1" IsNewNode="True" />
+                <LayoutItem Id="BeginTime" ViewItem="BeginTime" Index="2" IsNewNode="True" />
+                <LayoutItem Id="EndDateTime" ViewItem="EndDateTime" Index="3" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="R2" ShowCaption="False" Direction="Horizontal" Index="1" IsNewNode="True">
+                <LayoutItem Id="MeetingLocation" ViewItem="MeetingLocation" Index="0" IsNewNode="True" />
+                <LayoutItem Id="Recorder" ViewItem="Recorder" Index="1" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="R3" Index="2" IsNewNode="True">
+                <LayoutItem Id="Keywords" Index="0" ViewItem="Keywords" IsNewNode="True" />
+                <LayoutItem Id="Memo" ViewItem="Memo" Index="1" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="R4" ShowCaption="False" Index="3" RelativeSize="96.2719298245614" IsNewNode="True">
+                <LayoutItem Id="Issues_Concerns" ViewItem="Issues_Concerns" Index="1" IsNewNode="True" />
+                <LayoutItem Id="DecisionsMade" ViewItem="DecisionsMade" Index="2" RelativeSize="27.67653758542141" IsNewNode="True" />
+                <LayoutItem Id="ActionItems" ViewItem="ActionItems" Index="3" RelativeSize="3.8724373576309796" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="R5" ShowCaption="False" Index="4" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="Absentees" ViewItem="Absentees" Index="0" RelativeSize="83.86491557223265" IsNewNode="True" />
+                <LayoutItem Id="Attendees" Index="0" RelativeSize="83.86491557223265" ViewItem="Attendees" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="Remark" ShowCaption="False" Index="5" RelativeSize="50.023116042533516" IsNewNode="True">
+                <LayoutItem Id="Remarks" ViewItem="Remarks" Index="1" RelativeSize="16.135084427767353" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="AttachmentsGroup" Index="6" IsNewNode="True">
+                <LayoutItem Id="Attachments" ViewItem="Attachments" Index="3" ShowCaption="True" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="SimpleXPObject" Index="7" ShowCaption="False" Direction="Horizontal" RelativeSize="2.1645021645021645" IsNewNode="True">
+                <LayoutItem Id="Createor" ViewItem="Createor" ShowCaption="" Index="0" RelativeSize="24.803513638465095" IsNewNode="True" />
+                <LayoutItem Id="CreateTime" ViewItem="CreateTime" ShowCaption="" Index="1" RelativeSize="24.803513638465095" IsNewNode="True" />
+                <LayoutItem Id="LastUpdator" ViewItem="LastUpdator" ShowCaption="" Index="2" RelativeSize="24.803513638465095" IsNewNode="True" />
+                <LayoutItem Id="LastUpdateTime" ViewItem="LastUpdateTime" ShowCaption="" Index="3" RelativeSize="25.589459084604716" IsNewNode="True" />
+              </LayoutGroup>
+            </LayoutGroup>
+            <LayoutGroup Id="Items" Index="2" ShowCaption="True" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="Items" ViewItem="Items" ShowCaption="False" Index="0" RelativeSize="100" CaptionLocation="Top" IsNewNode="True" />
+              <LayoutItem Id="ContentText" ViewItem="ContentText" CaptionLocation="Top" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="Setup" Index="3" ShowCaption="True" Caption="设置" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="Prompt" ViewItem="Prompt" ShowCaption="" Index="0" RelativeSize="94.84454939000393" IsNewNode="True" />
+              <LayoutGroup Id="VoiceContentBase" Index="1" ShowCaption="False" RelativeSize="3.187721369539551" IsNewNode="True">
+                <LayoutItem Id="Model" ViewItem="Model" ShowCaption="" Index="0" RelativeSize="53.08641975308642" IsNewNode="True" />
+                <LayoutItem Id="TranslateToEnglish" ViewItem="TranslateToEnglish" ShowCaption="" Index="1" RelativeSize="46.91358024691358" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="XPObject" Index="2" ShowCaption="False" RelativeSize="1.9677292404565132" IsNewNode="True">
+                <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" RelativeSize="100" IsNewNode="True" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </TabbedGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="MeetingNotes_Items_ListView">
+      <Columns>
+        <ColumnInfo Id="Time" Width="245" />
+        <ColumnInfo Id="Begin" Width="181" />
+        <ColumnInfo Id="End" Width="181" />
+        <ColumnInfo Id="Text" Index="3" Width="1771" />
+      </Columns>
+    </ListView>
+    <ListView Id="VoiceSolution_ListView" AllowEdit="True" />
+    <ListView Id="VoiceSolution_LookupListView" Filter="[CommonlyUsed] = True">
+      <Columns>
+        <ColumnInfo Id="CommonlyUsed" PropertyName="CommonlyUsed" Index="0" Width="190" IsNewNode="True" />
+        <ColumnInfo Id="DisplayName" PropertyName="DisplayName" Index="1" Width="243" IsNewNode="True" />
+        <ColumnInfo Id="Gender" PropertyName="Gender" Index="3" Width="194" IsNewNode="True" />
+        <ColumnInfo Id="Memo" PropertyName="Memo" Index="4" Width="464" IsNewNode="True" />
+      </Columns>
+    </ListView>
+  </Views>
+</Application>

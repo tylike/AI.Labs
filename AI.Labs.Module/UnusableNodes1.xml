@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <Views Id="Views">
+    <DetailView Id="MeetingNotes_DetailView">
+      <Layout Id="Layout">
+        <LayoutGroup Id="Main">
+          <TabbedGroup Id="Tabs">
+            <LayoutGroup Id="Attachments">
+              <LayoutGroup Id="R21">
+                <LayoutGroup Id="Autob5f00869-bd5a-45b4-8bd7-66750e6963be">
+                  <LayoutGroup Id="Auto7ef863bc-e8a3-46ac-8054-3a142ffc92e8">
+                    <LayoutGroup Id="Auto57ca3a4e-4c39-4d2e-998a-582bfa147909">
+                      <LayoutItem Id="MettingNotesEmployees" ViewItem="MettingNotesEmployees" />
+                    </LayoutGroup>
+                  </LayoutGroup>
+                  <LayoutItem Id="AgendaItems" ViewItem="AgendaItems" />
+                </LayoutGroup>
+              </LayoutGroup>
+            </LayoutGroup>
+          </TabbedGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+  </Views>
+</Application>

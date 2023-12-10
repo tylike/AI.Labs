@@ -1,0 +1,59 @@
+{
+  "第一次,用户向api发送的内容": {
+    "messages": [
+      { "role": "system","content": "你是数据库管理员.....等系统提示词"},
+      { "role": "user",  "content": "数据库里有几张表?" }
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "Execute",
+          "description": "传入sql语句,返回执行结果,数据库是Microsoft SQLServer.",
+          "parameters": {
+            "type": "object",
+            "properties": { "sql": { "type": "string" } },
+            "required": [ "sql" ]
+          }
+        }
+      }
+    ],
+    "model": "gpt-3.5-turbo"
+  },
+  "api回复的内容+执行结果再发给api": {
+    "messages": [
+      //第一次的那两条messages中的内容,以下是api回复的内容
+      {
+        "role": "assistant",
+        "tool_calls": [
+          {
+            "id": "call_oJvtnc7CMYdkVmYzeSizSCYv",
+            "type": "function",
+            "function": {
+              "name": "Execute",
+              "arguments": "{\"sql\": \"SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';\"}"
+            }
+          }
+        ]
+      },
+      //这里是用户程序在api回复的基础上增加的内容:即函数的执行结果
+      {
+        "role": "tool",
+        "content": "'210'",
+        "tool_call_id": "call_oJvtnc7CMYdkVmYzeSizSCYv"
+      }
+    ],
+    //"tools":...和第一次的一样没有变化,略,
+    "model": "gpt-3.5-turbo"
+  },
+  
+  "最终回复": {
+    "Messages": [
+      // 之前的那些聊天记录.....略
+      {
+        "role": "assistant",
+        "content": "数据库中有210张表。"
+      }
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <Views Id="Views">
+    <ListView Id="AudioBook_Paragraphs_ListView">
+      <Columns Id="Columns">
+        <ColumnInfo Id="Index" Width="129" />
+        <ColumnInfo Id="Text" Index="1" Width="1699" />
+      </Columns>
+    </ListView>
+    <DetailView Id="AudioBook_DetailView">
+      <Layout Id="Layout">
+        <LayoutGroup Id="Main">
+          <TabbedGroup Id="Tabs">
+            <LayoutGroup Id="Paragraphs" Index="1" />
+          </TabbedGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="AudioBook_SpreakItems_ListView">
+      <Columns Id="Columns">
+        <ColumnInfo Id="Paragraph" Width="255" />
+        <ColumnInfo Id="Text" Index="3" />
+        <ColumnInfo Id="JSON" Index="9" />
+      </Columns>
+    </ListView>
+  </Views>
+</Application>

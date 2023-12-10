@@ -1,0 +1,90 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net7.0-windows</TargetFramework>
+		<CheckEolTargetFramework>false</CheckEolTargetFramework>
+		<Deterministic>false</Deterministic>
+		<AssemblyVersion>1.0.*</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<Configurations>Debug;Release;EasyTest;NewDebug</Configurations>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Platforms>AnyCPU;x64</Platforms>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Remove="Model.DesignedDiffs.Localization.zh-CN.xafml" />
+		<None Remove="Model.DesignedDiffs.Localization.zh-Hans.xafml" />
+		<None Remove="Model.DesignedDiffs.xafml" />
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="Model.DesignedDiffs.Localization.zh-CN.xafml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="Model.DesignedDiffs.Localization.zh-Hans.xafml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Model.DesignedDiffs.xafml" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="DevExpress.ExpressApp" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.CloneObject.Xpo" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.ConditionalAppearance" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Dashboards" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Notifications" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Objects" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Office" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.ReportsV2" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Security.Xpo" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.TreeListEditors" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Validation" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.ViewVariantsModule" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Xpo" Version="23.1.6" />
+		<PackageReference Include="DevExpress.Persistent.Base" Version="23.1.6" />
+		<PackageReference Include="DevExpress.Persistent.BaseImpl.Xpo" Version="23.1.6" />
+		<PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.33.0" />
+		<PackageReference Include="NAudio" Version="2.2.1" />
+		<PackageReference Include="Betalgo.OpenAI.Utilities" Version="7.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="System.Speech" Version="8.0.0" />
+
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\OpenAI.SDK\OpenAI.SDK\OpenAI.csproj" />
+	  <ProjectReference Include="..\STT\STT.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="UnusableNodes.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes1.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes1_zh-Hans.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes2.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes2_zh-Hans.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes3.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes4.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes5.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes6.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes_zh-Hans.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	</ItemGroup>
+</Project>

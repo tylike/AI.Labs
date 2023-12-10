@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<TargetFramework>net7.0-windows</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<Platforms>AnyCPU;x64</Platforms>
+		<Configurations>Debug;Release;NewDebug</Configurations>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+	</PropertyGroup>
+	<!--<ItemGroup>
+		<Content Include="..\..\x64\$(Configuration)\Whisper.dll" Link="Whisper.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>-->
+	<ItemGroup>
+		<ProjectReference Include="..\WhisperNet\WhisperNet.csproj" />
+	</ItemGroup>
+</Project>
