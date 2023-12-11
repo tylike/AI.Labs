@@ -16,20 +16,43 @@
   </Localization>
   <NavigationItems NavigationStyle="Accordion" DefaultChildItemsDisplayStyle="List">
     <Items>
-      <Item Id="设置">
+      <Item Id="应用场景" Index="0">
         <Items>
-          <Item Id="聊天记录" ViewId="ChatItem_ListView" IsNewNode="True" />
-          <Item Id="STT" Caption="Speech To Text" IsNewNode="True">
+          <Item Id="Chat_ListView" ViewId="Chat_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="SpreadSheetDocument_ListView" ViewId="SpreadSheetDocument_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="WordDocument_ListView" ViewId="WordDocument_ListView" ObjectKey="" IsNewNode="True" />
+        </Items>
+      </Item>
+      <Item Id="STT" Index="1">
+        <Items>
+          <Item Id="STTModel_ListView" Removed="True" />
+        </Items>
+      </Item>
+      <Item Id="Default" Index="2">
+        <Items>
+          <Item Id="AIModel_ListView" Removed="True" />
+          <Item Id="SpreadSheetDocument_ListView" Removed="True" />
+          <Item Id="VoiceSolution_ListView" Removed="True" />
+          <Item Id="WordDocument_ListView" Removed="True" />
+        </Items>
+      </Item>
+      <Item Id="Reports" Index="3" />
+      <Item Id="设置" Index="4">
+        <Items>
+          <Item Id="聊天记录" ViewId="ChatItem_ListView" Visible="False" Index="0" IsNewNode="True" />
+          <Item Id="VoiceSolution_ListView" ViewId="VoiceSolution_ListView" ObjectKey="" Index="1" IsNewNode="True" />
+          <Item Id="PredefinedRole_ListView" Index="2" />
+          <Item Id="AIModel_ListView" ViewId="AIModel_ListView" ObjectKey="" Index="3" IsNewNode="True" />
+          <Item Id="STT" Caption="Speech To Text" Index="4" IsNewNode="True">
             <Items IsNewNode="True">
               <Item Id="STTModel_ListView" ViewId="STTModel_ListView" ObjectKey="" ToolTip="Speech To Text （STT）Model Config" IsNewNode="True" />
               <Item Id="STTService" ViewId="STTService_DetailView" ObjectKey="Speech To Text Service" IsNewNode="True" />
             </Items>
           </Item>
-        </Items>
-      </Item>
-      <Item Id="STT">
-        <Items>
-          <Item Id="STTModel_ListView" Removed="True" />
+          <Item Id="ApplicationUser_ListView" ObjectKey="" ViewId="ApplicationUser_ListView" Index="5" IsNewNode="True" />
+          <Item Id="PermissionPolicyRole_ListView" ViewId="PermissionPolicyRole_ListView" ObjectKey="" Index="6" IsNewNode="True" />
+          <Item Id="MyDetails" ViewId="ApplicationUser_DetailView" ObjectKey="@CurrentUserID" Caption="My Details" ImageName="BO_MyDetails" Index="7" IsNewNode="True" />
+          <Item Id="Chat_ListView" Removed="True" />
         </Items>
       </Item>
     </Items>
@@ -250,6 +273,23 @@
         <ColumnInfo Id="Text" Index="3" Width="1771" />
       </Columns>
     </ListView>
+    <DetailView Id="SpreadSheetDocument_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main">
+          <LayoutGroup Id="SimpleEditors">
+            <LayoutGroup Id="SpreadSheetDocument" Direction="Horizontal">
+              <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="XPObject" Removed="True">
+              <LayoutItem Id="Oid" Removed="True" />
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutGroup Id="DocumentData_Group">
+            <LayoutItem Id="DocumentData" ShowCaption="False" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
     <ListView Id="VoiceSolution_ListView" AllowEdit="True" />
     <ListView Id="VoiceSolution_LookupListView" Filter="[CommonlyUsed] = True">
       <Columns>
@@ -259,5 +299,24 @@
         <ColumnInfo Id="Memo" PropertyName="Memo" Index="4" Width="464" IsNewNode="True" />
       </Columns>
     </ListView>
+    <DetailView Id="WordDocument_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="49.98086490623804">
+            <LayoutGroup Id="WordDocument" Direction="Horizontal" RelativeSize="3.8284839203675345">
+              <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" RelativeSize="50" IsNewNode="True" />
+              <LayoutItem Id="Title" Index="1" RelativeSize="50" />
+            </LayoutGroup>
+            <LayoutGroup Id="XPObject" RelativeSize="96.17151607963247">
+              <LayoutItem Id="DocumentText" ViewItem="DocumentText" ShowCaption="False" Index="0" RelativeSize="100" IsNewNode="True" />
+              <LayoutItem Id="Oid" Removed="True" />
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutGroup Id="SizeableEditors" RelativeSize="50.01913509376196" Removed="True">
+            <LayoutItem Id="DocumentText" Removed="True" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
   </Views>
 </Application>

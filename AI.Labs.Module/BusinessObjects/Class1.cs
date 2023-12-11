@@ -17,6 +17,7 @@ using System.Diagnostics;
 using DevExpress.ExpressApp.Model;
 using System.Runtime.Versioning;
 using DevExpress.XtraRichEdit.Import.Html;
+using AI.Labs.Module.BusinessObjects.ChatInfo;
 
 namespace AI.Labs.Module.BusinessObjects
 {
@@ -194,31 +195,6 @@ namespace AI.Labs.Module.BusinessObjects
     //        }
     //    }
     //}
-
-    [XafDisplayName("回复")]
-    [NavigationItem]
-    public class AIResponse : XPObject
-    {
-        public AIResponse(Session s) : base(s)
-        {
-
-        }
-        [XafDisplayName("问题")]
-        public Question Question
-        {
-            get { return GetPropertyValue<Question>(nameof(Question)); }
-            set { SetPropertyValue(nameof(Question), value); }
-        }
-        [XafDisplayName("回复内容")]
-        [Size(-1)]
-        public string Content
-        {
-            get { return GetPropertyValue<string>(nameof(Content)); }
-            set { SetPropertyValue(nameof(Content), value); }
-        }
-
-
-    }
 
     [NavigationItem]
     [XafDisplayName("产品单位")]

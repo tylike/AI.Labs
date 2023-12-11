@@ -4,6 +4,7 @@ using DevExpress.ExpressApp.DC;
 using DevExpress.ExpressApp.Actions;
 using DevExpress.ExpressApp;
 using AI.Labs.Module.BusinessObjects.TTS;
+using AI.Labs.Module.BusinessObjects.ChatInfo;
 
 namespace AI.Labs.Module.BusinessObjects
 {

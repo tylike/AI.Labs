@@ -91,6 +91,9 @@
     <None Update="Template\MyMessage.Html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="UnusableNodes.xml">
+      <DependentUpon>Model.xafml</DependentUpon>
+    </None>
     <None Update="voice.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

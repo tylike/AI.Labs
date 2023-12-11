@@ -445,7 +445,7 @@ namespace AI.Labs.Module.BusinessObjects.TTS
 " + ArticleText;
             Debug.WriteLine(new string('=', 80));
             Debug.WriteLine(p);
-            var rst =await  AI.Ask(AudioBook.SystemPrompt, p, "http://localhost:8000");
+            var rst =await  AIHelper.Ask(AudioBook.SystemPrompt, p, "http://localhost:8000");
             if (!rst.IsError)
             {
                 //idx++;

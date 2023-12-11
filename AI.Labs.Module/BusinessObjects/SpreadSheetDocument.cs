@@ -11,6 +11,13 @@ namespace AI.Labs.Module.BusinessObjects
                 
         }
 
+        public string Title
+        {
+            get { return GetPropertyValue<string>(nameof(Title)); }
+            set { SetPropertyValue(nameof(Title), value); }
+        }
+
+
         [EditorAlias(DevExpress.ExpressApp.Editors.EditorAliases.SpreadsheetPropertyEditor)]
         public byte[] DocumentData
         {

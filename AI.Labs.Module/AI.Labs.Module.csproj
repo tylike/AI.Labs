@@ -74,6 +74,9 @@
 	  <None Update="UnusableNodes3.xml">
 	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
 	  </None>
+	  <None Update="UnusableNodes3_zh-Hans.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
 	  <None Update="UnusableNodes4.xml">
 	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
 	  </None>
@@ -81,6 +84,9 @@
 	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
 	  </None>
 	  <None Update="UnusableNodes6.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes7.xml">
 	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
 	  </None>
 	  <None Update="UnusableNodes_zh-Hans.xml">

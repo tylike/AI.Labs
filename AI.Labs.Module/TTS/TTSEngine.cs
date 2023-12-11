@@ -1,5 +1,4 @@
 ﻿using DevExpress.ExpressApp.Xpo;
-using AI.Labs.Module.BusinessObjects;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -9,6 +8,7 @@ using System.IO;
 using System.Reflection;
 using System.Speech.Synthesis;
 using AI.Labs.Module.BusinessObjects.TTS;
+using AI.Labs.Module.BusinessObjects.ChatInfo;
 
 public enum TTSState
 {

@@ -5,6 +5,7 @@ using DevExpress.ExpressApp;
 using OpenAI.ObjectModels.RequestModels;
 using AI.Labs.Module.BusinessObjects.Contexts;
 using OpenAI.Utilities.FunctionCalling;
+using AI.Labs.Module.BusinessObjects.ChatInfo;
 
 namespace AI.Labs.Module.BusinessObjects
 {

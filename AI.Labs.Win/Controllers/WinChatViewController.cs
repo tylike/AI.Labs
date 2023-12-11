@@ -1,4 +1,4 @@
-﻿using AI.Labs.Module.BusinessObjects;
+﻿using AI.Labs.Module.BusinessObjects.ChatInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace AI.Labs.Win.Controllers
 {
+
     public class WinChatViewController:ChatViewController
     {
         public WinChatViewController()

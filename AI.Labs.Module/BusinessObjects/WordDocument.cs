@@ -17,7 +17,7 @@ namespace AI.Labs.Module.BusinessObjects
             set { SetPropertyValue(nameof(Title), value); }
         }
 
-        [EditorAlias(DevExpress.ExpressApp.Editors.EditorAliases.RichTextPropertyEditor)]
+        [EditorAlias(DevExpress.ExpressApp.Editors.EditorAliases.RichTextPropertyEditor),Size(-1)]
         public string DocumentText
         {
             get { return GetPropertyValue<string>(nameof(DocumentText)); }

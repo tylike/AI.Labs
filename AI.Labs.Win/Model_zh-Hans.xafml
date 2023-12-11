@@ -3,7 +3,7 @@
   <ActionDesign>
     <Actions>
       <Action Id="发送" ToolTip="发送消息给AI，快捷键CTRL+回车键" />
-      <Action Id="语音问AI" ToolTip="语音问 AI 快捷键Alt 第一次开始录音，第二次停止录音" />
+      <Action Id="语音问AI" ToolTip="语音问 AI 快捷键[Ctrl+Q] 第一次开始录音，第二次停止录音" />
       <Action Id="About Info" Caption="关于..." />
       <Action Id="AddFromFile" Caption="从文件填加..." />
       <Action Id="ChooseSkin" Caption="选择皮肤" />
