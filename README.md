@@ -15,11 +15,11 @@ AI.Labs 是一个开源项目，旨在融合最先进的人工智能技术，以
 通过 LMStudio 或 ChatGLM3-6B 在本地部署大型语言模型（LLM），使用与 OpenAI 类似的 API 进行交互，保证数据的私密性同时提高响应速度。
 注模型、模型服务不限定，只要有openai风格的api支持就可以了。
 
-下载地址：https://lmstudio.ai/ 
-模型下载：https://huggingface.co/TheBloke 需要魔法 
-模型下载：https://hf-mirror.com/TheBloke 免魔法 
-模型下载：https://wisemodel.cn/models 免魔法 
-模型下载：https://gpt4all.io/ 免魔法 
+下载地址：https://lmstudio.ai/  
+模型下载：https://huggingface.co/TheBloke 需要魔法  
+模型下载：https://hf-mirror.com/TheBloke 免魔法  
+模型下载：https://wisemodel.cn/models 免魔法  
+模型下载：https://gpt4all.io/ 免魔法  
 
 # 2. 语音识别 STT/ASR
 ## 2.1本地语音识别： 
