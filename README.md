@@ -6,6 +6,10 @@ AI.Labs 是一个开源项目，旨在融合最先进的人工智能技术，以
 ![聊天设置](https://github.com/tylike/AI.Labs/blob/master/AI.Labs.Win/Images/ChatSettings.png)
 ![有声书籍](https://github.com/tylike/AI.Labs/blob/master/AI.Labs.Win/Images/AudioBook.png)
 
+B站聊天视频演示、介绍： https://www.bilibili.com/video/BV1hb4y1579q/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb
+
+https://github.com/tylike/ai.labs
+
 主要功能
 ## 1. 大型语言模型对话系统
 ### 1.1 OpenAI API 接口： 
