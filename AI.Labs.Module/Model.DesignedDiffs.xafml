@@ -273,6 +273,7 @@
         <ColumnInfo Id="Text" Index="3" Width="1771" />
       </Columns>
     </ListView>
+    <ListView Id="PredefinedRole_Prompts_ListView" AllowEdit="True" NewItemRowPosition="Top" />
     <DetailView Id="SpreadSheetDocument_DetailView">
       <Layout>
         <LayoutGroup Id="Main">

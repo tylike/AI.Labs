@@ -137,7 +137,10 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                     _history.Messages = new List<ChatMessage>();
                     if (ViewCurrentObject.Role != null)
                     {
-                        foreach (var item in ViewCurrentObject.Role.Prompts)
+                        var os = Application.CreateObjectSpace(typeof(PredefinedRole));
+                        var role = os.GetObjectsQuery<PredefinedRole>().First(t=>t.Oid == ViewCurrentObject.Role.Oid);
+
+                        foreach (var item in role.Prompts)
                         {
                             _history.Messages.Add(new ChatMessage(item.ChatRole.ToString(), item.Message));
                         }

@@ -59,6 +59,12 @@ namespace AI.Labs.Module.BusinessObjects
             set { SetPropertyValue(nameof(LastUpdateTime), value); }
         }
 
+        //[XafDisplayName("系统提示")]
+        //public string Prompts
+        //{
+        //    get { return GetPropertyValue<string>(nameof(Prompts)); }
+        //    set { SetPropertyValue(nameof(Prompts), value); }
+        //}
         [Association, DevExpress.Xpo.Aggregated]
         [XafDisplayName("预制内容")]
         public XPCollection<Prompt> Prompts
@@ -68,6 +74,7 @@ namespace AI.Labs.Module.BusinessObjects
                 return GetCollection<Prompt>(nameof(Prompts));
             }
         }
+
         protected override void OnSaving()
         {
             base.OnSaving();
