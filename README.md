@@ -60,8 +60,11 @@ https://github.com/tylike/AI.Labs/blob/master/HowToRun.md
 
 # 5.翻译与聊天的结合
 
-DevExpress Application Framework介绍：  
-这是一个商业的框架，网址：http://www.devexpress.com  
+# 6.DevExpress Application Framework(XAF)  
+项目中使用了XAF,网址：http://www.devexpress.com  
+如果您要将项目用于真实环境中时，请购买devexpress正版  
+用于测试目的时，可以下载1个月的试用版。  
+
 AI.Labs是基于C#（.Net6.0+）/SQLite数据库+XAF+OPENAI API+TTS+STT等一堆技术的组合。  
 尽量减少对python的依赖。但比如，edge-tts暂时没有办法摆脱的，还是得去调用。  
 
