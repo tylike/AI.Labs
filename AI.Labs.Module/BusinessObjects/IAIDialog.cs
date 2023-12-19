@@ -1,92 +1,13 @@
 ﻿using DevExpress.ExpressApp;
-using DevExpress.Xpo;
-using DevExpress.XtraSpreadsheet.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DevExpress.Persistent.Base;
-using OpenAI.Managers;
-using OpenAI;
 using OpenAI.ObjectModels.RequestModels;
-using OpenAI.ObjectModels;
-using DevExpress.Persistent.BaseImpl;
-using DevExpress.ExpressApp.DC;
-using static OpenAI.ObjectModels.Models;
-using System.Diagnostics;
-using DevExpress.ExpressApp.Model;
-using System.Runtime.Versioning;
-using DevExpress.XtraRichEdit.Import.Html;
 using AI.Labs.Module.BusinessObjects.ChatInfo;
 
 namespace AI.Labs.Module.BusinessObjects
 {
-    [NavigationItem]
-    [XafDisplayName("仓库")]
-    public class Warehouse : BaseObject
-    {
-        public Warehouse(Session s) : base(s)
-        {
-
-        }
-        [XafDisplayName("仓库名称")]
-        public string Name
-        {
-            get { return GetPropertyValue<string>(nameof(Name)); }
-            set { SetPropertyValue(nameof(Name), value); }
-        }
-    }
-
-    [NavigationItem]
-    [XafDisplayName("产品")]
-    public class Product : BaseObject
-    {
-        public Product(Session s) : base(s)
-        {
-
-        }
-
-        [XafDisplayName("产品分类")]
-        public ProductCategory Category
-        {
-            get { return GetPropertyValue<ProductCategory>(nameof(Category)); }
-            set { SetPropertyValue(nameof(Category), value); }
-        }
-
-        [XafDisplayName("产品名称")]
-        public string Name
-        {
-            get { return GetPropertyValue<string>(nameof(Name)); }
-            set { SetPropertyValue(nameof(Name), value); }
-        }
-
-        [XafDisplayName("单位")]
-        public ProductUnit Unit
-        {
-            get { return GetPropertyValue<ProductUnit>(nameof(Unit)); }
-            set { SetPropertyValue(nameof(Unit), value); }
-        }        
-    }
-
-    [XafDisplayName("产品分类")]
-    public class ProductCategory : XPObject
-    {
-        public ProductCategory(Session s):base(s)
-        {
-        }
-        [XafDisplayName("名称")]
-        public string Name
-        {
-            get { return GetPropertyValue<string>(nameof(Name)); }
-            set { SetPropertyValue(nameof(Name), value); }
-        }
-    }
-
     /// <summary>
     /// 是否可以与AI对话
     /// </summary>
     public interface IAIDialog { }
-
     public interface IAIDialog<T> : IAIDialog
         where T : IAIDialog<T>
     {
@@ -97,13 +18,13 @@ namespace AI.Labs.Module.BusinessObjects
         /// <param name="history"></param>
         /// <param name="os"></param>
         /// <param name="chat"></param>
-        public abstract static void InitializeContextData(ChatCompletionCreateRequest history,IObjectSpace os,Chat chat,ViewController controller);
+        public abstract static void InitializeContextData(ChatCompletionCreateRequest history, IObjectSpace os, Chat chat, ViewController controller);
         /// <summary>
         /// 当AI回复时,应该如何处理
         /// </summary>
         /// <param name="chat"></param>
         /// <param name="item"></param>
-        public abstract static void ChatResponse(Chat chat,ChatItem item);
+        public abstract static void ChatResponse(Chat chat, ChatItem item);
     }
 
     //public class InventoryViewController : ObjectViewController<ObjectView, InventoryRecord>
@@ -196,20 +117,4 @@ namespace AI.Labs.Module.BusinessObjects
     //    }
     //}
 
-    [NavigationItem]
-    [XafDisplayName("产品单位")]
-    public class ProductUnit : BaseObject
-    {
-        public ProductUnit(Session s) : base(s)
-        {
-
-        }
-
-        [XafDisplayName("名称")]
-        public string Name
-        {
-            get { return GetPropertyValue<string>(nameof(Name)); }
-            set { SetPropertyValue(nameof(Name), value); }
-        }
-    }
 }

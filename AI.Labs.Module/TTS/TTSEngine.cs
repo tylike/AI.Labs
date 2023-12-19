@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Speech.Synthesis;
 using AI.Labs.Module.BusinessObjects.TTS;
 using AI.Labs.Module.BusinessObjects.ChatInfo;
+using Edge_tts_sharp;
 
 public enum TTSState
 {
@@ -16,7 +17,6 @@ public enum TTSState
     生成中,
     已生成
 }
-
 public static class TTSEngine
 {
     static TTSEngine()
@@ -44,22 +44,38 @@ public static class TTSEngine
     }
     static SpeechSynthesizer synthesizer = new SpeechSynthesizer();
 
-    public static async void ReadText(string text)
+    public static async Task ReadText(string text, string voice = null, bool useSAPI = false)
     {
-        
-        synthesizer.SpeakAsync(text);
+        if (useSAPI)
+        {
+            synthesizer.SpeakAsync(text);
+            //sapi中没有支持音色人声
+        }
+        else
+        {
+            // See https://aka.ms/new-console-template for more information
 
-        //return Task.Run(() =>
-        //{
-        //    lock (synthesizer)
-        //    {
-        //        // 朗读文本
-        //        //ms.Flush();
-        //        // 关闭SpeechSynthesizer实例
-        //        //synthesizer.Dispose();
-        //        //return ms.ToArray();
-        //    }
-        //});
+            //string msg = string.Empty;
+            //Console.WriteLine("请输入文本内容.");
+            //msg = Console.ReadLine();
+            // 获取xiaoxiao语音包
+            if (voice == null)
+            {
+                voice = "zh-CN-XiaoxiaoNeural";
+            }
+            var edgevoice = Edge_tts.GetVoice().FirstOrDefault(i => i.ShortName == voice);// i.Name == "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)");
+            // 文字转语音，并且设置语速
+            Edge_tts.PlayText(text, edgevoice
+                //, -25
+                );
+            //Console.ReadLine();
+
+            //await Task.Run(() =>
+            //{
+            //    var data = text.GetTextToSpeechData(voice);
+            //    Play(data);
+            //});
+        }
     }
 
     static string GetTempFile(string extFileName = ".mp3")

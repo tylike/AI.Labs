@@ -8,6 +8,7 @@ using AI.Labs.Module.BusinessObjects.Contexts;
 using AI.Labs.Module.BusinessObjects.STT;
 using AI.Labs.Module.BusinessObjects.TTS;
 using OpenAI.Utilities.FunctionCalling;
+using AI.Labs.Module.BusinessObjects.Sales;
 
 namespace AI.Labs.Module.BusinessObjects.ChatInfo
 {
@@ -133,12 +134,12 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                     {
                         throw new UserFriendlyException("请先选择语言模型!");
                     }
-                    _history = new ChatCompletionCreateRequest() { Model = ViewCurrentObject.Model.Name };
+                    _history = new ChatCompletionCreateRequest() { Model = ViewCurrentObject.Model.Name, Temperature = 0.6f };
                     _history.Messages = new List<ChatMessage>();
                     if (ViewCurrentObject.Role != null)
                     {
                         var os = Application.CreateObjectSpace(typeof(PredefinedRole));
-                        var role = os.GetObjectsQuery<PredefinedRole>().First(t=>t.Oid == ViewCurrentObject.Role.Oid);
+                        var role = os.GetObjectsQuery<PredefinedRole>().First(t => t.Oid == ViewCurrentObject.Role.Oid);
 
                         foreach (var item in role.Prompts)
                         {
@@ -170,30 +171,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
             }
         }
 
-        public static void ReadText(IReadText text)
-        {
-            Task.Run(() =>
-            {
-                var msg = text.Message;
-                var chat = text.TTSSettingProvider;
-                if (!string.IsNullOrEmpty(msg))
-                {
-                    if (chat.ReadUseSystem)
-                    {
-                        TTSEngine.ReadText(msg);
-                    }
-                    else
-                    {
-                        var voice = chat.VoiceSolution?.DisplayName;
-                        var data = msg.GetTextToSpeechData(voice);
-                        //aiTextToVoice.EndVerb();
-                        //var playAIAudio = chat.Start("AI音频播放", "System");
-                        TTSEngine.Play(data);
-                        //playAIAudio.EndVerb();
-                    }
-                }
-            });
-        }
+
 
         //WhisperEngine sttengine;
         static object playing = new object();
@@ -240,6 +218,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
         {
             var chat = ViewCurrentObject;
             var userTextChatItem = chat.Start("用户文字->AI", "用户");
+            userTextChatItem.ChatItemType = ChatItemType.User;
             if (!string.IsNullOrEmpty(addationLog))
             {
                 userTextChatItem.Log += addationLog;
@@ -253,187 +232,260 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
 
             //发送给llm的内容：追加
             history.Messages.Add(ChatMessage.FromUser(userText));
+
             var AINeedToExecuteAFunction = false;
-            do
+
+            if (chat.Model.Category == AIModelCategory.GoogleGeminiPro)
             {
-                #region rem
-                //if (ViewCurrentObject.StreamOut)
-                //{
-                //    var completionResult = ((IChatCompletionService)ai.Completions).CreateCompletionAsStream(history);
+                //如果只有一条消息,则上面的处理
 
-                //    await foreach (var completion in completionResult)
-                //    {
-                //        if (completion.Successful)
-                //        {
-                //            Console.Write(completion.Choices.FirstOrDefault()?.Message);
-                //        }
-                //        else
-                //        {
-                //            if (completion.Error == null)
-                //            {
-                //                throw new Exception("Unknown Error");
-                //            }
+                //如果有多条消息时,则在第一消息上增加系统提示
 
-                //            Console.WriteLine($"{completion.Error.Code}: {completion.Error.Message}");
-                //        }
-                //    }
-                //} 
-                #endregion
-
-                var replyChatItem = ViewCurrentObject.Start("AI->用户", "AI");
-                ChatMessage functionCall = null;
-                //暂不考虑function calling
-                //1.流式输出时:
-                try
+                var request = new GeminiChatRequest();
+                Content first = null;
+                foreach (var m in history.Messages.Where(t => t.Role != "system"))
                 {
-                    #region 流式输出时
-                    if (ViewCurrentObject.StreamOut)
+                    var cnt = new Content();
+                    first ??= cnt;
+                    var cr = Enum.Parse<ChatRole>(m.Role);
+                    switch (cr)
                     {
-                        var reply = AIService.ChatCompletion.CreateCompletionAsStream(history);
-                        await foreach (var item in reply)
+                        //case ChatRole.system:
+                        //    cnt.Role = "system";
+                        //    break;
+                        case ChatRole.user:
+                            cnt.Role = "user";
+                            break;
+                        case ChatRole.assistant:
+                            cnt.Role = "model";
+                            break;
+                        case ChatRole.function:
+                            cnt.Role = "function";
+                            break;
+                        default:
+                            break;
+                    }
+                    cnt.Parts.Add(new ContentPart { Text = m.Content });
+                    request.Contents.Add(cnt);
+                }
+
+                if (first != null)
+                {
+                    var firstUserMessage = "";
+                    var systems = history.Messages.Where(t => t.Role == "system");
+                    if (systems.Any())
+                    {
+                        firstUserMessage = "# 已知资料:" + string.Join("\n", systems.Select(t => t.Content)) + "\n";
+                    }
+
+                    var txt = first.Parts.First();
+                    firstUserMessage += "# 用户说:" + txt.Text;
+                    txt.Text = firstUserMessage;
+                }
+
+                var sw = Stopwatch.StartNew();
+                var rst = await ChatGemini.Send(request);
+                sw.Stop();
+
+                Debug.WriteLine("发送完成！");
+                if (rst.Error == null)
+                {
+                    var replyChatItem = ViewCurrentObject.Start("AI->用户", "AI");
+                    replyChatItem.ChatItemType = ChatItemType.Assistant;
+                    replyChatItem.Message = rst.Candidates.FirstOrDefault()?.Content.Parts.FirstOrDefault()?.Text;
+                    replyChatItem.EndVerb();
+                    replyChatItem.AddLog($"模型用时:{sw.ElapsedMilliseconds}");
+                    history.Messages.Add(ChatMessage.FromAssistant(replyChatItem.Message));
+                }
+                else
+                {
+                    Debug.WriteLine(rst.Error.Message + "\ncode:" + rst.Error.Code, InformationType.Error);
+                    Application.ShowViewStrategy.ShowMessage(rst.Error.Message + "\ncode:" + rst.Error.Code, InformationType.Error);
+                }
+            }
+            else
+            {
+
+                do
+                {
+                    #region rem
+                    //if (ViewCurrentObject.StreamOut)
+                    //{
+                    //    var completionResult = ((IChatCompletionService)ai.Completions).CreateCompletionAsStream(history);
+
+                    //    await foreach (var completion in completionResult)
+                    //    {
+                    //        if (completion.Successful)
+                    //        {
+                    //            Console.Write(completion.Choices.FirstOrDefault()?.Message);
+                    //        }
+                    //        else
+                    //        {
+                    //            if (completion.Error == null)
+                    //            {
+                    //                throw new Exception("Unknown Error");
+                    //            }
+
+                    //            Console.WriteLine($"{completion.Error.Code}: {completion.Error.Message}");
+                    //        }
+                    //    }
+                    //} 
+                    #endregion
+
+                    var replyChatItem = ViewCurrentObject.Start("AI->用户", "AI");
+                    ChatMessage functionCall = null;
+                    //暂不考虑function calling
+                    //1.流式输出时:
+                    try
+                    {
+                        #region 流式输出时
+                        if (ViewCurrentObject.StreamOut)
                         {
-                            if (item.Successful)
+                            var reply = AIService.ChatCompletion.CreateCompletionAsStream(history);
+                            await foreach (var item in reply)
                             {
-                                var msg = item.Choices.FirstOrDefault()?.Message.Content;
-                                if (!string.IsNullOrEmpty(msg))
+                                if (item.Successful)
                                 {
-                                    replyChatItem.Message += msg;
-                                    Application.UIThreadDoEvents();
+                                    var msg = item.Choices.FirstOrDefault()?.Message.Content;
+                                    if (!string.IsNullOrEmpty(msg))
+                                    {
+                                        replyChatItem.Message += msg;
+                                        Application.UIThreadDoEvents();
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("错误:" + item.Error.Message);
                                 }
                             }
-                            else
+
+                            if (chat.MultiRoundChat && !string.IsNullOrEmpty(replyChatItem.Message))
                             {
-                                Debug.WriteLine("错误:" + item.Error.Message);
+                                history.Messages.Add(ChatMessage.FromAssistant(replyChatItem.Message));
                             }
                         }
+                        #endregion
 
-                        if (chat.MultiRoundChat && !string.IsNullOrEmpty(replyChatItem.Message))
-                        {
-                            history.Messages.Add(ChatMessage.FromAssistant(replyChatItem.Message));
-                        }
-                    }
-                    #endregion
-
-                    #region 非流式输出时
-                    else
-                    {
-                        //2.非流式输出时:
-                        var reply = await AIService.ChatCompletion.CreateCompletion(history);
-
-                        if (!reply.Successful)
-                        {
-                            replyChatItem.Message = reply.Error?.Message;
-                            //如果是函数调用时,出错则不在循环,否则可能就是死循环
-                            break;
-                        }
+                        #region 非流式输出时
                         else
                         {
+                            //2.非流式输出时:
+                            var reply = await AIService.ChatCompletion.CreateCompletion(history);
 
-                            var choices = reply.Choices.First();
-
-                            var response = reply.Choices.First().Message;
-                            functionCall = response;
-                            AINeedToExecuteAFunction = response.ToolCalls?.Any() ?? false;
-
-                            replyChatItem.Message = response.Content;
-                            if (AINeedToExecuteAFunction)
+                            if (!reply.Successful)
                             {
-                                //如果是调用函数，则统一到一个地方去处理
-                                //replyChatItem.Message += $"\r\n调用:{response.FunctionCall.Name}({response.FunctionCall.Arguments})\r\n";
-                                //Console.WriteLine($"Invoking {response.FunctionCall.Name} with params: {response.FunctionCall.Arguments}");
+                                replyChatItem.Message = reply.Error?.Message;
+                                //如果是函数调用时,出错则不在循环,否则可能就是死循环
+                                break;
                             }
                             else
                             {
-                                chat.ProcessResponse(replyChatItem);
+
+                                var choices = reply.Choices.First();
+
+                                var response = reply.Choices.First().Message;
+                                functionCall = response;
+                                AINeedToExecuteAFunction = response.ToolCalls?.Any() ?? false;
+
+                                replyChatItem.Message = response.Content;
+                                if (AINeedToExecuteAFunction)
+                                {
+                                    //如果是调用函数，则统一到一个地方去处理
+                                    //replyChatItem.Message += $"\r\n调用:{response.FunctionCall.Name}({response.FunctionCall.Arguments})\r\n";
+                                    //Console.WriteLine($"Invoking {response.FunctionCall.Name} with params: {response.FunctionCall.Arguments}");
+                                }
+                                else
+                                {
+                                    chat.ProcessResponse(replyChatItem);
+                                }
                             }
-                        }
 
-                        if (AINeedToExecuteAFunction || chat.MultiRoundChat && !string.IsNullOrEmpty(replyChatItem.Message))
-                        {
-                            history.Messages.Add(functionCall);
-                        }
-                    }
-                    #endregion
-                }
-                finally
-                {
-                    replyChatItem.EndVerb();
-                    Application.UIThreadDoEvents();
-                }
-
-                //朗读消息时可以全部输出完成了再读，也可以一个逗号、句号、感叹号、回车符后就马上读
-                //暂时没有加入这个功能，先实现了全部输出完成了再读。
-                if (chat.ReadMessage)
-                {
-                    var sw = Stopwatch.StartNew();
-                    replyChatItem.AddLog("朗读语音:");
-                    ReadText(replyChatItem);
-                    sw.Stop();
-                    replyChatItem.AddLog($"朗读结束,用时:{sw.ElapsedMilliseconds}");
-                }
-
-                //history.Messages.Add(response);
-
-                if (AINeedToExecuteAFunction)
-                {
-                    foreach (var item in functionCall.ToolCalls)
-                    {
-                        try
-                        {
-                            var rst = FunctionCallingHelper.CallFunction<string>(item.FunctionCall, helper);
-                            replyChatItem.Message = $"{item.FunctionCall.Name}({item.FunctionCall.Arguments})\n";
-                            replyChatItem.Message += "调用结果:" + rst;
-                            history.Messages.Add(ChatMessage.FromTool(rst, item.Id));
-                            //functionCall.Content = rst;
-                        }
-                        catch (Exception ex)
-                        {
-                            replyChatItem.Message += "报错了:" + ex.Message;
-                            var errorMessage = "请根据报错信息考虑重新调用?报错信息:" + ex.Message;
-                            if (ex.InnerException != null)
+                            if (AINeedToExecuteAFunction || chat.MultiRoundChat && !string.IsNullOrEmpty(replyChatItem.Message))
                             {
-                                errorMessage += ex.InnerException.Message;
-                                replyChatItem.Message += ex.InnerException.Message;
+                                history.Messages.Add(functionCall);
                             }
-                            history.Messages.Add(ChatMessage.FromTool(errorMessage, item.Id));
                         }
+                        #endregion
+                    }
+                    finally
+                    {
+                        replyChatItem.EndVerb();
+                        Application.UIThreadDoEvents();
                     }
 
-
-                    //FunctionCallingHelper.CallFunction<string>(functionCall.FunctionCall, helper);
-                    //var functionCall = response.FunctionCall;
-
-                    //var obj = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject(response.FunctionCallJson, typeof(object));
-
-                    ////response.Content = result.ToString(CultureInfo.CurrentCulture);
-                    //var parameters = obj.Properties().FirstOrDefault(t => t.Name == "parameters");
-                    //var sql = ((Newtonsoft.Json.Linq.JValue)parameters.First.First.First).Value.ToString();
-
-                    //string rst = "";
-                    //try
+                    //朗读消息时可以全部输出完成了再读，也可以一个逗号、句号、感叹号、回车符后就马上读
+                    //暂时没有加入这个功能，先实现了全部输出完成了再读。
+                    //if (chat.ReadMessage)
                     //{
-
-                    //    rst = helper.Execute(sql);
+                    //    var sw = Stopwatch.StartNew();
+                    //    replyChatItem.AddLog("朗读语音:");
+                    //    ReadText(replyChatItem);
+                    //    sw.Stop();
+                    //    replyChatItem.AddLog($"朗读结束,用时:{sw.ElapsedMilliseconds}");
                     //}
-                    //catch (Exception ex)
-                    //{
-                    //    rst = "提示:应该使用t-sql语法,当前操作的数据库是sqlserver.\n报错了:" + ex.ToString();
-                    //}
-                    ////response.Content = rst;
-                    ///
-                    //var tellAI = ChatMessage.FromFunction(rst);
-                    ////tellAI.Role = "function";
-                    //tellAI.FunctionCall = functionCall.FunctionCall;
-                    //tellAI.Name = functionCall.FunctionCall.Name;
-                    //history.Messages.Add(tellAI);
 
-                    //var aiTextToVoice = ViewCurrentObject.Start("AI调用函数", "AI");
-                    //aiTextToVoice.Message = sql + "\n" + rst;
-                    //aiTextToVoice.EndVerb();
-                }
+                    //history.Messages.Add(response);
 
-            } while (AINeedToExecuteAFunction);
+                    if (AINeedToExecuteAFunction)
+                    {
+                        foreach (var item in functionCall.ToolCalls)
+                        {
+                            try
+                            {
+                                var rst = FunctionCallingHelper.CallFunction<string>(item.FunctionCall, helper);
+                                replyChatItem.Message = $"{item.FunctionCall.Name}({item.FunctionCall.Arguments})\n";
+                                replyChatItem.Message += "调用结果:" + rst;
+                                history.Messages.Add(ChatMessage.FromTool(rst, item.Id));
+                                //functionCall.Content = rst;
+                            }
+                            catch (Exception ex)
+                            {
+                                replyChatItem.Message += "报错了:" + ex.Message;
+                                var errorMessage = "请根据报错信息考虑重新调用?报错信息:" + ex.Message;
+                                if (ex.InnerException != null)
+                                {
+                                    errorMessage += ex.InnerException.Message;
+                                    replyChatItem.Message += ex.InnerException.Message;
+                                }
+                                history.Messages.Add(ChatMessage.FromTool(errorMessage, item.Id));
+                            }
+                        }
 
+
+                        //FunctionCallingHelper.CallFunction<string>(functionCall.FunctionCall, helper);
+                        //var functionCall = response.FunctionCall;
+
+                        //var obj = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject(response.FunctionCallJson, typeof(object));
+
+                        ////response.Content = result.ToString(CultureInfo.CurrentCulture);
+                        //var parameters = obj.Properties().FirstOrDefault(t => t.Name == "parameters");
+                        //var sql = ((Newtonsoft.Json.Linq.JValue)parameters.First.First.First).Value.ToString();
+
+                        //string rst = "";
+                        //try
+                        //{
+
+                        //    rst = helper.Execute(sql);
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    rst = "提示:应该使用t-sql语法,当前操作的数据库是sqlserver.\n报错了:" + ex.ToString();
+                        //}
+                        ////response.Content = rst;
+                        ///
+                        //var tellAI = ChatMessage.FromFunction(rst);
+                        ////tellAI.Role = "function";
+                        //tellAI.FunctionCall = functionCall.FunctionCall;
+                        //tellAI.Name = functionCall.FunctionCall.Name;
+                        //history.Messages.Add(tellAI);
+
+                        //var aiTextToVoice = ViewCurrentObject.Start("AI调用函数", "AI");
+                        //aiTextToVoice.Message = sql + "\n" + rst;
+                        //aiTextToVoice.EndVerb();
+                    }
+
+                } while (AINeedToExecuteAFunction);
+            }
             if (!ViewCurrentObject.MultiRoundChat)
             {
                 _history = null;

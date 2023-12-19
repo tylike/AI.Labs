@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <ActionDesign Id="ActionDesign">
+    <Actions Id="Actions">
+      <Action Id="ReadMessage" Caption="朗读消息" ToolTip="手动指定重新朗读该条选中的消息" />
+    </Actions>
+  </ActionDesign>
+</Application>

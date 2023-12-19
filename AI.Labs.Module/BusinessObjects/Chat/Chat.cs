@@ -13,6 +13,7 @@ using AI.Labs.Module.BusinessObjects.STT;
 using AI.Labs.Module.BusinessObjects.TTS;
 using DevExpress.ExpressApp.ConditionalAppearance;
 using System.Security.Cryptography;
+using System.Diagnostics;
 
 namespace AI.Labs.Module.BusinessObjects.ChatInfo
 {
@@ -73,13 +74,14 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
             set { SetPropertyValue(nameof(VoiceSolution), value); }
         }
 
-
         [XafDisplayName("朗读消息")]
         public bool ReadMessage
         {
             get { return GetPropertyValue<bool>(nameof(ReadMessage)); }
             set { SetPropertyValue(nameof(ReadMessage), value); }
         }
+
+        
 
 
         public bool SendMessageAfterClear
@@ -162,6 +164,10 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
             return ci;
         }
 
+        public void ChatItemEndVerb()
+        {
+
+        }
 
         public Action<ChatCompletionCreateRequest, IObjectSpace> InitializeDataAction { get; set; }
 
@@ -218,6 +224,13 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
         [XafDisplayName("函数")]
         function
     }
+    public enum ChatItemType
+    {
+        System,
+        User,
+        Assistant,
+        Function
+    }
 
     [XafDisplayName("交互内容")]
     [Appearance("UserStyle", Criteria = "MessageSource=='AI'", BackColor = "#F9FF8D", TargetItems = "*")]
@@ -235,12 +248,20 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
             DateTime = DateTime.Now;
         }
 
+
+        public ChatItemType ChatItemType
+        {
+            get { return GetPropertyValue<ChatItemType>(nameof(ChatItemType)); }
+            set { SetPropertyValue(nameof(ChatItemType), value); }
+        }
+
         [Association]
         public Chat Chat
         {
             get { return GetPropertyValue<Chat>(nameof(Chat)); }
             set { SetPropertyValue(nameof(Chat), value); }
         }
+
         [XafDisplayName("动作说明")]
         [Size(200)]
         public string Verb
@@ -304,6 +325,29 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
         public void EndVerb()
         {
             EndTime = DateTime.Now;
+
+            if (this.ChatItemType == ChatItemType.Assistant && !string.IsNullOrEmpty(Message))
+            {
+                ReadMessage();
+            }
+        }
+
+        /// <summary>
+        /// 用户可以手动进行朗读消息，无条件的
+        /// </summary>
+        /// <returns></returns>
+        [Action]
+        public async Task ReadMessage()
+        {
+            if (!string.IsNullOrEmpty(Message))
+            {
+                var sw = Stopwatch.StartNew();
+                var msg = this.Message;
+                var chat = this.Chat;
+                await TTSEngine.ReadText(msg, chat.VoiceSolution?.DisplayName, chat.ReadUseSystem);
+                sw.Stop();
+                this.AddLog($"朗读消息用时:{sw.ElapsedMilliseconds}");
+            }
         }
         /// <summary>
         /// 发言者

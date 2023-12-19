@@ -2,7 +2,8 @@
 <Application Title="AI.Labs" Logo="ExpressAppLogo">
   <ActionDesign>
     <Actions>
-      <Action Id="ReadMessage" ImageName="Electronics_Volume" />
+      <Action Id="CreateProductData" ImageName="Travel_Beach" />
+      <Action Id="CreateTestBookData" ImageName="Travel_Beach" />
       <Action Id="SaveAndClose" Shortcut="Control+Alt+Enter" />
     </Actions>
   </ActionDesign>
@@ -18,7 +19,10 @@
     <Items>
       <Item Id="应用场景" Index="0">
         <Items>
-          <Item Id="Chat_ListView" ViewId="Chat_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Chat_ListView" ViewId="Chat_ListView" ObjectKey="" Index="0" IsNewNode="True" />
+          <Item Id="Book_ListView" Index="1" />
+          <Item Id="Product_ListView" ViewId="Product_ListView" ObjectKey="" Index="2" IsNewNode="True" />
+          <Item Id="DataBaseCommander_ListView" Index="3" />
           <Item Id="SpreadSheetDocument_ListView" ViewId="SpreadSheetDocument_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="WordDocument_ListView" ViewId="WordDocument_ListView" ObjectKey="" IsNewNode="True" />
         </Items>
@@ -31,6 +35,7 @@
       <Item Id="Default" Index="2">
         <Items>
           <Item Id="AIModel_ListView" Removed="True" />
+          <Item Id="Product_ListView" Removed="True" />
           <Item Id="SpreadSheetDocument_ListView" Removed="True" />
           <Item Id="VoiceSolution_ListView" Removed="True" />
           <Item Id="WordDocument_ListView" Removed="True" />
@@ -274,6 +279,13 @@
       </Columns>
     </ListView>
     <ListView Id="PredefinedRole_Prompts_ListView" AllowEdit="True" NewItemRowPosition="Top" />
+    <ListView Id="Product_ListView" MasterDetailMode="ListViewAndDetailView" />
+    <ListView Id="Product_Properties_ListView">
+      <Columns>
+        <ColumnInfo Id="PropertyName" Width="334" />
+        <ColumnInfo Id="PropertyValue" Index="1" Width="519" />
+      </Columns>
+    </ListView>
     <DetailView Id="SpreadSheetDocument_DetailView">
       <Layout>
         <LayoutGroup Id="Main">

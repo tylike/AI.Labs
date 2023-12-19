@@ -7,6 +7,11 @@ using DevExpress.XtraRichEdit.Import.Doc;
 
 namespace AI.Labs.Module.BusinessObjects
 {
+    public enum AIModelCategory
+    {
+        API,
+        GoogleGeminiPro,        
+    }
     [XafDisplayName("模型")]
     [NavigationItem()]
     public class AIModel:XPObject
@@ -16,6 +21,11 @@ namespace AI.Labs.Module.BusinessObjects
                 
         }
 
+        public AIModelCategory Category
+        {
+            get { return GetPropertyValue<AIModelCategory>(nameof(Category)); }
+            set { SetPropertyValue(nameof(Category), value); }
+        }
 
         [XafDisplayName("名称")]
         [ModelDefault("PredefinedValues", "gpt-3.5-turbo-1106;gpt-3.5-turbo;gpt-3.5-turbo-instruct;gpt-4;gpt-4-32k;gpt-4-1106-preview;gpt-4-1106-vision-preview")]

@@ -16,6 +16,8 @@
       <Action Id="CopyPredefinedReport" Caption="复制内置报表" />
       <Action Id="CreateDashboard" Caption="创建Dashboard" />
       <Action Id="CreateModelDifferences" Caption="创建模型差异" />
+      <Action Id="CreateProductData" Caption="创建测试数据" />
+      <Action Id="CreateTestBookData" Caption="创建测试数据" />
       <Action Id="Delete" Caption="删除" />
       <Action Id="Delete Item" Caption="删除条目" />
       <Action Id="DeleteDashboard" Caption="删除Dashboard" />
@@ -46,7 +48,6 @@
       <Action Id="NextObject" Caption="下一条记录" />
       <Action Id="PlayWav" Caption="播放" />
       <Action Id="PreviousObject" Caption="上一条" />
-      <Action Id="ReadMessage" Caption="朗读消息" ToolTip="手动指定重新朗读该条选中的消息" />
       <Action Id="Refresh" Caption="刷新" />
       <Action Id="RefreshAction" Caption="刷新" ToolTip="刷新" />
       <Action Id="RefreshNotifications" Caption="刷新" />

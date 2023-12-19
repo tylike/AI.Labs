@@ -20,20 +20,22 @@ namespace AI.Labs.Module.BusinessObjects.TTS
         public bool ReadUseSystem { get; }
     }
     
-    public class ReadMessageViewController:ObjectViewController<ObjectView,IReadText>
-    {
-        public ReadMessageViewController()
-        {
-            var read = new SimpleAction(this, "ReadMessage", null);
-            read.TargetObjectsCriteria = "Message!=null && Message!=''";
-            read.SelectionDependencyType = SelectionDependencyType.RequireSingleObject;
-            read.Execute += Read_Execute;
-        }
+    //public class ReadMessageViewController:ObjectViewController<ObjectView,IReadText>
+    //{
+    //    public ReadMessageViewController()
+    //    {
+    //        var read = new SimpleAction(this, "ReadMessage", null);
+    //        read.TargetObjectsCriteria = "Message!=null && Message!=''";
+    //        read.SelectionDependencyType = SelectionDependencyType.RequireSingleObject;
+    //        read.Execute += Read_Execute;
+    //    }
 
-        private void Read_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            ChatViewController.ReadText(this.ViewCurrentObject);
-        }
-    }
+    //    private void Read_Execute(object sender, SimpleActionExecuteEventArgs e)
+    //    {
+    //        this.ViewCurrentObject.
+    //        //TTSEngine.ReadText(this.ViewCurrentObject.Message)
+    //        //ChatViewController.ReadText(this.ViewCurrentObject);
+    //    }
+    //}
 
 }
