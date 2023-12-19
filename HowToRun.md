@@ -13,14 +13,14 @@ AI.Labs中只支持openai风格的API调用。
 模型下载：https://hf-mirror.com/TheBloke 免魔法  
 模型下载：https://wisemodel.cn/models 免魔法  
 模型下载：https://gpt4all.io/ 免魔法  
-### 2.1配置LMStudio  
-#### 1.下图是服务端的模型配置界面，点了1->2所示后：
+### 配置LMStudio  
+#### 2.1.下图是服务端的模型配置界面，点了1->2所示后：
 ![LMStudio](./AI.Labs.Win/Images/LMStudioConfigLLM.png)  
-#### 2.在弹出的文件浏览器中按下图配置，文件夹名你可以自己取  
+#### 2.2.在弹出的文件浏览器中按下图配置，文件夹名你可以自己取  
 ![LMStudio](./AI.Labs.Win/Images/LMStudioConfigLLM2.png)  
-#### 3.配好之后是这样的效果：  
+#### 2.3.配好之后是这样的效果：  
 ![LMStudio](./AI.Labs.Win/Images/LMStudioConfigLLM3.png)  
-#### 4.你可以在LLMStudio中测试模型的聊天，然后去启动服务  
+#### 2.4.你可以在LLMStudio中测试模型的聊天，然后去启动服务  
 按下图操作顺序完成3步操作。  
 ![LMStudio](./AI.Labs.Win/Images/LMStudioConfigLLM4.png)  
 

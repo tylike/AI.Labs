@@ -3,7 +3,11 @@
 AI.Labs 是一个开源项目，旨在融合最先进的人工智能技术，以提供一个功能强大的人工智能平台。该项目的核心在于集成多种人工智能服务，包括大型语言模型、语音识别和语音合成，以支持对话、语音交互和会议记录等功能。  
 B站聊天视频演示、介绍：   
 https://www.bilibili.com/video/BV1hb4y1579q/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb  
-本项目地址：https://github.com/tylike/ai.labs
+本项目地址：https://github.com/tylike/ai.labs  
+
+如何运行:  
+https://github.com/tylike/AI.Labs/blob/master/HowToRun.md  
+
 
 ![聊天界面](./AI.Labs.Win/Images/AI.Labs.Chat.png)
 ![聊天设置](https://github.com/tylike/AI.Labs/blob/master/AI.Labs.Win/Images/ChatSettings.png)
@@ -56,8 +60,11 @@ https://www.bilibili.com/video/BV1hb4y1579q/?share_source=copy_web&vd_source=113
 
 # 5.翻译与聊天的结合
 
-DevExpress Application Framework介绍：  
-这是一个商业的框架，网址：http://www.devexpress.com  
+# 6.DevExpress Application Framework(XAF)  
+项目中使用了XAF,网址：http://www.devexpress.com  
+如果您要将项目用于真实环境中时，请购买devexpress正版  
+用于测试目的时，可以下载1个月的试用版。  
+# 7.环境  
 AI.Labs是基于C#（.Net6.0+）/SQLite数据库+XAF+OPENAI API+TTS+STT等一堆技术的组合。  
 尽量减少对python的依赖。但比如，edge-tts暂时没有办法摆脱的，还是得去调用。  
 
