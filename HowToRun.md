@@ -47,7 +47,7 @@ https://hf-mirror.com/ggerganov/whisper.cpp/blob/main/ggml-medium.bin
 **重要：配置完成后，需要到设置->语音识别->语音识别服务 点击上方的“停止”按钮，然后选择刚刚你配好的模型，重启系统**
 
 ## 5.如果你需要TTS(文本转语音功能)  
-
+# 注:2023-12-19日更新，现在可以不需要安装python+edge-tts了，在c#中直接实现了调用edge tts
 ### 5.1 你需要安装python.(略)
 ### 5.2 你需要安装edge-tts python库.
 到命令行下执行：  
