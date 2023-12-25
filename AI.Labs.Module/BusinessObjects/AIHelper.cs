@@ -129,6 +129,27 @@ namespace AI.Labs.Module.BusinessObjects
                     //"sk-7A5enIMIVH4PtxML4TL0M6Khi1ty8INWpQfvR6gykqgfCY6z"
                 });
         }
+
+
+        public async static Task<(string Message, bool IsError)> Ask(string systemPrompt, string userMessage, AIModel aiModel)
+        {
+            var openAiService = CreateOpenAIService(baseDomain: aiModel.ApiUrlBase, apiKey: aiModel.ApiKey);
+            // ChatGPT Official API
+            var completionResult = await openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
+            {
+                Messages = new List<ChatMessage>
+                {
+                    ChatMessage.FromSystem(systemPrompt),
+                    ChatMessage.FromUser(userMessage)
+                },
+                Model = aiModel.Name,
+            });
+
+            return completionResult.GetAIResponse();
+        }
+
+
+
         public async static Task<(string Message, bool IsError)> Ask(string systemPrompt,string userMessage, string url = null)
         {
             var openAiService = CreateOpenAIService(baseDomain: url);

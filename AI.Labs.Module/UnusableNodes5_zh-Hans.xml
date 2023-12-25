@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <BOModel Id="BOModel">
+    <Class Name="AI.Labs.Module.BusinessObjects.TTS.AudioBook">
+      <OwnMembers Id="OwnMembers">
+        <Member Name="AudioItems" Caption="音频条目" />
+        <Member Name="Content" Caption="文章内容" />
+        <Member Name="Description" Caption="备注" />
+        <Member Name="Name" Caption="文章名称" />
+        <Member Name="Narration" Caption="旁白音色" />
+        <Member Name="Roles" Caption="人物角色" />
+        <Member Name="SimpleMode" Caption="简单模式" />
+        <Member Name="SpreakItems" Caption="角色说话" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.TTS.AudioBookRole">
+      <OwnMembers Id="OwnMembers">
+        <Member Name="SpreakItems" Caption="说话内容" />
+        <Member Name="SpreakItemsCount" Caption="说话数量" />
+        <Member Name="VoiceSolution" Caption="音色" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.TTS.AudioBookSpreakItem">
+      <OwnMembers Id="OwnMembers">
+        <Member Name="AudioRole" Caption="角色" />
+        <Member Name="Emotion" Caption="情感" />
+        <Member Name="SpreakBefore" Caption="说话前缀" />
+        <Member Name="SpreakContent" Caption="说话内容" />
+        <Member Name="Spreaker" Caption="说话人" />
+        <Member Name="Volumn" Caption="音量" />
+      </OwnMembers>
+    </Class>
+  </BOModel>
+  <ActionDesign Id="ActionDesign">
+    <Actions Id="Actions">
+      <Action Id="AudioBook.ParseSpreakItems" Caption="2.解析说话人" />
+      <Action Id="AudioBookSpreakItem.ParseArticleText" Caption="解析说话角色" />
+    </Actions>
+  </ActionDesign>
+</Application>

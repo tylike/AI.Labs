@@ -1,10 +1,10 @@
-﻿using Edge_tts_sharp.Model;
+﻿using EdgeTTSSharp.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using WebSocketSharp;
 
-namespace Edge_tts_sharp
+namespace EdgeTTSSharp
 {
     public enum SslProtocolsHack
     {

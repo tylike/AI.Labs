@@ -29,7 +29,7 @@ namespace AI.Labs.Win.Controllers
             }
         }
     }
-    public class WordDocumentViewController : ObjectViewController<DetailView, WordDocument>
+    public class WordDocumentViewController : ObjectViewController<DetailView, IWordDocument>
     {
         public WordDocumentViewController()
         {
@@ -92,6 +92,18 @@ namespace AI.Labs.Win.Controllers
         {
             base.OnActivated();
             editor = View.GetItems<RichTextPropertyEditor>().First();
+            editor.ValueStoring += Editor_ValueStoring;
+        }
+        protected override void OnDeactivated()
+        {
+            if (editor != null)
+                editor.ValueStoring -= Editor_ValueStoring;
+            base.OnDeactivated();
+        }
+
+        private void Editor_ValueStoring(object sender, ValueStoringEventArgs e)
+        {
+            ViewCurrentObject.Content = editor.RichEditControl.Document.Text;
         }
 
         private async void ContinueWrite_Execute(object sender, SimpleActionExecuteEventArgs e)

@@ -2,9 +2,28 @@
 <Application Title="AI.Labs" Logo="ExpressAppLogo">
   <ActionDesign>
     <Actions>
+      <Action Id="播放" Index="0" />
+      <Action Id="初始列表" Index="1" />
+      <Action Id="创建Azure声音" Index="2" />
+      <Action Id="呼叫助理" Index="3" />
+      <Action Id="呼叫助理主窗" Index="4" />
+      <Action Id="生成语音" Index="5" />
+      <Action Id="招聘助理" Index="6" />
+      <Action Id="AudioBook.CreateAudioBook" ImageName="Actions_Book" Index="7" PaintStyle="CaptionAndImage" />
+      <Action Id="AudioBook.ParseParagerahs" ImageName="SnapEmptyParagraphSeparator" Index="8" PaintStyle="CaptionAndImage" />
+      <Action Id="AudioBook.PlayAudioBook" ImageName="Action_SimpleAction" Index="10" PaintStyle="CaptionAndImage" />
+      <Action Id="BingChat.Chat" Index="13" />
+      <Action Id="AudioBookRole.TryReading" ImageName="BO_Security_Permission_Action" PaintStyle="CaptionAndImage" />
+      <Action Id="AudioBookTextAudioItem.ParseArticleText" ImageName="WeightedPies" PaintStyle="CaptionAndImage" />
+      <Action Id="AudioBookTextAudioItem.Read" ImageName="BO_Security_Permission_Action" PaintStyle="CaptionAndImage" />
+      <Action Id="BatchSetupRole" ImageName="BO_Department" PaintStyle="CaptionAndImage" />
+      <Action Id="ChatItem.ReadMessage" ImageName="Electronics_Volume" />
       <Action Id="CreateProductData" ImageName="Travel_Beach" />
       <Action Id="CreateTestBookData" ImageName="Travel_Beach" />
+      <Action Id="GenerateTextAudioItem" ImageName="ModelEditor_GenerateContent" PaintStyle="CaptionAndImage" />
+      <Action Id="MergeAudioTextItem" ImageName="Action_CloneMerge_Merge_Object" PaintStyle="CaptionAndImage" />
       <Action Id="SaveAndClose" Shortcut="Control+Alt+Enter" />
+      <Action Id="SplitAudioTextItem" ImageName="Clip" PaintStyle="CaptionAndImage" />
     </Actions>
   </ActionDesign>
   <BOModel>
@@ -38,7 +57,6 @@
           <Item Id="Product_ListView" Removed="True" />
           <Item Id="SpreadSheetDocument_ListView" Removed="True" />
           <Item Id="VoiceSolution_ListView" Removed="True" />
-          <Item Id="WordDocument_ListView" Removed="True" />
         </Items>
       </Item>
       <Item Id="Reports" Index="3" />
@@ -84,25 +102,48 @@
       </Columns>
     </ListView>
     <ListView Id="ApplicationUser_ListView" Caption="Users" />
+    <ListView Id="AudioBook_AudioItems_ListView">
+      <Columns>
+        <ColumnInfo Id="Index" Width="65" />
+        <ColumnInfo Id="ArticleText" Index="2" Width="1284" />
+        <ColumnInfo Id="AudioRole" Width="149" />
+        <ColumnInfo Id="Spreaker" Width="291" Index="3" />
+        <ColumnInfo Id="Emotion" Width="442" Index="4" />
+        <ColumnInfo Id="State" Index="5" />
+        <ColumnInfo Id="Volumn" Width="65" Index="6" />
+      </Columns>
+    </ListView>
     <DetailView Id="AudioBook_DetailView">
       <Layout>
-        <LayoutGroup Id="Main">
-          <TabbedGroup Id="Tabs">
-            <LayoutGroup Id="Content" Index="0" IsNewNode="True">
-              <LayoutGroup Id="R1" Index="0" Direction="Horizontal" IsNewNode="True">
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <TabbedGroup Id="Tabs" Index="0" RelativeSize="100">
+            <LayoutGroup Id="Content" Index="0" ShowCaption="True" RelativeSize="100" ImageName="InsertListBox" IsNewNode="True">
+              <LayoutGroup Id="WordDocument" Index="0" ShowCaption="True" IsNewNode="True">
+                <LayoutItem Id="WordDocument" ViewItem="WordDocument" ShowCaption="False" Index="0" IsNewNode="True" />
+              </LayoutGroup>
+            </LayoutGroup>
+            <LayoutGroup Id="Roles" Index="2" RelativeSize="100" ImageName="BO_Department">
+              <LayoutItem Id="Roles" RelativeSize="100" />
+            </LayoutGroup>
+            <LayoutGroup Id="AudioItems" Index="3" RelativeSize="100" ImageName="SnapEmptyParagraphSeparator">
+              <LayoutItem Id="AudioItems" RelativeSize="100" />
+            </LayoutGroup>
+            <LayoutGroup Id="Description" ShowCaption="True" Index="4" RelativeSize="100" ImageName="Properties" IsNewNode="True">
+              <LayoutGroup Id="R1" Index="0" Direction="Horizontal" ShowCaption="False" IsNewNode="True">
                 <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" IsNewNode="True" />
                 <LayoutItem Id="Name" ViewItem="Name" ShowCaption="" Index="1" IsNewNode="True" />
-                <LayoutItem Id="Narration" ViewItem="Narration" ShowCaption="" Index="2" IsNewNode="True" />
-                <LayoutItem Id="SimpleMode" ViewItem="SimpleMode" IsNewNode="True" />
+                <LayoutItem Id="SimpleMode" ViewItem="SimpleMode" Index="3" IsNewNode="True" />
+                <LayoutItem Id="AIModel" ViewItem="AIModel" Index="4" IsNewNode="True" />
               </LayoutGroup>
-              <LayoutItem Id="Content" ViewItem="Content" ShowCaption="False" Index="1" IsNewNode="True" />
+              <LayoutGroup Id="R2" Index="1" IsNewNode="True">
+                <LayoutItem Id="OutputPath" ViewItem="OutputPath" Index="2" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="R3" Index="2" IsNewNode="True">
+                <LayoutItem Id="Content" ViewItem="Content" ShowCaption="True" Index="3" CaptionLocation="Top" IsNewNode="True" />
+                <LayoutItem Id="Description" ViewItem="Description" ShowCaption="" Index="4" CaptionLocation="Top" IsNewNode="True" />
+              </LayoutGroup>
             </LayoutGroup>
-            <LayoutGroup Id="SpreakItems" Index="2" />
-            <LayoutGroup Id="Roles" Index="3" />
-            <LayoutGroup Id="AudioItems" Index="4" />
-            <LayoutGroup Id="Description" IsNewNode="True">
-              <LayoutItem Id="Description" ViewItem="Description" ShowCaption="" Index="1" IsNewNode="True" />
-            </LayoutGroup>
+            <LayoutGroup Id="WordDocument" Removed="True" />
           </TabbedGroup>
           <LayoutGroup Id="SimpleEditors" Removed="True">
             <LayoutGroup Id="AudioBook" Removed="True">
@@ -120,16 +161,12 @@
         </LayoutGroup>
       </Layout>
     </DetailView>
-    <ListView Id="AudioBook_Roles_ListView" AllowEdit="True" />
-    <ListView Id="AudioBook_SpreakItems_ListView" AllowEdit="True">
+    <ListView Id="AudioBook_Roles_ListView" AllowEdit="True">
       <Columns>
-        <ColumnInfo Id="Index" Width="117" />
-        <ColumnInfo Id="AudioRole" Width="221" />
-        <ColumnInfo Id="SpreakBefore" Index="4" />
-        <ColumnInfo Id="Spreaker" Width="380" Index="5" />
-        <ColumnInfo Id="SpreakContent" Index="6" />
-        <ColumnInfo Id="Emotion" Width="243" Index="7" />
-        <ColumnInfo Id="Volumn" Width="238" Index="8" />
+        <ColumnInfo Id="Name" Width="239" />
+        <ColumnInfo Id="VoiceSolution" Width="253" />
+        <ColumnInfo Id="SpreakItemsCount" Width="167" />
+        <ColumnInfo Id="TryReadingText" Width="1411" />
       </Columns>
     </ListView>
     <DetailView Id="Chat_DetailView">
@@ -312,24 +349,5 @@
         <ColumnInfo Id="Memo" PropertyName="Memo" Index="4" Width="464" IsNewNode="True" />
       </Columns>
     </ListView>
-    <DetailView Id="WordDocument_DetailView">
-      <Layout>
-        <LayoutGroup Id="Main" RelativeSize="100">
-          <LayoutGroup Id="SimpleEditors" RelativeSize="49.98086490623804">
-            <LayoutGroup Id="WordDocument" Direction="Horizontal" RelativeSize="3.8284839203675345">
-              <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" RelativeSize="50" IsNewNode="True" />
-              <LayoutItem Id="Title" Index="1" RelativeSize="50" />
-            </LayoutGroup>
-            <LayoutGroup Id="XPObject" RelativeSize="96.17151607963247">
-              <LayoutItem Id="DocumentText" ViewItem="DocumentText" ShowCaption="False" Index="0" RelativeSize="100" IsNewNode="True" />
-              <LayoutItem Id="Oid" Removed="True" />
-            </LayoutGroup>
-          </LayoutGroup>
-          <LayoutGroup Id="SizeableEditors" RelativeSize="50.01913509376196" Removed="True">
-            <LayoutItem Id="DocumentText" Removed="True" />
-          </LayoutGroup>
-        </LayoutGroup>
-      </Layout>
-    </DetailView>
   </Views>
 </Application>

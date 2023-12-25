@@ -2,11 +2,7 @@
 <Application Title="云梯人工智工融合实验室">
   <ActionDesign>
     <Actions>
-      <Action Id="AudioBook.CreateAudioBook" Caption="3.生成书籍" />
-      <Action Id="AudioBook.ParseParagerahs" Caption="1.拆分角色" />
-      <Action Id="AudioBook.ParseSpreakItems" Caption="2.解板说话人" />
-      <Action Id="AudioBook.PlayAudioBook" Caption="4.播放书籍" />
-      <Action Id="AudioBookSpreakItem.ParseArticleText" Caption="解析说话角色" />
+      <Action Id="AudioBookTextAudioItem.ParseArticleText" Caption="智能识别" />
       <Action Id="Cancel" Caption="取消" />
       <Action Id="CancelAction" Caption="取消" />
       <Action Id="ChangePasswordByUser" Caption="修改我的密码" />
@@ -36,6 +32,7 @@
       <Action Id="DialogClose" Caption="关闭" />
       <Action Id="DialogOK" Caption="确定" />
       <Action Id="FullTextSearch" ShortCaption="搜索" Caption="按文本过滤" NullValuePrompt="搜索文本..." />
+      <Action Id="GenerateTextAudioItem" Caption="生成音频" ToolTip="将选中的（一条或批量）段落使用指定的声音生成音频内容" />
       <Action Id="Link" Caption="链接" />
       <Action Id="ListViewShowObject" Caption="打开" />
       <Action Id="Logoff" Caption="退出" />
@@ -163,42 +160,7 @@
         <Member Name="TranslateToEnglish" Caption="翻译为英文" />
       </OwnMembers>
     </Class>
-    <Class Name="AI.Labs.Module.BusinessObjects.TTS.AudioBook">
-      <OwnMembers>
-        <Member Name="AudioItems" Caption="音频条目" />
-        <Member Name="Content" Caption="文章内容" />
-        <Member Name="Description" Caption="备注" />
-        <Member Name="Name" Caption="文章名称" />
-        <Member Name="Narration" Caption="旁白音色" />
-        <Member Name="Roles" Caption="人物角色" />
-        <Member Name="SimpleMode" Caption="简单模式" />
-        <Member Name="SpreakItems" Caption="角色说话" />
-      </OwnMembers>
-    </Class>
-    <Class Name="AI.Labs.Module.BusinessObjects.TTS.AudioBookRole">
-      <OwnMembers>
-        <Member Name="SpreakItems" Caption="说话内容" />
-        <Member Name="SpreakItemsCount" Caption="说话数量" />
-        <Member Name="VoiceSolution" Caption="音色" />
-      </OwnMembers>
-    </Class>
-    <Class Name="AI.Labs.Module.BusinessObjects.TTS.AudioBookSpreakItem">
-      <OwnMembers>
-        <Member Name="AudioRole" Caption="角色" />
-        <Member Name="Emotion" Caption="情感" />
-        <Member Name="SpreakBefore" Caption="说话前缀" />
-        <Member Name="SpreakContent" Caption="说话内容" />
-        <Member Name="Spreaker" Caption="说话人" />
-        <Member Name="Volumn" Caption="音量" />
-      </OwnMembers>
-    </Class>
     <Class Name="AI.Labs.Module.BusinessObjects.TTS.VoiceSolution" Caption="朗读音色" />
-    <Class Name="AI.Labs.Module.BusinessObjects.WordDocument" Caption="Word集成">
-      <OwnMembers>
-        <Member Name="DocumentText" Caption="文档内容" />
-        <Member Name="Title" Caption="标题" />
-      </OwnMembers>
-    </Class>
     <Class Name="DevExpress.ExpressApp.Security.AuthenticationStandardLogonParameters">
       <OwnMembers>
         <Member Name="Password" Caption="密码" />
@@ -265,6 +227,7 @@
         <LayoutGroup Id="Main">
           <TabbedGroup Id="Tabs">
             <LayoutGroup Id="Content" Caption="文章内容" />
+            <LayoutGroup Id="Description" Caption="设置" />
           </TabbedGroup>
         </LayoutGroup>
       </Layout>
@@ -307,13 +270,6 @@
               <LayoutGroup Id="XPObject" Caption="Oid" />
             </LayoutGroup>
           </TabbedGroup>
-        </LayoutGroup>
-      </Layout>
-    </DetailView>
-    <DetailView Id="WordDocument_DetailView">
-      <Layout>
-        <LayoutGroup Id="Main">
-          <LayoutGroup Id="SizeableEditors" Caption="文档内容" />
         </LayoutGroup>
       </Layout>
     </DetailView>

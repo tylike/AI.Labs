@@ -7,24 +7,28 @@ using DevExpress.XtraRichEdit.Import.Doc;
 
 namespace AI.Labs.Module.BusinessObjects
 {
-    public enum AIModelCategory
-    {
-        API,
-        GoogleGeminiPro,        
-    }
+    
     [XafDisplayName("模型")]
     [NavigationItem()]
     public class AIModel:XPObject
     {
         public AIModel(Session s):base(s)
         {
-                
+
+        }
+        public string Title
+        {
+            get { return GetPropertyValue<string>(nameof(Title)); }
+            set { SetPropertyValue(nameof(Title), value); }
         }
 
-        public AIModelCategory Category
+        protected override void OnSaving()
         {
-            get { return GetPropertyValue<AIModelCategory>(nameof(Category)); }
-            set { SetPropertyValue(nameof(Category), value); }
+            base.OnSaving();
+            if (string.IsNullOrEmpty(Title))
+            {
+                Title = Name;
+            }
         }
 
         [XafDisplayName("名称")]

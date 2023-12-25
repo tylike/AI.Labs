@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Edge_tts_sharp.Model
+namespace EdgeTTSSharp.Model
 {
 
     public class eVoice

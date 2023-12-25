@@ -21,6 +21,27 @@ public class MessagesRef
 
 public static class MessageHelper
 {
+    public static string RemoveJsonRem(this string json)
+    {
+        if (string.IsNullOrEmpty(json))
+            return string.Empty;
+        if (json.StartsWith("```json"))
+        {
+            json = json["```json".Length..];
+        }
+
+        if (json.StartsWith("```"))
+        {
+            json = json["```".Length..];
+        }
+
+        if (json.EndsWith("```"))
+        {
+            json = json[..^3];
+        }
+        return json;
+    }
+
     /// <summary>
     /// 这么干就是为了实现中英文显示文字的不同
     /// </summary>

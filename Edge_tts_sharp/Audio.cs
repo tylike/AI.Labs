@@ -7,7 +7,7 @@ using NAudio;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 
-namespace Edge_tts_sharp
+namespace EdgeTTSSharp
 {
     public class Audio
     {

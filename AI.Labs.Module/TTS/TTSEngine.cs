@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Speech.Synthesis;
 using AI.Labs.Module.BusinessObjects.TTS;
 using AI.Labs.Module.BusinessObjects.ChatInfo;
-using Edge_tts_sharp;
+using EdgeTTSSharp;
 
 public enum TTSState
 {
@@ -63,19 +63,10 @@ public static class TTSEngine
             {
                 voice = "zh-CN-XiaoxiaoNeural";
             }
-            var edgevoice = Edge_tts.GetVoice().FirstOrDefault(i => i.ShortName == voice);// i.Name == "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)");
             // 文字转语音，并且设置语速
-            Edge_tts.PlayText(text, edgevoice
-                //, -25
-                );
-            //Console.ReadLine();
-
-            //await Task.Run(() =>
-            //{
-            //    var data = text.GetTextToSpeechData(voice);
-            //    Play(data);
-            //});
+            EdgeTTS.PlayText(text, voice);
         }
+        await Task.CompletedTask;
     }
 
     static string GetTempFile(string extFileName = ".mp3")
@@ -124,6 +115,11 @@ public static class TTSEngine
         return File.ReadAllBytes(fn);
     }
 
+    public static void Play(string fileName,bool isWav = false)
+    {
+        Play(File.ReadAllBytes(fileName), isWav);
+    }
+
     public static void Play(byte[] fileContent, bool isWav = false)
     {
         IWaveProvider audioFile = null;
@@ -148,77 +144,6 @@ public static class TTSEngine
                 }
             }
         }
-    }
-    public static string GetAudioFile(this ReadTextInfo text, bool waitExit = true, Action exited = null, bool play = false, Chat chat = null)
-    {
-        var aiTextToVoice = chat.Start("AI文字->音频", "AI");
-        aiTextToVoice.Message = text.Text;
-
-
-        if (Directory.Exists(@"d:\audio") == false)
-        {
-            Directory.CreateDirectory(@"d:\audio");
-        }
-        var sw = Stopwatch.StartNew();
-        text.State = TTSState.生成中;
-        var inputFile = $@"d:\audio\{text.Oid}.txt";
-        File.WriteAllText(inputFile, text.Text);
-
-        var outputFile = $@"d:\audio\{text.Oid}.mp3";
-        var vttFile = $@"d:\audio\{text.Oid}.vtt";
-        var info = new ProcessStartInfo();
-        info.FileName = "edge-tts";
-
-        var list = new List<string>();
-        list.Add($"-f {inputFile}");
-        list.Add($"--write-media {outputFile}");
-        list.Add($"--write-subtitles {vttFile}");
-        var defaultVoice = "zh-CN-XiaoyiNeural";
-
-        if (text.Solution != null)
-        {
-            defaultVoice = text.Solution.ShortName;
-        }
-
-
-        list.Add($"--voice {defaultVoice}");
-        //list.Add($"--text \"{text.Text.Replace("\n"," ").Replace("\r"," ").Replace("-","－")}\"");
-        //$ edge -tts--rate = -50 % --text "Hello, world!"--write - media hello_with_rate_halved.mp3--write - subtitles hello_with_rate_halved.vtt
-        //$ edge -tts--volume = -50 % --text "Hello, world!"--write - media hello_with_volume_halved.mp3--write - subtitles hello_with_volume_halved.vtt
-        //$ edge -tts--pitch = -50Hz--text "Hello, world!"--write - media hello_with_pitch_halved.mp3--write - subtitles hello_with_pitch_halved.vtt
-
-        info.Arguments = string.Join(" ", list);
-        Process p = new Process();
-        p.StartInfo = info;
-
-        //p.Exited += (s, e) =>
-        //{
-        //    sw.Stop();
-        //    text.State = TTSState.已生成;
-        //    text.FileContent = File.ReadAllBytes(outputFile);
-        //    text.ElapsedMilliseconds = (int)sw.ElapsedMilliseconds;
-        //    XPObjectSpace.FindObjectSpaceByObject(text).CommitChanges();
-        //    exited?.Invoke();
-        //};
-        p.Start();
-        if (waitExit)
-        {
-            p.WaitForExit();
-            text.State = TTSState.已生成;
-            text.FileContent = File.ReadAllBytes(outputFile);
-            text.ElapsedMilliseconds = (int)sw.ElapsedMilliseconds;
-            XPObjectSpace.FindObjectSpaceByObject(text).CommitChanges();
-
-            aiTextToVoice.EndVerb();
-
-            if (play)
-            {
-                var playAIAudio = chat.Start("AI音频播放", "System");
-                Play(text.FileContent);
-                playAIAudio.EndVerb();
-            }
-        }
-        return outputFile;
     }
 
     /// <summary>
@@ -293,7 +218,7 @@ public static class TTSEngine
     /// <param name="defaultVoice"></param>
     /// <param name="outputFile">如果不指定，则保存临时目录</param>
     /// <returns></returns>
-    private static string TextToSpeech(
+    public static string TextToSpeech(
         this string text,
         string defaultVoice = "zh-CN-XiaoyiNeural",
         string outputFile = null
@@ -308,28 +233,8 @@ public static class TTSEngine
             outputFile = GetTempFile();
         }
 
-        var tempInTxt = GetTempFile(".txt");
-        File.WriteAllText(tempInTxt, text);
+        EdgeTTS.PlayText(text, outputFile);
 
-        var info = new ProcessStartInfo();
-        info.FileName = @"d:\ai.stt\edge-tts.exe";
-        var list = new List<string>();
-        list.Add($"-f {tempInTxt}");
-        list.Add($"--write-media {outputFile}");
-        //list.Add($"--write-subtitles {vttFile}");
-        list.Add($"--voice {defaultVoice}");
-        //list.Add($"--text \"{text.Text.Replace("\n"," ").Replace("\r"," ").Replace("-","－")}\"");
-        //$ edge -tts--rate = -50 % --text "Hello, world!"--write - media hello_with_rate_halved.mp3--write - subtitles hello_with_rate_halved.vtt
-        //$ edge -tts--volume = -50 % --text "Hello, world!"--write - media hello_with_volume_halved.mp3--write - subtitles hello_with_volume_halved.vtt
-        //$ edge -tts--pitch = -50Hz--text "Hello, world!"--write - media hello_with_pitch_halved.mp3--write - subtitles hello_with_pitch_halved.vtt
-        info.Arguments = string.Join(" ", list);
-        //info.WindowStyle = ProcessWindowStyle.Hidden;
-        info.CreateNoWindow = true;
-        Process p = new Process();
-        
-        p.StartInfo = info;
-        p.Start();
-        p.WaitForExit();
         return outputFile;
     }
 

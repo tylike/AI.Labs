@@ -150,6 +150,7 @@ namespace AI.Labs.Module.BusinessObjects.Sales
                 //    Debug.WriteLine(t);                    
                 //}
                 //return;
+                
                 var rst = await ChatGemini.Send(request);
                 if (rst != null)
                 {

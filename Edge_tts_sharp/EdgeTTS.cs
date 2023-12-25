@@ -1,4 +1,4 @@
-﻿using Edge_tts_sharp.Model;
+﻿using EdgeTTSSharp.Model;
 using System;
 using System.Resources;
 using System.Collections.Generic;
@@ -12,13 +12,16 @@ using System.Threading.Tasks;
 using WebSocketSharp;
 
 
-namespace Edge_tts_sharp
+namespace EdgeTTSSharp
 {
-    public class Edge_tts
+    /// <summary>
+    /// 调用edge tts
+    /// </summary>
+    public class EdgeTTS
     {
         static string GetGUID()
         {
-            return Guid.NewGuid().ToString().Replace("-","");
+            return Guid.NewGuid().ToString().Replace("-", "");
         }
         /// <summary>
         /// 讲一个浮点型数值转换为百分比数值
@@ -55,19 +58,25 @@ namespace Edge_tts_sharp
         {
             return $"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis'  xml:lang='{lang}'><voice name='{voice}'><prosody pitch='+0Hz' rate ='{FromatPercentage(rate)}' volume='+0%'>{text}</prosody></voice></speak>";
         }
-        static string ConvertToSsmlWebSocketString(string requestId, string lang, string voice,int rate, string msg)
+        static string ConvertToSsmlWebSocketString(string requestId, string lang, string voice, int rate, string msg)
         {
             return $"X-RequestId:{requestId}\r\nContent-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n{ConvertToSsmlText(lang, voice, rate, msg)}";
         }
+
         /// <summary>
         /// 调用微软Edge接口，文字转语音
         /// </summary>
         /// <param name="msg">文本内容</param>
-        /// <param name="voice">音频名称</param>
+        /// <param name="voiceShortName">音频名称</param>
         /// <param name="rate">（可选）调整语速，是一个-100 - 100的数值</param>
         /// <param name="savePath">（可选）保存音频到指定路径</param>
-        public static void PlayText(string msg, eVoice voice, int rate = 0, string savePath = "")
+        public static void PlayText(string msg, string voiceShortName, int rate = 0, string savePath = "",bool play = true)
         {
+            var voice = Voices.FirstOrDefault(i => i.ShortName == voiceShortName);// i.Name == "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)");
+            if (voice == null)
+            {
+                throw new Exception("没有找到对应的声音记录!");
+            }
             var binary_delim = "Path:audio\r\n";
             var sendRequestId = GetGUID();
             var binary = new List<byte>();
@@ -120,7 +129,9 @@ namespace Edge_tts_sharp
                 //File.WriteAllBytes($"{savePath}temp.mp3", binary.ToArray());
                 if (binary.Count > 0)
                 {
-                    Audio.PlayToByte(binary.ToArray());
+                    if (play)
+                        Audio.PlayToByte(binary.ToArray());
+
                     if (!string.IsNullOrWhiteSpace(savePath))
                     {
                         File.WriteAllBytes(savePath, binary.ToArray());
@@ -138,14 +149,24 @@ namespace Edge_tts_sharp
             }
 
         }
+
+
+        static List<eVoice> voices;
         /// <summary>
         /// 获取支持的音频列表
         /// </summary>
         /// <returns></returns>
-        public static List<eVoice> GetVoice()
+        public static List<eVoice> Voices
         {
-            var voiceList = Tools.GetEmbedText("Edge_tts_sharp.Source.VoiceList.json");
-            return Tools.StringToJson<List<eVoice>>(voiceList);
+            get
+            {
+                if (voices == null)
+                {
+                    var voiceList = Tools.GetEmbedText("Edge_tts_sharp.Source.VoiceList.json");
+                    voices = Tools.StringToJson<List<eVoice>>(voiceList);
+                }
+                return voices;
+            }
         }
     }
 }

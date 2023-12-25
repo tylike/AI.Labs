@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 
-namespace Edge_tts_sharp
+namespace EdgeTTSSharp
 {
     public class Tools
     {

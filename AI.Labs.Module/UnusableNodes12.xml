@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <Views Id="Views">
+    <DetailView Id="WordDocument_DetailView">
+      <Layout Id="Layout">
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="49.98086490623804">
+            <LayoutGroup Id="WordDocument" Direction="Horizontal" RelativeSize="3.8284839203675345">
+              <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" RelativeSize="50" />
+              <LayoutItem Id="Title" Index="1" RelativeSize="50" />
+            </LayoutGroup>
+            <LayoutGroup Id="XPObject" RelativeSize="96.17151607963247">
+              <LayoutItem Id="DocumentText" ViewItem="DocumentText" ShowCaption="False" Index="0" RelativeSize="100" />
+              <LayoutItem Id="Oid" Removed="True" />
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutGroup Id="SizeableEditors" RelativeSize="50.01913509376196" Removed="True">
+            <LayoutItem Id="DocumentText" Removed="True" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <DetailView Id="AudioBook_DetailView">
+      <Layout Id="Layout">
+        <LayoutGroup Id="Main">
+          <TabbedGroup Id="Tabs">
+            <LayoutGroup Id="Description">
+              <LayoutGroup Id="R1">
+                <LayoutItem Id="Narration" ViewItem="Narration" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </TabbedGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+  </Views>
+  <NavigationItems Id="NavigationItems">
+    <Items Id="Items">
+      <Item Id="应用场景">
+        <Items Id="Items">
+          <Item Id="WordDocument_ListView" ViewId="WordDocument_ListView" />
+        </Items>
+      </Item>
+      <Item Id="Default">
+        <Items Id="Items">
+          <Item Id="WordDocument_ListView" Removed="True" />
+        </Items>
+      </Item>
+    </Items>
+  </NavigationItems>
+</Application>

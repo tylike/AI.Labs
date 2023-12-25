@@ -235,75 +235,75 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
 
             var AINeedToExecuteAFunction = false;
 
-            if (chat.Model.Category == AIModelCategory.GoogleGeminiPro)
-            {
-                //如果只有一条消息,则上面的处理
+            //if (chat.Model.Category == AIModelCategory.GoogleGeminiPro)
+            //{
+            //    //如果只有一条消息,则上面的处理
 
-                //如果有多条消息时,则在第一消息上增加系统提示
+            //    //如果有多条消息时,则在第一消息上增加系统提示
 
-                var request = new GeminiChatRequest();
-                Content first = null;
-                foreach (var m in history.Messages.Where(t => t.Role != "system"))
-                {
-                    var cnt = new Content();
-                    first ??= cnt;
-                    var cr = Enum.Parse<ChatRole>(m.Role);
-                    switch (cr)
-                    {
-                        //case ChatRole.system:
-                        //    cnt.Role = "system";
-                        //    break;
-                        case ChatRole.user:
-                            cnt.Role = "user";
-                            break;
-                        case ChatRole.assistant:
-                            cnt.Role = "model";
-                            break;
-                        case ChatRole.function:
-                            cnt.Role = "function";
-                            break;
-                        default:
-                            break;
-                    }
-                    cnt.Parts.Add(new ContentPart { Text = m.Content });
-                    request.Contents.Add(cnt);
-                }
+            //    var request = new GeminiChatRequest();
+            //    Content first = null;
+            //    foreach (var m in history.Messages.Where(t => t.Role != "system"))
+            //    {
+            //        var cnt = new Content();
+            //        first ??= cnt;
+            //        var cr = Enum.Parse<ChatRole>(m.Role);
+            //        switch (cr)
+            //        {
+            //            //case ChatRole.system:
+            //            //    cnt.Role = "system";
+            //            //    break;
+            //            case ChatRole.user:
+            //                cnt.Role = "user";
+            //                break;
+            //            case ChatRole.assistant:
+            //                cnt.Role = "model";
+            //                break;
+            //            case ChatRole.function:
+            //                cnt.Role = "function";
+            //                break;
+            //            default:
+            //                break;
+            //        }
+            //        cnt.Parts.Add(new ContentPart { Text = m.Content });
+            //        request.Contents.Add(cnt);
+            //    }
 
-                if (first != null)
-                {
-                    var firstUserMessage = "";
-                    var systems = history.Messages.Where(t => t.Role == "system");
-                    if (systems.Any())
-                    {
-                        firstUserMessage = "# 已知资料:" + string.Join("\n", systems.Select(t => t.Content)) + "\n";
-                    }
+            //    if (first != null)
+            //    {
+            //        var firstUserMessage = "";
+            //        var systems = history.Messages.Where(t => t.Role == "system");
+            //        if (systems.Any())
+            //        {
+            //            firstUserMessage = "# 已知资料:" + string.Join("\n", systems.Select(t => t.Content)) + "\n";
+            //        }
 
-                    var txt = first.Parts.First();
-                    firstUserMessage += "# 用户说:" + txt.Text;
-                    txt.Text = firstUserMessage;
-                }
+            //        var txt = first.Parts.First();
+            //        firstUserMessage += "# 用户说:" + txt.Text;
+            //        txt.Text = firstUserMessage;
+            //    }
 
-                var sw = Stopwatch.StartNew();
-                var rst = await ChatGemini.Send(request);
-                sw.Stop();
+            //    var sw = Stopwatch.StartNew();
+            //    var rst = await ChatGemini.Send(request);
+            //    sw.Stop();
 
-                Debug.WriteLine("发送完成！");
-                if (rst.Error == null)
-                {
-                    var replyChatItem = ViewCurrentObject.Start("AI->用户", "AI");
-                    replyChatItem.ChatItemType = ChatItemType.Assistant;
-                    replyChatItem.Message = rst.Candidates.FirstOrDefault()?.Content.Parts.FirstOrDefault()?.Text;
-                    replyChatItem.EndVerb();
-                    replyChatItem.AddLog($"模型用时:{sw.ElapsedMilliseconds}");
-                    history.Messages.Add(ChatMessage.FromAssistant(replyChatItem.Message));
-                }
-                else
-                {
-                    Debug.WriteLine(rst.Error.Message + "\ncode:" + rst.Error.Code, InformationType.Error);
-                    Application.ShowViewStrategy.ShowMessage(rst.Error.Message + "\ncode:" + rst.Error.Code, InformationType.Error);
-                }
-            }
-            else
+            //    Debug.WriteLine("发送完成！");
+            //    if (rst.Error == null)
+            //    {
+            //        var replyChatItem = ViewCurrentObject.Start("AI->用户", "AI");
+            //        replyChatItem.ChatItemType = ChatItemType.Assistant;
+            //        replyChatItem.Message = rst.Candidates.FirstOrDefault()?.Content.Parts.FirstOrDefault()?.Text;
+            //        replyChatItem.EndVerb();
+            //        replyChatItem.AddLog($"模型用时:{sw.ElapsedMilliseconds}");
+            //        history.Messages.Add(ChatMessage.FromAssistant(replyChatItem.Message));
+            //    }
+            //    else
+            //    {
+            //        Debug.WriteLine(rst.Error.Message + "\ncode:" + rst.Error.Code, InformationType.Error);
+            //        Application.ShowViewStrategy.ShowMessage(rst.Error.Message + "\ncode:" + rst.Error.Code, InformationType.Error);
+            //    }
+            //}
+            //else
             {
 
                 do
