@@ -4,6 +4,9 @@ AI.Labs 是一个开源项目，旨在融合最先进的人工智能技术，以
 
 <iframe src="//player.bilibili.com/player.html?aid=793520654&bvid=BV1jC4y1Y7et&cid=1399925890&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
+<video id="video" controls="" preload="none" poster="封面">
+      <source id="mp4" src="//player.bilibili.com/player.html?aid=793520654&bvid=BV1jC4y1Y7et&cid=1399925890&p=1" type="video/mp4">
+</videos>
 
 B站聊天视频演示、介绍：   
 https://www.bilibili.com/video/BV1hb4y1579q/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb  
