@@ -2,8 +2,8 @@
 
 AI.Labs 是一个开源项目，旨在融合最先进的人工智能技术，以提供一个功能强大的人工智能平台。该项目的核心在于集成多种人工智能服务，包括大型语言模型、语音识别和语音合成，以支持对话、语音交互和会议记录等功能。  
 
-本项目包含的功能:  [B站功能演示视频1:Word,Excel集成,多角色语音有声读物生成,会议记录,知识库编辑记忆](https://www.bilibili.com/video/BV1jC4y1Y7et/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb)
-[B站聊天视频演示2](https://www.bilibili.com/video/BV1hb4y1579q/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb) [如何运行文档](https://github.com/tylike/AI.Labs/blob/master/HowToRun.md)  
+本项目包含的功能:  [B站功能演示视频1](https://www.bilibili.com/video/BV1jC4y1Y7et/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb)  
+[B站聊天视频演示2](https://www.bilibili.com/video/BV1hb4y1579q/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb)   [如何运行文档](https://github.com/tylike/AI.Labs/blob/master/HowToRun.md)  
 ![功能](./AI.Labs.Win/Images/ModuleMind.png)
 
 [本项目地址：](https://github.com/tylike/ai.labs)  
