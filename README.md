@@ -2,15 +2,14 @@
 
 AI.Labs 是一个开源项目，旨在融合最先进的人工智能技术，以提供一个功能强大的人工智能平台。该项目的核心在于集成多种人工智能服务，包括大型语言模型、语音识别和语音合成，以支持对话、语音交互和会议记录等功能。  
 
-[公有或私有ChatGPT本地开源大模型语音对话Word,Excel集成,多角色语音有声读物生成,会议记录,知识库编辑记忆一键安装开源](https://www.bilibili.com/video/BV1jC4y1Y7et/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb)
+[B站功能演示视频:公有或私有ChatGPT本地开源大模型语音对话Word,Excel集成,多角色语音有声读物生成,会议记录,知识库编辑记忆一键安装开源](https://www.bilibili.com/video/BV1jC4y1Y7et/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb)
 
 
-B站聊天视频演示、介绍：   
-https://www.bilibili.com/video/BV1hb4y1579q/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb  
-本项目地址：https://github.com/tylike/ai.labs  
+[B站聊天视频演示、介绍：](https://www.bilibili.com/video/BV1hb4y1579q/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb)
 
-如何运行:  
-https://github.com/tylike/AI.Labs/blob/master/HowToRun.md  
+[本项目地址：](https://github.com/tylike/ai.labs)  
+
+[如何运行:](https://github.com/tylike/AI.Labs/blob/master/HowToRun.md)  
 
 
 ![聊天界面](./AI.Labs.Win/Images/AI.Labs.Chat.png)
