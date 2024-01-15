@@ -25,11 +25,11 @@ Utilizes the following project: https://github.com/betalgo/openai
 Deploy large language models (LLM) locally using LMStudio or ChatGLM3-6B, interacting with a similar API to OpenAI, ensuring data privacy while improving response speed.
 Note: model and model services are not limited; any with OpenAI-style API support can be used.
 
-Download Address: https://lmstudio.ai/
-Model Download: https://huggingface.co/TheBloke (VPN required)
-Model Download: https://hf-mirror.com/TheBloke (VPN not required)
-Model Download: https://wisemodel.cn/models (VPN not required)
-Model Download: https://gpt4all.io/ (VPN not required)
+Download Address: https://lmstudio.ai/  
+Model Download: https://huggingface.co/TheBloke (VPN required)  
+Model Download: https://hf-mirror.com/TheBloke (VPN not required)  
+Model Download: https://wisemodel.cn/models (VPN not required)  
+Model Download: https://gpt4all.io/ (VPN not required)  
 
 # 2. Speech Recognition STT/ASR
 ## 2.1 Local Speech Recognition:
@@ -53,7 +53,7 @@ Installation guide: https://github.com/rany2/edge-tts
 ## 3.2 Azure TTS Voice Synthesis
 Users can register their own accounts, with 5 hours per month free or 5 million characters.
 Supports Azure TTS service, allowing users to opt for cloud-based voice synthesis service.
-Registration Address: https://portal.azure.com/
+Registration Address: https://portal.azure.com/  
 
 # 5. Integration of Translation and Chat
 
@@ -70,7 +70,7 @@ II. Questions and Doubts
 If you pay attention to this option, you can use LMStudio to build a private model locally (or within a LAN).
 Supports most models in gguf format or models from llama2.cpp.
 This process is introduced in the Bilibili video. Note: The video is in Chinese.
-https://www.bilibili.com/video/BV1Fc411D7eK/
+https://www.bilibili.com/video/BV1Fc411D7eK/  
 
 2. Multilingual Support: Does the project support multiple languages, and how are translations between different languages handled?
 XAF facilitates convenient expansion for multiple languages. Various versions will be rolled out progressively.
