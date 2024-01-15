@@ -1,6 +1,6 @@
 # AI.Labs (Cloud Ladder AI Integration Laboratory)
 
-[中文版](/readme.cn.md)
+[中文版](/Readme.cn.md)
 
 AI.Labs is an open-source project that aims to integrate the most advanced artificial intelligence technologies to provide a powerful AI platform. The core of this project lies in the integration of various AI services, including large language models, speech recognition, and speech synthesis, to support functionalities such as dialogue, voice interaction, and meeting transcription.
 QQ Group: 306499618
