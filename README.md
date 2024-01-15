@@ -2,19 +2,19 @@
 
 [中文版](/Readme.cn.md)
 
-AI.Labs is an open-source project that aims to integrate the most advanced artificial intelligence technologies to provide a powerful AI platform. The core of this project lies in the integration of various AI services, including large language models, speech recognition, and speech synthesis, to support functionalities such as dialogue, voice interaction, and meeting transcription.
-QQ Group: 306499618
-This project includes the following features:
-[Bilibili Feature Demonstration Video 1](https://www.bilibili.com/video/BV1jC4y1Y7et/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb) Clicking the triple link will get you the installation package + model
+AI.Labs is an open-source project that aims to integrate the most advanced artificial intelligence technologies to provide a powerful AI platform. The core of this project lies in the integration of various AI services, including large language models, speech recognition, and speech synthesis, to support functionalities such as dialogue, voice interaction, and meeting transcription.  
+QQ Group: 306499618  
+This project includes the following features:  
+[Bilibili Feature Demonstration Video 1](https://www.bilibili.com/video/BV1jC4y1Y7et/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb) Clicking the triple link will get you the installation package + model  
 [Bilibili Chat Video Demonstration 2](https://www.bilibili.com/video/BV1hb4y1579q/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb)
-[How to Run Documentation](https://github.com/tylike/AI.Labs/blob/master/HowToRun.md)
-![Functionality](./AI.Labs.Win/Images/ModuleMind.png)
+[How to Run Documentation](https://github.com/tylike/AI.Labs/blob/master/HowToRun.md)  
+![Functionality](./AI.Labs.Win/Images/ModuleMind.png)  
 
-[Project Repository:](https://github.com/tylike/ai.labs)
+[Project Repository:](https://github.com/tylike/ai.labs)  
 
-![Chat Interface](./AI.Labs.Win/Images/AI.Labs.Chat.png)
-![Chat Settings](https://github.com/tylike/AI.Labs/blob/master/AI.Labs.Win/Images/ChatSettings.png)
-![Audio Books](https://github.com/tylike/AI.Labs/blob/master/AI.Labs.Win/Images/AudioBook.png)
+![Chat Interface](./AI.Labs.Win/Images/AI.Labs.Chat.png)  
+![Chat Settings](https://github.com/tylike/AI.Labs/blob/master/AI.Labs.Win/Images/ChatSettings.png)  
+![Audio Books](https://github.com/tylike/AI.Labs/blob/master/AI.Labs.Win/Images/AudioBook.png)  
 
 Main Features
 ## 1. Large Language Model Dialogue System
