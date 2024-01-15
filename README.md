@@ -6,7 +6,7 @@ AI.Labs is an open-source project that aims to integrate the most advanced artif
 QQ Group: 306499618  
 This project includes the following features:  
 [Bilibili Feature Demonstration Video 1](https://www.bilibili.com/video/BV1jC4y1Y7et/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb) Clicking the triple link will get you the installation package + model  
-[Bilibili Chat Video Demonstration 2](https://www.bilibili.com/video/BV1hb4y1579q/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb)
+[Bilibili Chat Video Demonstration 2](https://www.bilibili.com/video/BV1hb4y1579q/?share_source=copy_web&vd_source=11323d03e28fe3d5d656ff7d4c5662fb)  
 [How to Run Documentation](https://github.com/tylike/AI.Labs/blob/master/HowToRun.md)  
 ![Functionality](./AI.Labs.Win/Images/ModuleMind.png)  
 
