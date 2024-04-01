@@ -11,6 +11,8 @@ using DevExpress.Data.Filtering;
 using DevExpress.ExpressApp.SystemModule;
 using WebSocketSharp;
 using DevExpress.ExpressApp.Model;
+using AI.Labs.Module.BusinessObjects.VideoTranslate;
+using Xabe.FFmpeg;
 
 namespace AI.Labs.Module.BusinessObjects.AudioBooks
 {
@@ -18,6 +20,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
     /// 有声书的最小条目
     /// </summary>
     [Appearance("没有赋值声音角色", Criteria = "AudioRole is null", BackColor = "#FF0000", TargetItems = nameof(AudioRole))]
+    [Appearance("音频时长超过字幕", Criteria = "Duration > Subtitle.Duration", BackColor = "#FF0000", TargetItems = "Subtitle.Duration;Duration")]
     [XafDisplayName("段落")]
     public class AudioBookTextAudioItem : TTSBase
     {
@@ -26,6 +29,61 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
 
         }
 
+        [XafDisplayName("关联字幕")]
+        [ToolTip("视频翻译时可以关联到已有的字幕")]
+        public SubtitleItem Subtitle
+        {
+            get { return GetPropertyValue<SubtitleItem>(nameof(Subtitle)); }
+            set 
+            {
+                SetPropertyValue(nameof(Subtitle), value);
+                if (!IsLoading && value!=null)
+                {
+                    ArticleText = value.CnText;
+                    Index = value.Index;
+                }
+            }
+        }
+
+        [XafDisplayName("音频时长")]
+        public int Duration
+        {
+            get { return GetPropertyValue<int>(nameof(Duration)); }
+            set { SetPropertyValue(nameof(Duration), value); }
+        }
+
+        /// <summary>
+        /// 是指音频时长超过了字幕时长多久（毫秒）
+        /// </summary>
+        [XafDisplayName("时长差异")]
+        public int Diffence
+        {
+            get
+            {
+                return Duration - (Subtitle?.Duration ?? 0);
+            }
+        }
+
+
+        protected override void OnChanged(string propertyName, object oldValue, object newValue)
+        {
+            base.OnChanged(propertyName, oldValue, newValue);
+            if (!IsLoading)
+            {
+                //声音方案了就重新生成
+                if (
+                    propertyName == nameof(ArticleText) ||  //内容变化时
+                    propertyName == nameof(AudioRole) ||    //角色变化时
+                    (propertyName == nameof(OutputFileName) && string.IsNullOrEmpty(OutputFileName))    //文件名被设置成了空时
+                    )
+                {
+                    State = TTSState.WaitGenerate;
+                }
+                //azure的功能增加时,影响ssml的属性增到加这里
+            }
+        }
+
+        #region 属性
         [Association]
         [XafDisplayName("所属书籍")]
         public AudioBook AudioBook
@@ -87,88 +145,139 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             get { return GetPropertyValue<string>(nameof(Emotion)); }
             set { SetPropertyValue(nameof(Emotion), value); }
         }
+
         [XafDisplayName("音量")]
         public int Volumn
         {
             get { return GetPropertyValue<int>(nameof(Volumn)); }
             set { SetPropertyValue(nameof(Volumn), value); }
-        }
-
-        [Action(ToolTip = "识别说人、情绪、音量")]
-        public async Task ParseArticleText()
-        {
-            if (AudioBook?.AIModel == null)
-            {
-                throw new UserFriendlyException("错误,没有设置LLM模型!");
-            }
-
-            var p = @"
-#要识别的小说内容:
-" + ArticleText;
-            Debug.WriteLine(new string('=', 80));
-            Debug.WriteLine(p);
-            (string Message, bool IsError) rst;
-
-            try
-            {
-                rst = await AIHelper.Ask(AudioBook.SystemPrompt, p, AudioBook.AIModel);
-            }
-            catch (Exception ex)
-            {
-                throw new UserFriendlyException($"调用模型时出错:{ex.Message}");
-            }
-
-            if (!rst.IsError)
-            {
-                //idx++;
-                //var n = new AudioBookSpreakItem(Session);
-                //n.Index = idx;
-                //n.Paragraph = item;
-                //this.SpreakItems.Add(n);
-                var n = this;
-                try
-                {
-                    var json = JsonConvert.DeserializeObject<ParseResult>(rst.Message.RemoveJsonRem());
-                    n.Spreaker = json.Spreaker;
-                    n.SpreakContent = json.SpreakContent;
-                    n.SpreakBefore = json.SpreakBefore;
-                    n.Emotion = json.Emotion;
-                    n.Volumn = json.Volume;
-                    n.AudioRole = await AudioBook.CreateOrFindAudioRole(n.Spreaker);
-                }
-                catch (Exception ex)
-                {
-                    n.SpreakContent = rst.Message;
-                    n.SpreakBefore = "报错了:" + ex.Message;
-                }
-            }
-            Debug.WriteLine(new string('-', 80));
-            Debug.WriteLine(rst.Message);
-        }
-
-        [Action(Caption = "朗读")]
-        public async void Read()
-        {
-            var vs = this.AudioRole?.VoiceSolution?.DisplayName;
-            if (string.IsNullOrEmpty(vs))
-            {
-                throw new UserFriendlyException("没有选择声音方案!");
-            }
-
-            var text = string.IsNullOrEmpty(SpreakContent) ? ArticleText : SpreakContent;
-            text = (text + "").Trim();
-            if (!string.IsNullOrEmpty(text))
-            {
-                await TTSEngine.ReadText(text,vs);
-            }
-        }
-
-        [XafDisplayName("输出文件")]
-        //[ModelDefault("AllowEdit","False")]
+        } 
+        
+        [XafDisplayName("输出文件")]        
         public string OutputFileName
         {
             get { return GetPropertyValue<string>(nameof(OutputFileName)); }
             set { SetPropertyValue(nameof(OutputFileName), value); }
+        }
+        #endregion
+
+        [Action(ToolTip = "识别说人、情绪、音量")]
+        public async Task ParseArticleText()
+        {
+#warning 待实现
+            //            if (AudioBook?.AIModel == null)
+            //            {
+            //                throw new UserFriendlyException("错误,没有设置LLM模型!");
+            //            }
+
+            //            var p = @"
+            //#要识别的小说内容:
+            //" + ArticleText;
+            //            Debug.WriteLine(new string('=', 80));
+            //            Debug.WriteLine(p);
+            //            (string Message, bool IsError) rst;
+
+            //            try
+            //            {
+            //                rst = await AIHelper.Ask(AudioBook.SystemPrompt, p, AudioBook.AIModel);
+            //            }
+            //            catch (Exception ex)
+            //            {
+            //                throw new UserFriendlyException($"调用模型时出错:{ex.Message}");
+            //            }
+
+            //            if (!rst.IsError)
+            //            {
+            //                //idx++;
+            //                //var n = new AudioBookSpreakItem(Session);
+            //                //n.Index = idx;
+            //                //n.Paragraph = item;
+            //                //this.SpreakItems.Add(n);
+            //                var n = this;
+            //                try
+            //                {
+            //                    var json = JsonConvert.DeserializeObject<ParseResult>(rst.Message.RemoveJsonRem());
+            //                    n.Spreaker = json.Spreaker;
+            //                    n.SpreakContent = json.SpreakContent;
+            //                    n.SpreakBefore = json.SpreakBefore;
+            //                    n.Emotion = json.Emotion;
+            //                    n.Volumn = json.Volume;
+            //                    n.AudioRole = await AudioBook.CreateOrFindAudioRole(n.Spreaker);
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    n.SpreakContent = rst.Message;
+            //                    n.SpreakBefore = "报错了:" + ex.Message;
+            //                }
+            //            }
+            //            Debug.WriteLine(new string('-', 80));
+            //            Debug.WriteLine(rst.Message);
+        }
+
+        //[Action(Caption = "朗读")]
+        public async Task Play()
+        {
+            //应该改成从文件播放
+            await GenerateAudioFile();
+            AudioPlayer.NAudioPlay(this.OutputFileName);
+            //VoiceSolution vs = GetFinalSolution();
+
+            //var text = string.IsNullOrEmpty(SpreakContent) ? ArticleText : SpreakContent;
+            //text = (text + "").Trim();
+            //if (!string.IsNullOrEmpty(text))
+            //{
+            //    await vs.Read(text);
+            //}
+        }
+
+        private VoiceSolution GetFinalSolution()
+        {
+            var vs = this.Solution ?? this.AudioRole?.VoiceSolution;
+            if (vs == null)
+            {
+                throw new UserFriendlyException("没有选择声音方案!");
+            }
+
+            return vs;
+        }
+
+        /// <summary>
+        /// 生成文件
+        /// </summary>
+        /// <param name="reGenerate"></param>
+        //[Action(Caption = "生成音频")]
+        public async Task GenerateAudioFile()
+        {
+            bool exist = !string.IsNullOrEmpty(OutputFileName) && File.Exists(OutputFileName);
+
+            //重新生成,并且文件名不为空,并且文件存在,则删除
+            if (exist)
+            {
+                File.Delete(OutputFileName);
+                exist = false;
+            }
+            if (!exist)
+            {
+                this.State = TTSState.Generatting;
+                var vs = GetFinalSolution();
+                var p = Path.Combine(this.AudioBook.OutputPath, $"{Index}.mp3");
+                await vs.GenerateAudioToFile(this.ArticleText, p);
+                OutputFileName = p;
+                this.State = TTSState.Generated;
+                var rst = (int)(await AudioHelper.GetAudioFileInfo(OutputFileName)).Duration.TotalMilliseconds;
+                this.Duration = rst;
+                //OutputFileName = rst.Item1;
+                if (Diffence>0)
+                {
+#warning 调整音频时长还没处理
+                    //var fixedAudio = AudioHelper.FixAudio(OutputFileName, Subtitle.Duration, Duration);
+                    //if (fixedAudio.已调整)
+                    //{
+                    //    this.Duration = fixedAudio.调整后时长;
+                    //    this.OutputFileName = fixedAudio.输出文件;
+                    //}
+                }
+            }
         }
     }
 
@@ -195,19 +304,29 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             splitItem.Execute += SplitItem_Execute;
 
             var generate = new SimpleAction(this, "GenerateTextAudioItem", null);
+            generate.Caption = "生成";
             generate.Execute += Generate_Execute;
 
+            var play = new SimpleAction(this, "PlayAudioTextItem", null);
+            play.Caption = "播放";
+            play.Execute += Play_Execute;
         }
 
-        private void Generate_Execute(object sender, SimpleActionExecuteEventArgs e)
+        private async void Play_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            AudioBook.GenerateAudioBook(e.SelectedObjects.OfType<AudioBookTextAudioItem>(), true);
+            foreach (AudioBookTextAudioItem item in e.SelectedObjects)
+            {
+                await item.Play();
+            }
+        }
+
+        private async void Generate_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            await AudioBook.GenerateAudioBook(e.SelectedObjects.OfType<AudioBookTextAudioItem>());
             var cnt = ObjectSpace.ModifiedObjects.OfType<AudioBookTextAudioItem>().Count();
             ObjectSpace.CommitChanges();
             Application.ShowViewStrategy.ShowMessage($"生成完成,保存了{cnt}个段落!");
         }
-
-
 
         private void SplitItem_Execute(object sender, SimpleActionExecuteEventArgs e)
         {

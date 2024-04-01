@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <ActionDesign Id="ActionDesign">
+    <Actions Id="Actions">
+      <Action Id="CreateProductData" ImageName="Travel_Beach" />
+      <Action Id="CreateTestBookData" ImageName="Travel_Beach" />
+    </Actions>
+  </ActionDesign>
+</Application>

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <ActionDesign Id="ActionDesign">
+    <Actions Id="Actions">
+      <Action Id="TranslateToChines" ImageName="Action_StateMachine" />
+    </Actions>
+  </ActionDesign>
+</Application>

@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Application>
-  <ActionDesign Id="ActionDesign">
-    <Actions Id="Actions">
-      <Action Id="ReadMessage" ImageName="Electronics_Volume" />
-    </Actions>
-  </ActionDesign>
-</Application>

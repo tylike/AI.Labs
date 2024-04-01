@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WebSocketSharp;
+using System.Diagnostics;
 
 
 namespace EdgeTTSSharp
@@ -70,8 +71,13 @@ namespace EdgeTTSSharp
         /// <param name="voiceShortName">音频名称</param>
         /// <param name="rate">（可选）调整语速，是一个-100 - 100的数值</param>
         /// <param name="savePath">（可选）保存音频到指定路径</param>
-        public static void PlayText(string msg, string voiceShortName, int rate = 0, string savePath = "",bool play = true)
-        {
+        /// <param name="play">是否立即播放</param>
+        /// <param name="resultBytes">是否返回音频数据</param>
+        public static async Task PlayText(string msg, string voiceShortName, int rate = 0, string savePath = "",bool play = true,List<byte> resultBytes = null)
+        {    
+            // 创建一个TaskCompletionSource，用于等待WebSocket关闭事件
+            var tcs = new TaskCompletionSource<bool>();
+
             var voice = Voices.FirstOrDefault(i => i.ShortName == voiceShortName);// i.Name == "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)");
             if (voice == null)
             {
@@ -129,6 +135,11 @@ namespace EdgeTTSSharp
                 //File.WriteAllBytes($"{savePath}temp.mp3", binary.ToArray());
                 if (binary.Count > 0)
                 {
+                    if (resultBytes != null)
+                    {
+                        resultBytes.AddRange(binary);
+                        Debug.WriteLine("音频数据已经返回");
+                    }
                     if (play)
                         Audio.PlayToByte(binary.ToArray());
 
@@ -137,6 +148,8 @@ namespace EdgeTTSSharp
                         File.WriteAllBytes(savePath, binary.ToArray());
                     }
                 }
+                // 设置TaskCompletionSource的结果，表示WebSocket已关闭
+                tcs.SetResult(true);
             };
             wss.OnLog += (onmsg) =>
             {
@@ -147,7 +160,7 @@ namespace EdgeTTSSharp
                 wss.Send(ConvertToAudioFormatWebSocketString(voice.SuggestedCodec));
                 wss.Send(ConvertToSsmlWebSocketString(sendRequestId, voice.Locale, voice.Name, rate, msg));
             }
-
+            await tcs.Task;
         }
 
 

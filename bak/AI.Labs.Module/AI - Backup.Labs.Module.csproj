@@ -1,0 +1,157 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net7.0-windows</TargetFramework>
+		<CheckEolTargetFramework>false</CheckEolTargetFramework>
+		<Deterministic>false</Deterministic>
+		<AssemblyVersion>1.0.*</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<Configurations>Debug;Release;EasyTest;NewDebug</Configurations>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Platforms>AnyCPU;x64</Platforms>
+	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="BusinessObjects\SK.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="Model.DesignedDiffs.Localization.zh-CN.xafml" />
+		<None Remove="Model.DesignedDiffs.Localization.zh-Hans.xafml" />
+		<None Remove="Model.DesignedDiffs.xafml" />
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="Model.DesignedDiffs.Localization.zh-CN.xafml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="Model.DesignedDiffs.Localization.zh-Hans.xafml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Model.DesignedDiffs.xafml" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="BingChat" Version="0.8.0" />
+		<PackageReference Include="DevExpress.ExpressApp" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.CloneObject.Xpo" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.ConditionalAppearance" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Dashboards" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Notifications" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Objects" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Office" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.ReportsV2" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Security.Xpo" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.TreeListEditors" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Validation" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.ViewVariantsModule" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp.Xpo" Version="23.1.6" />
+		<PackageReference Include="DevExpress.Persistent.Base" Version="23.1.6" />
+		<PackageReference Include="DevExpress.Persistent.BaseImpl.Xpo" Version="23.1.6" />
+		<PackageReference Include="LLamaSharp.kernel-memory" Version="0.8.1" />
+		<PackageReference Include="LLamaSharp.semantic-kernel" Version="0.8.1" />
+		<PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.34.0" />
+		<PackageReference Include="Microsoft.SemanticKernel" Version="1.0.1" />
+		<PackageReference Include="Microsoft.SemanticKernel.Abstractions" Version="1.0.1" />
+		<PackageReference Include="Microsoft.SemanticKernel.Connectors.Sqlite" Version="1.0.1-alpha" />
+		<PackageReference Include="Microsoft.SemanticKernel.Plugins.Memory" Version="1.0.1-alpha" />
+		<PackageReference Include="NAudio" Version="2.2.1" />
+		<PackageReference Include="Betalgo.OpenAI.Utilities" Version="7.0.4" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="System.Speech" Version="8.0.0" />
+
+		<PackageReference Include="LLamaSharp" Version="0.8.1" />
+		<PackageReference Include="LLamaSharp.Backend.Cuda11" Version="0.8.1" />
+
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+		<!--<PackageReference Include="Microsoft.KernelMemory.Core" Version="0.12.231123.1-preview" />
+		<PackageReference Include="Microsoft.SemanticKernel" Version="1.0.0-beta8" />-->
+
+
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Edge_tts_sharp\Edge_tts_sharp.csproj" />
+	  <ProjectReference Include="..\OpenAI.SDK\OpenAI.SDK\OpenAI.csproj" />
+	  <ProjectReference Include="..\STT\STT.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="UnusableNodes.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes1.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes10.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes11.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes12.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes13.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes14.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes15.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes16.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes17.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes18.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes1_zh-Hans.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes2.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes2_zh-Hans.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes3.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes3_zh-Hans.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes4.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes4_zh-Hans.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes5.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes5_zh-Hans.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes6.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes6_zh-Hans.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes7.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes8.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes9.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	  <None Update="UnusableNodes_zh-Hans.xml">
+	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+	  </None>
+	</ItemGroup>
+</Project>

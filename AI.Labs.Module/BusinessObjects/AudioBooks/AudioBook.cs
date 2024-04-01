@@ -8,6 +8,10 @@ using AI.Labs.Module.BusinessObjects.TTS;
 using DevExpress.ExpressApp.Editors;
 using NAudio.Wave;
 using DevExpress.ExpressApp;
+using DevExpress.ExpressApp.Actions;
+using AI.Labs.Module.BusinessObjects.STT;
+using DevExpress.Utils.Filtering.Internal;
+using System.Xml;
 
 namespace AI.Labs.Module.BusinessObjects.AudioBooks
 {
@@ -15,13 +19,100 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
     [XafDisplayName("有声书籍")]
     public class AudioBook : XPObject, IWordDocument
     {
+        [XafDisplayName("服务提供")]
+        public TTSProvider SSMLProvider
+        {
+            get { return GetPropertyValue<TTSProvider>(nameof(SSMLProvider)); }
+            set { SetPropertyValue(nameof(SSMLProvider), value); }
+        }
+
+        //[Action(Caption ="生成音频",ToolTip ="使用ssml生成音频")]
+        public async Task SaySSML()
+        {
+            if (string.IsNullOrEmpty(this.SSML))
+            {
+                throw new UserFriendlyException("还没有生成ssml!");
+            }
+            if (SSMLProvider == null || SSMLProvider.Engine != VoiceEngine.AzureTTS || string.IsNullOrEmpty(SSMLProvider.ApiKey) || string.IsNullOrEmpty(SSMLProvider.BaseUrl))
+            {
+                throw new UserFriendlyException("1.必须选择AzureTTS类型的服务提供商\n2.必须配置APIKey和网址. \n说明:目前微软是免费的,需要自行申请,申请时需要有外币支付功能的信用卡，但不会扣费。");
+            }
+
+            var path = this.CheckOutputPath();
+            path = Path.Combine(path, "ssml.mp3");
+
+            await AzureTTSEngine.PlasySSML(this.SSML, SSMLProvider.ApiKey, SSMLProvider.BaseUrl, path);
+        }
+
+        public void DefaultSSMLPrompt()
+        {
+            string getStyles(IEnumerable<VoiceStyle> styles)
+            {
+                return string.Join(";", styles.Select(t => $"{t.Name}:{t.Caption}"));
+            }
+            var rw = string.Join("\r\n\n", this.Roles.Select(t => $"{t.Name}的声音名称是:{t.VoiceSolution.DisplayName},说话风格可选:{getStyles(t.VoiceSolution.Styles)}"));
+
+            SSMLPrompt = @$"#要求：
+你精通ssml，请根以下小品对话，分析人物性格、说话情绪，生成对应的ssml，考虑使用的声音名称（都是中文角色）、角色扮演(role)、说话风格(style)等参数，人名不需要读出只输出说话内容即可
+{rw}
+输出示例:
+<speak xmlns=""http://www.w3.org/2001/10/synthesis"" xmlns:mstts=""http://www.w3.org/2001/mstts"" xmlns:emo=""http://www.w3.org/2009/10/emotionml"" version=""1.0"" xml:lang=""zh-CN"">
+<voice name=""{Roles.First().VoiceSolution.DisplayName}"" style=""narration-relaxed"">清晨起床，拥抱太阳，我要当大侠，我有梦想。</voice>
+<voice name=""{Roles.Last().VoiceSolution.DisplayName}"" style=""newscast"">出去。</voice>
+<!--把其他对话也生成同样格式的ssml-->
+</speak>
+#对话内容是:";
+        }
+
+        public void PlaySSML()
+        {
+            var path = this.CheckOutputPath();
+            path = Path.Combine(path, "ssml.mp3");
+            AudioPlayer.WindowsMediaPlayerPlay(path);
+        }
+
+        [Size(2000), ModelDefault("RowCount", "0")]
+        public string SSMLAudioFile
+        {
+            get { return GetPropertyValue<string>(nameof(SSMLAudioFile)); }
+            set { SetPropertyValue(nameof(SSMLAudioFile), value); }
+        }
+
+
+        [XafDisplayName("生成要求"), Size(-1)]
+        public string SSMLPrompt
+        {
+            get { return GetPropertyValue<string>(nameof(SSMLPrompt)); }
+            set { SetPropertyValue(nameof(SSMLPrompt), value); }
+        }
+
+        [XafDisplayName("流式输出")]
+        public bool SSMLStream
+        {
+            get { return GetPropertyValue<bool>(nameof(SSMLStream)); }
+            set { SetPropertyValue(nameof(SSMLStream), value); }
+        }
+
+        [Size(-1)]
+        public string SSML
+        {
+            get { return GetPropertyValue<string>(nameof(SSML)); }
+            set { SetPropertyValue(nameof(SSML), value); }
+        }
+        [XafDisplayName("流式输出"), ToolTip("为了测试流式输出性能是否会快一些,即收到N个结果后才刷新一次界面,实际测下来差不多")]
+        public int StreamCountOutput
+        {
+            get { return GetPropertyValue<int>(nameof(StreamCountOutput)); }
+            set { SetPropertyValue(nameof(StreamCountOutput), value); }
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="items"></param>
         /// <param name="reGenerate">对于一个段落,如果已经生成了,是否强制生新生成</param>
         /// <exception cref="UserFriendlyException"></exception>
-        public static void GenerateAudioBook(IEnumerable<AudioBookTextAudioItem> items, bool reGenerate = true)
+        public async static Task GenerateAudioBook(IEnumerable<AudioBookTextAudioItem> items)
         {
             if (!items.Any())
             {
@@ -33,21 +124,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
 
             foreach (var item in items)
             {
-                bool exist = !string.IsNullOrEmpty(item.OutputFileName) && File.Exists(item.OutputFileName);
-
-                //重新生成,并且文件名不为空,并且文件存在,则删除
-                if (reGenerate && exist)
-                {
-                    File.Delete(item.OutputFileName);
-                    exist = false;
-                }
-
-                if (!exist)
-                {
-                    var p = Path.Combine(outputPath, $"{item.Index}.mp3");
-                    EdgeTTSSharp.EdgeTTS.PlayText(item.ArticleText, item.AudioRole.VoiceSolution.DisplayName, savePath: p, play: false);
-                    item.OutputFileName = p;
-                }
+                await item.GenerateAudioFile();
             }
         }
         public string CheckOutputPath()
@@ -170,7 +247,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         //public XPCollection<AudioBookParagraphItem> Paragraphs { get => GetCollection<AudioBookParagraphItem>(nameof(Paragraphs)); }
         #endregion
 
-        #region 2.SpreakItem
+        #region 2.声音角色
         //[Action(ToolTip = "为每个条目创建出角色")]
         //public async void GenerateRoles()
         //{
@@ -257,7 +334,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         public async void CreateAudioBook()
         {
             var path = CheckOutputPath();
-            GenerateAudioBook(this.AudioItems, false);
+            await GenerateAudioBook(this.AudioItems);
             Mp3FileUtils.Combine(this.AudioItems.Select(t => t.OutputFileName).ToArray(), Path.Combine(path, "audiobook.mp3"));
             Debug.WriteLine("处理完成!");
             await Task.CompletedTask;
@@ -271,24 +348,13 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         {
             var path = CheckOutputPath();
             var fp = Path.Combine(path, "audiobook.mp3");
-            
-            if (File.Exists(fp))
-            {
-                var pi = new ProcessStartInfo(fp);
-                pi.UseShellExecute = true;
-                Process.Start(pi);
-                //TTSEngine.Play(fp, false);
-            }
-            else
-            {
-                throw new UserFriendlyException("文件不存在,请先进行生成!");
-            }
+            AudioPlayer.WindowsMediaPlayerPlay(fp);
             await Task.CompletedTask;
         }
+
+
         #endregion
     }
-
-
 
     public class WavFileUtils
     {
@@ -338,8 +404,6 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         }
     }
 
-
-
     public class Mp3FileUtils
     {
         public static void Combine(string[] mp3Files, string mp3OuputFile)
@@ -379,7 +443,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                         writer.Write(buffer, 0, bytesRead);
                     }
                     writer.Flush();
-                    
+
                 }
             }
             finally
@@ -389,11 +453,125 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                 {
                     reader.Dispose();
                 }
-                
+
             }
         }
     }
 
-    
+    public class SSMLGeneratorViewController : ObjectViewController<ObjectView, AudioBook>
+    {
+        public SSMLGeneratorViewController()
+        {
+            var generateSSML = new SimpleAction(this, "GenerateSSML", "SSMLActions");
+            generateSSML.SelectionDependencyType = SelectionDependencyType.RequireSingleObject;
+            generateSSML.Caption = "生成SSML";
+            generateSSML.Execute += GenerateSSML_Execute;
+
+            var generateSSMLAudio = new SimpleAction(this, "GenerateSSMLAudio", "SSMLActions");
+            generateSSMLAudio.SelectionDependencyType = SelectionDependencyType.RequireSingleObject;
+            generateSSMLAudio.Caption = "生成音频";
+            generateSSMLAudio.Execute += GenerateSSMLAudio_Execute;
+
+            var playSSMLAudio = new SimpleAction(this, "PlaySSMLAudio", "SSMLActions");
+            playSSMLAudio.SelectionDependencyType = SelectionDependencyType.RequireSingleObject;
+            playSSMLAudio.Caption = "播放音频";
+            playSSMLAudio.Execute += PlaySSMLAudio_Execute;
+
+            var defaultRequire = new SimpleAction(this, "RequireSSMLRequire", "SSMLActions");
+            defaultRequire.Execute += DefaultRequire_Execute;
+            defaultRequire.Caption = "生成默认要求";
+        }
+
+        private void DefaultRequire_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            ViewCurrentObject.DefaultSSMLPrompt();
+        }
+        static string XmlFormat(string xmlString)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xmlString);
+
+            // 设置格式化选项
+            XmlWriterSettings settings = new XmlWriterSettings
+            {
+                Indent = true,          // 启用缩进
+                IndentChars = "  ",     // 缩进使用的字符（两个空格）
+                NewLineChars = "\r\n",  // 设置换行符
+                NewLineHandling = NewLineHandling.Replace // 替换换行符
+            };
+
+            // 将格式化后的 XML 输出到字符串
+            using (var stringWriter = new System.IO.StringWriter())
+            using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
+            {
+                doc.WriteTo(xmlWriter);
+                xmlWriter.Flush();
+                return (stringWriter.GetStringBuilder().ToString());
+            }
+        }
+
+        private async void GenerateSSML_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            ViewCurrentObject.SSML = "";
+
+            await AIHelper.Ask(
+                ViewCurrentObject.SSMLPrompt, ViewCurrentObject.Content,
+                t =>
+                {
+                    this.ViewCurrentObject.SSML = t.Content;
+                }, 
+                ViewCurrentObject.AIModel,
+                ViewCurrentObject.SSMLStream
+                );
+
+            //var sw = Stopwatch.StartNew();
+            //ViewCurrentObject.SSML = "";
+            //if (ViewCurrentObject.SSMLStream)
+            //{                
+            //    var t = AIHelper.AskStream(ViewCurrentObject.SSMLPrompt, ViewCurrentObject.Content, ViewCurrentObject.AIModel);
+            //    var i = 0;
+            //    await foreach (var item in t)
+            //    {
+            //        if (!string.IsNullOrEmpty(item))
+            //        {
+
+            //            i++;
+            //            if (i % ViewCurrentObject.StreamCountOutput == 0)
+            //                Application.UIThreadDoEvents();
+            //        }
+            //        Debug.WriteLine(item);
+            //    }
+            //    Application.UIThreadDoEvents();
+            //}
+            //else
+            //{
+            //    var t =await AIHelper.Ask(ViewCurrentObject.SSMLPrompt, ViewCurrentObject.Content, ViewCurrentObject.AIModel);
+            //    if (!t.IsError)
+            //    {
+            //        Application.UIThreadInvoke(() =>
+            //        {
+
+            //        });
+            //        Application.UIThreadDoEvents();
+            //    }
+            //    else
+            //    {
+            //        throw new UserFriendlyException(t.Message);
+            //    }
+            //}
+            //sw.Stop();
+            this.ViewCurrentObject.SSML = XmlFormat(System.Net.WebUtility.HtmlDecode(ViewCurrentObject.SSML));
+        }
+
+        private void PlaySSMLAudio_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            ViewCurrentObject.PlaySSML();
+        }
+
+        private async void GenerateSSMLAudio_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            await ViewCurrentObject.SaySSML();
+        }
+    }
 
 }

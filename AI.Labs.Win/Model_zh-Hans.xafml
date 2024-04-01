@@ -9,8 +9,8 @@
       <Action Id="ChooseSkin" Caption="选择皮肤" />
       <Action Id="Close" Caption="关闭" />
       <Action Id="ConfigureSkin" Caption="配置皮肤" />
-      <Action Id="ContinueWrite" Caption="续写" />
       <Action Id="CopyCellValue" Caption="复制单元格内容" />
+      <Action Id="CreateAssistant" Caption="创建助手" />
       <Action Id="EditModel" ToolTip="编辑模型" Caption="编辑模型" />
       <Action Id="EditReportControllerV2.Edit" Caption="编辑" />
       <Action Id="ExecuteReportV2" Caption="执行报表" />
@@ -27,11 +27,12 @@
       <Action Id="PrintPreview" Caption="打印预览..." />
       <Action Id="SaveTo" Caption="另存为..." />
       <Action Id="ShowToolbar" Caption="显示工具栏" />
-      <Action Id="Summarize" Caption="总结" />
-      <Action Id="TranslateToEnglish" Caption="翻译为英语" />
-      <Action Id="TranslateToJapanese" Caption="翻译为日语" />
-      <Action Id="TranslateToKorean" Caption="翻译为韩语" />
       <Action Id="ViewInModel" Caption="查看视图模型" />
     </Actions>
   </ActionDesign>
+  <ViewItems>
+    <PropertyEditor Name="PropertyEditors">
+      <RegisteredPropertyEditor PropertyType="System.TimeSpan" MaskSettings="AgAAAA9NYXNrTWFuYWdlclR5cGUAgwFEZXZFeHByZXNzLkRhdGEuTWFzay5EYXRlVGltZU1hc2tNYW5hZ2VyLCBEZXZFeHByZXNzLkRhdGEudjIzLjEsIFZlcnNpb249MjMuMS42LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQRtYXNrBwINaGg6bW06c3MsIEZGRg==" DefaultDisplayFormat="{0:hh\:mm\:ss\,fff}" />
+    </PropertyEditor>
+  </ViewItems>
 </Application>

@@ -6,13 +6,56 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using YoutubeExplode;
+using YoutubeExplode.Common;
+using YoutubeExplode.Videos.Streams;
+using YoutubeExplode.Videos;
+
 namespace LlamaConsole48
 {
+
+
+    public static class YouTubeDownloader
+    {
+        public static async Task DownloadVideoAsync(string videoIdOrUrl, string outputPath)
+        {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            var youtube = new YoutubeClient();
+            var videoId = VideoId.TryParse(videoIdOrUrl);
+            // Try to parse the video ID
+            if (videoId == null)
+            {
+                Console.WriteLine("Invalid YouTube video ID or URL.");
+                return;
+            }
+
+            // Get the video
+            var video = await youtube.Videos.GetAsync(videoId.Value);
+
+            // Get the stream manifest
+            var streamManifest = await youtube.Videos.Streams.GetManifestAsync(videoId.Value);
+            var streamInfo = streamManifest.GetMuxedStreams().GetWithHighestVideoQuality();
+
+            if (streamInfo != null)
+            {
+                // Download the video
+                Console.WriteLine($"Downloading {video.Title}...");
+                await youtube.Videos.Streams.DownloadAsync(streamInfo, $"{outputPath}{video.Title}.{streamInfo.Container}");
+
+                Console.WriteLine("Download complete!");
+            }
+            else
+            {
+                Console.WriteLine("No suitable video stream found.");
+            }
+        }
+    }
     internal class Program
     {
         static void Main(string[] args)
         {
 
+            YouTubeDownloader.DownloadVideoAsync("https://www.youtube.com/watch?v=iMYn7EGDfXw", "d:\\videoInfo\\AutoGen.Agent").Wait();
 
             string modelPath =
                 //"D:\\llm\\text-generation-webui-2023-11-12\\models\\YI\\34b-q8\\yi-34b-chat.Q5_K_S.gguf"; // change it to your own model path
@@ -45,7 +88,7 @@ namespace LlamaConsole48
             // run the inference in a loop to chat with LLM
             while (prompt != "stop")
             {
-                var rst =  session.ChatAsync(prompt, new InferenceParams() { Temperature = 0.6f, AntiPrompts = new List<string> { "User:" } });
+                var rst = session.ChatAsync(prompt, new InferenceParams() { Temperature = 0.6f, AntiPrompts = new List<string> { "User:" } });
 
                 //foreach (var text in rst.GetAsyncEnumerator().)
                 //{

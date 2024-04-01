@@ -15,18 +15,32 @@
       <Action Id="BingChat.Chat" Index="13" />
       <Action Id="AudioBookRole.TryReading" ImageName="BO_Security_Permission_Action" PaintStyle="CaptionAndImage" />
       <Action Id="AudioBookTextAudioItem.ParseArticleText" ImageName="WeightedPies" PaintStyle="CaptionAndImage" />
-      <Action Id="AudioBookTextAudioItem.Read" ImageName="BO_Security_Permission_Action" PaintStyle="CaptionAndImage" />
       <Action Id="BatchSetupRole" ImageName="BO_Department" PaintStyle="CaptionAndImage" />
       <Action Id="ChatItem.ReadMessage" ImageName="Electronics_Volume" />
-      <Action Id="CreateProductData" ImageName="Travel_Beach" />
-      <Action Id="CreateTestBookData" ImageName="Travel_Beach" />
       <Action Id="GenerateTextAudioItem" ImageName="ModelEditor_GenerateContent" PaintStyle="CaptionAndImage" />
       <Action Id="MergeAudioTextItem" ImageName="Action_CloneMerge_Merge_Object" PaintStyle="CaptionAndImage" />
       <Action Id="SaveAndClose" Shortcut="Control+Alt+Enter" />
       <Action Id="SplitAudioTextItem" ImageName="Clip" PaintStyle="CaptionAndImage" />
+      <Action Id="StartLLMServer" ImageName="BO_Security_Permission_Action" Caption="启动模型" ToolTip="启动大语言模型" />
+      <Action Id="StopLLMServer" ImageName="Action_Debug_Stop" Caption="停止模型" ToolTip="停止大模型运行" />
     </Actions>
   </ActionDesign>
   <BOModel>
+    <Class Name="AI.Labs.Module.BusinessObjects.AudioBooks.AudioBook" ImageName="Actions_Book" />
+    <Class Name="AI.Labs.Module.BusinessObjects.ChatInfo.Chat" ImageName="BO_Department" />
+    <Class Name="AI.Labs.Module.BusinessObjects.DataBaseCommander" ImageName="Actions_Database" />
+    <Class Name="AI.Labs.Module.BusinessObjects.KnowledgeBase.BusinessKnowledgeBase" ImageName="re-layout" />
+    <Class Name="AI.Labs.Module.BusinessObjects.Sales.Product" ImageName="ProductOrderDetail-21" />
+    <Class Name="AI.Labs.Module.BusinessObjects.SpreadSheetDocument" ImageName="PrintSheetSelection" />
+    <Class Name="AI.Labs.Module.BusinessObjects.STT.MeetingNotes" ImageName="Meeting" />
+    <Class Name="AI.Labs.Module.BusinessObjects.TTS.ReadTextInfo" ImageName="TextAnnotation" />
+    <Class Name="AI.Labs.Module.BusinessObjects.VideoTranslate.NSubtitleItem">
+      <OwnMembers>
+        <Member Name="End" EditMaskType="DateTime" EditMask="hh:mm:ss,fff" DisplayFormat="{0:hh\:mm\:ss\,fff}" />
+        <Member Name="Start" EditMaskType="DateTime" EditMask="hh:mm:ss,fff" DisplayFormat="{0:hh\:mm\:ss\,fff}" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.WordDocumentRecord" ImageName="ExportToDOCX" />
     <Class Name="DevExpress.Persistent.BaseImpl.PermissionPolicy.PermissionPolicyUser" Caption="Base User" />
   </BOModel>
   <Localization>
@@ -34,7 +48,7 @@
       <LocalizationItem Name="STTService.Started" Value="STT Service Started!" IsNewNode="True" />
     </LocalizationGroup>
   </Localization>
-  <NavigationItems NavigationStyle="Accordion" DefaultChildItemsDisplayStyle="List">
+  <NavigationItems NavigationStyle="NavBar" DefaultChildItemsDisplayStyle="LargeIcons">
     <Items>
       <Item Id="应用场景" Index="0">
         <Items>
@@ -42,12 +56,14 @@
           <Item Id="Book_ListView" Index="1" />
           <Item Id="Product_ListView" ViewId="Product_ListView" ObjectKey="" Index="2" IsNewNode="True" />
           <Item Id="DataBaseCommander_ListView" Index="3" />
+          <Item Id="MeetingNotes_ListView" ViewId="MeetingNotes_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="SpreadSheetDocument_ListView" ViewId="SpreadSheetDocument_ListView" ObjectKey="" IsNewNode="True" />
-          <Item Id="WordDocument_ListView" ViewId="WordDocument_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="WordDocumentRecord_ListView" ViewId="WordDocumentRecord_ListView" ObjectKey="" IsNewNode="True" />
         </Items>
       </Item>
       <Item Id="STT" Index="1">
         <Items>
+          <Item Id="MeetingNotes_ListView" Removed="True" />
           <Item Id="STTModel_ListView" Removed="True" />
         </Items>
       </Item>
@@ -57,6 +73,7 @@
           <Item Id="Product_ListView" Removed="True" />
           <Item Id="SpreadSheetDocument_ListView" Removed="True" />
           <Item Id="VoiceSolution_ListView" Removed="True" />
+          <Item Id="WordDocumentRecord_ListView" Removed="True" />
         </Items>
       </Item>
       <Item Id="Reports" Index="3" />
@@ -66,16 +83,12 @@
           <Item Id="VoiceSolution_ListView" ViewId="VoiceSolution_ListView" ObjectKey="" Index="1" IsNewNode="True" />
           <Item Id="PredefinedRole_ListView" Index="2" />
           <Item Id="AIModel_ListView" ViewId="AIModel_ListView" ObjectKey="" Index="3" IsNewNode="True" />
-          <Item Id="STT" Caption="Speech To Text" Index="4" IsNewNode="True">
-            <Items IsNewNode="True">
-              <Item Id="STTModel_ListView" ViewId="STTModel_ListView" ObjectKey="" ToolTip="Speech To Text （STT）Model Config" IsNewNode="True" />
-              <Item Id="STTService" ViewId="STTService_DetailView" ObjectKey="Speech To Text Service" IsNewNode="True" />
-            </Items>
-          </Item>
           <Item Id="ApplicationUser_ListView" ObjectKey="" ViewId="ApplicationUser_ListView" Index="5" IsNewNode="True" />
           <Item Id="PermissionPolicyRole_ListView" ViewId="PermissionPolicyRole_ListView" ObjectKey="" Index="6" IsNewNode="True" />
           <Item Id="MyDetails" ViewId="ApplicationUser_DetailView" ObjectKey="@CurrentUserID" Caption="My Details" ImageName="BO_MyDetails" Index="7" IsNewNode="True" />
           <Item Id="Chat_ListView" Removed="True" />
+          <Item Id="STTModel_ListView" ViewId="STTModel_ListView" ObjectKey="" ToolTip="Speech To Text （STT）Model Config" IsNewNode="True" />
+          <Item Id="STTService" ViewId="STTService_DetailView" ObjectKey="Speech To Text Service" IsNewNode="True" />
         </Items>
       </Item>
     </Items>
@@ -98,22 +111,27 @@
         <ColumnInfo Id="ApiUrlBase" PropertyName="ApiUrlBase" Index="1" Width="482" IsNewNode="True" />
         <ColumnInfo Id="ApiKey" PropertyName="ApiKey" Index="2" Width="263" IsNewNode="True" />
         <ColumnInfo Id="Description" PropertyName="Description" Index="3" Width="407" IsNewNode="True" />
-        <ColumnInfo Id="Default" PropertyName="Default" Index="4" IsNewNode="True" />
       </Columns>
     </ListView>
     <ListView Id="ApplicationUser_ListView" Caption="Users" />
-    <ListView Id="AudioBook_AudioItems_ListView">
+    <ListView Id="AudioBook_AudioItems_ListView" AllowEdit="True" NewItemRowPosition="Top">
       <Columns>
-        <ColumnInfo Id="Index" Width="65" />
+        <ColumnInfo Id="Subtitle" Width="131" Index="-1" />
+        <ColumnInfo Id="Index" Width="65" Index="0" />
+        <ColumnInfo Id="Subtitle.Duration" PropertyName="Subtitle.Duration" Index="1" IsNewNode="True" />
         <ColumnInfo Id="ArticleText" Index="2" Width="1284" />
-        <ColumnInfo Id="AudioRole" Width="149" />
-        <ColumnInfo Id="Spreaker" Width="291" Index="3" />
-        <ColumnInfo Id="Emotion" Width="442" Index="4" />
-        <ColumnInfo Id="State" Index="5" />
-        <ColumnInfo Id="Volumn" Width="65" Index="6" />
+        <ColumnInfo Id="AudioRole" Width="149" Index="3" />
+        <ColumnInfo Id="Spreaker" Width="291" Index="4" />
+        <ColumnInfo Id="OutputFileName" Width="214" Index="5" />
+        <ColumnInfo Id="Emotion" Width="442" Index="6" />
+        <ColumnInfo Id="State" Index="7" />
+        <ColumnInfo Id="Volumn" Width="65" Index="8" />
       </Columns>
     </ListView>
     <DetailView Id="AudioBook_DetailView">
+      <Items>
+        <ActionContainerViewItem Id="SSMLActions" IsNewNode="True" />
+      </Items>
       <Layout>
         <LayoutGroup Id="Main" RelativeSize="100">
           <TabbedGroup Id="Tabs" Index="0" RelativeSize="100">
@@ -143,7 +161,16 @@
                 <LayoutItem Id="Description" ViewItem="Description" ShowCaption="" Index="4" CaptionLocation="Top" IsNewNode="True" />
               </LayoutGroup>
             </LayoutGroup>
-            <LayoutGroup Id="WordDocument" Removed="True" />
+            <LayoutGroup Id="MultiPerson" IsNewNode="True">
+              <LayoutItem Id="服务提供" ViewItem="SSMLProvider" Index="0" CaptionLocation="Top" IsNewNode="True" />
+              <LayoutItem Id="SSMLPrompt" ViewItem="SSMLPrompt" Index="1" CaptionLocation="Top" IsNewNode="True" />
+              <LayoutGroup Id="ActionsAndOptions" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="SSMLActions" ViewItem="SSMLActions" Index="0" CaptionLocation="Top" IsNewNode="True" />
+                <LayoutItem Id="StreamCountOutput" ViewItem="StreamCountOutput" Index="1" RelativeSize="10" IsNewNode="True" />
+                <LayoutItem Id="SSMLStream" ViewItem="SSMLStream" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutItem Id="SSML" ViewItem="SSML" CaptionLocation="Top" IsNewNode="True" />
+            </LayoutGroup>
           </TabbedGroup>
           <LayoutGroup Id="SimpleEditors" Removed="True">
             <LayoutGroup Id="AudioBook" Removed="True">
@@ -161,7 +188,7 @@
         </LayoutGroup>
       </Layout>
     </DetailView>
-    <ListView Id="AudioBook_Roles_ListView" AllowEdit="True">
+    <ListView Id="AudioBook_Roles_ListView" AllowEdit="True" NewItemRowPosition="Top">
       <Columns>
         <ColumnInfo Id="Name" Width="239" />
         <ColumnInfo Id="VoiceSolution" Width="253" />
@@ -169,9 +196,60 @@
         <ColumnInfo Id="TryReadingText" Width="1411" />
       </Columns>
     </ListView>
+    <ListView Id="Book_ListView" ImageName="Actions_Book" />
+    <DetailView Id="BusinessKnowledgeBase_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main">
+          <TabbedGroup Id="MTabs" IsNewNode="True">
+            <LayoutGroup Id="Chat" Index="0" IsNewNode="True">
+              <LayoutItem Id="Question" ViewItem="Question" ShowCaption="" Index="0" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="Info" Index="1" IsNewNode="True">
+              <LayoutGroup Id="SimpleEditors" Index="0" ShowCaption="False" IsNewNode="True">
+                <LayoutGroup Id="BusinessKnowledgeBase" Index="0" Direction="Horizontal" ShowCaption="True" Caption="Business Knowledge Base" IsNewNode="True">
+                  <LayoutGroup Id="BusinessKnowledgeBase_col1" Index="0" ShowCaption="False" IsNewNode="True">
+                    <LayoutItem Id="Value" ViewItem="Value" ShowCaption="" Index="0" IsNewNode="True" />
+                    <LayoutItem Id="SplitType" ViewItem="SplitType" ShowCaption="" Index="1" IsNewNode="True" />
+                    <LayoutItem Id="CustomSpliter" ViewItem="CustomSpliter" ShowCaption="" Index="2" IsNewNode="True" />
+                    <LayoutItem Id="Title" ViewItem="Title" ShowCaption="" Index="3" IsNewNode="True" />
+                  </LayoutGroup>
+                  <LayoutGroup Id="BusinessKnowledgeBase_col2" Index="1" ShowCaption="False" IsNewNode="True">
+                    <LayoutItem Id="Length" ViewItem="Length" ShowCaption="" Index="0" IsNewNode="True" />
+                    <LayoutItem Id="Index" ViewItem="Index" ShowCaption="" Index="1" IsNewNode="True" />
+                    <LayoutItem Id="Parent" ViewItem="Parent" ShowCaption="" Index="2" IsNewNode="True" />
+                  </LayoutGroup>
+                </LayoutGroup>
+                <LayoutGroup Id="XPObject" Index="1" ShowCaption="False" IsNewNode="True">
+                  <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" IsNewNode="True" />
+                </LayoutGroup>
+              </LayoutGroup>
+              <LayoutGroup Id="SizeableEditors" Index="1" ShowCaption="False" IsNewNode="True">
+                <LayoutItem Id="Summary" ViewItem="Summary" ShowCaption="" Index="1" IsNewNode="True" />
+                <LayoutItem Id="Keyword" ViewItem="Keyword" ShowCaption="" Index="2" IsNewNode="True" />
+                <LayoutItem Id="Response" ViewItem="Response" ShowCaption="" Index="3" IsNewNode="True" />
+                <LayoutItem Id="Text" ViewItem="Text" ShowCaption="" Index="4" IsNewNode="True" />
+              </LayoutGroup>
+              <TabbedGroup Id="Tabs" Index="2" IsNewNode="True">
+                <LayoutGroup Id="KeyWords" Index="0" ShowCaption="True" IsNewNode="True">
+                  <LayoutItem Id="KeyWords" ViewItem="KeyWords" ShowCaption="False" Index="0" IsNewNode="True" />
+                </LayoutGroup>
+                <LayoutGroup Id="Nodes" Index="1" ShowCaption="True" IsNewNode="True">
+                  <LayoutItem Id="Nodes" ViewItem="Nodes" ShowCaption="False" Index="0" IsNewNode="True" />
+                </LayoutGroup>
+              </TabbedGroup>
+            </LayoutGroup>
+          </TabbedGroup>
+          <LayoutGroup Id="SimpleEditors" Removed="True" />
+          <LayoutGroup Id="SizeableEditors" Removed="True">
+            <LayoutItem Id="Question" Removed="True" />
+          </LayoutGroup>
+          <TabbedGroup Id="Tabs" Removed="True" />
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
     <DetailView Id="Chat_DetailView">
       <Items>
-        <ActionContainerViewItem Id="ChatAction" Caption="ChatAction(8)" IsNewNode="True" />
+        <ActionContainerViewItem Id="ChatAction" IsNewNode="True" />
       </Items>
       <Layout>
         <TabbedGroup Id="Tabs" Index="0" RelativeSize="100" IsNewNode="True">
@@ -179,9 +257,9 @@
             <LayoutItem Id="Items" ViewItem="Items" ShowCaption="False" Index="0" CaptionLocation="Top" RelativeSize="82.10463733650415" IsNewNode="True" />
             <LayoutGroup Id="SizeableEditors" Index="1" ShowCaption="False" RelativeSize="17.89536266349584" IsNewNode="True">
               <LayoutItem Id="SendMessage" ViewItem="SendMessage" ShowCaption="False" Index="0" CaptionLocation="Top" RelativeSize="83.38870431893687" IsNewNode="True" />
-              <LayoutGroup Id="R2" Direction="Horizontal" ShowCaption="False" Index="1" RelativeSize="16.611295681063122" IsNewNode="True">
-                <LayoutItem Id="Empty" Index="0" RelativeSize="90.66543438077635" IsNewNode="True" />
-                <LayoutItem Id="ChatAction" ViewItem="ChatAction" Index="1" RelativeSize="9.33456561922366" IsNewNode="True" />
+              <LayoutGroup Id="R2" Direction="Horizontal" ShowCaption="False" Index="1" IsNewNode="True">
+                <LayoutItem Id="Empty" Index="0" RelativeSize="90" IsNewNode="True" />
+                <LayoutItem Id="ChatAction" ViewItem="ChatAction" Index="1" RelativeSize="10" IsNewNode="True" />
               </LayoutGroup>
             </LayoutGroup>
           </LayoutGroup>
@@ -224,7 +302,7 @@
         </LayoutGroup>
       </Layout>
     </DetailView>
-    <ListView Id="Chat_Items_ListView" PreviewColumnName="Message">
+    <ListView Id="Chat_Items_ListView" PreviewColumnName="DisplayMessage">
       <Columns>
         <ColumnInfo Id="Verb" Width="101" />
         <ColumnInfo Id="MessageSource" Width="159" />
@@ -315,6 +393,53 @@
         <ColumnInfo Id="Text" Index="3" Width="1771" />
       </Columns>
     </ListView>
+    <DetailView Id="NSubtitleItem_DetailView">
+      <Items>
+        <PropertyEditor Id="SourceItemOids" RowCount="0" />
+      </Items>
+      <Layout>
+        <LayoutGroup Id="Main">
+          <LayoutGroup Id="SimpleEditors">
+            <LayoutGroup Id="R1" Index="2" Direction="Horizontal" IsNewNode="True">
+              <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" IsNewNode="True" />
+              <LayoutItem Id="Task" ViewItem="Task" ShowCaption="" Index="1" IsNewNode="True" />
+              <LayoutItem Id="Index" ViewItem="Index" ShowCaption="" Index="2" IsNewNode="True" />
+              <LayoutItem Id="Start" ViewItem="Start" ShowCaption="" Index="3" IsNewNode="True" />
+              <LayoutItem Id="End" ViewItem="End" ShowCaption="" Index="4" IsNewNode="True" />
+              <LayoutItem Id="Second" ViewItem="Second" ShowCaption="" Index="5" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="R2" Index="3" Direction="Horizontal" IsNewNode="True">
+              <LayoutItem Id="SourceItemOids" Index="0" ViewItem="SourceItemOids" ShowCaption="" SizeConstraintsType="Custom" MaxSize="0, 35" RelativeSize="84" IsNewNode="True" />
+              <LayoutItem Id="时间重合警告" ViewItem="时间重合警告" ShowCaption="" Index="1" RelativeSize="16" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="NSubtitleItem" Removed="True">
+              <LayoutGroup Id="NSubtitleItem_col1">
+                <LayoutItem Id="时间重合警告" Removed="True" />
+                <LayoutItem Id="Index" Removed="True" />
+                <LayoutItem Id="Task" Removed="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="NSubtitleItem_col2">
+                <LayoutItem Id="End" Removed="True" />
+                <LayoutItem Id="Second" Removed="True" />
+                <LayoutItem Id="Start" Removed="True" />
+              </LayoutGroup>
+            </LayoutGroup>
+            <LayoutGroup Id="R3" Direction="Horizontal" IsNewNode="True">
+              <LayoutItem Id="EnglishText" Index="0" ViewItem="EnglishText" ShowCaption="" SizeConstraintsType="Custom" MaxSize="0, 80" IsNewNode="True" />
+              <LayoutItem Id="ChineseText" Index="1" ViewItem="ChineseText" SizeConstraintsType="Custom" MaxSize="0, 80" ShowCaption="" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="XPObject" Removed="True">
+              <LayoutItem Id="Oid" Removed="True" />
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutGroup Id="SizeableEditors">
+            <LayoutItem Id="ChineseText" MaxSize="0, 80" SizeConstraintsType="Custom" Removed="True" />
+            <LayoutItem Id="EnglishText" MaxSize="0, 80" SizeConstraintsType="Custom" Removed="True" />
+            <LayoutItem Id="SourceItemOids" SizeConstraintsType="Custom" MaxSize="0, 35" Removed="True" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
     <ListView Id="PredefinedRole_Prompts_ListView" AllowEdit="True" NewItemRowPosition="Top" />
     <ListView Id="Product_ListView" MasterDetailMode="ListViewAndDetailView" />
     <ListView Id="Product_Properties_ListView">
@@ -326,20 +451,225 @@
     <DetailView Id="SpreadSheetDocument_DetailView">
       <Layout>
         <LayoutGroup Id="Main">
-          <LayoutGroup Id="SimpleEditors">
+          <LayoutGroup Id="SimpleEditors" IsCollapsibleGroup="True" ShowCaption="True" Caption="信息">
             <LayoutGroup Id="SpreadSheetDocument" Direction="Horizontal">
               <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="AIResponse" IsNewNode="True">
+              <LayoutItem Id="AIResponse" ViewItem="AIResponse" ShowCaption="" Index="2" SizeConstraintsType="Custom" MaxSize="0, 300" MinSize="0, 300" CaptionLocation="Top" IsNewNode="True" />
             </LayoutGroup>
             <LayoutGroup Id="XPObject" Removed="True">
               <LayoutItem Id="Oid" Removed="True" />
             </LayoutGroup>
           </LayoutGroup>
-          <LayoutGroup Id="DocumentData_Group">
-            <LayoutItem Id="DocumentData" ShowCaption="False" />
-          </LayoutGroup>
         </LayoutGroup>
       </Layout>
     </DetailView>
+    <DetailView Id="TranslateTask_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <TabbedGroup Id="Tabs" Index="0" RelativeSize="100">
+            <LayoutGroup Id="SimpleEditors" Index="0" ShowCaption="False" IsNewNode="True">
+              <LayoutGroup Id="TranslateTask" Index="0" ShowCaption="False" IsNewNode="True">
+                <LayoutItem Id="Video" ViewItem="Video" ShowCaption="" Index="0" IsNewNode="True" />
+                <LayoutItem Id="Index" ViewItem="Index" ShowCaption="" Index="1" IsNewNode="True" />
+                <LayoutItem Id="Title" ViewItem="Title" ShowCaption="" Index="2" IsNewNode="True" />
+                <LayoutItem Id="标点正确率" ViewItem="标点正确率" ShowCaption="" Index="3" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="SimpleXPObject" Index="1" ShowCaption="False" IsNewNode="True">
+                <LayoutItem Id="Createor" ViewItem="Createor" ShowCaption="" Index="0" IsNewNode="True" />
+                <LayoutItem Id="CreateTime" ViewItem="CreateTime" ShowCaption="" Index="1" IsNewNode="True" />
+                <LayoutItem Id="LastUpdator" ViewItem="LastUpdator" ShowCaption="" Index="2" IsNewNode="True" />
+                <LayoutItem Id="LastUpdateTime" ViewItem="LastUpdateTime" ShowCaption="" Index="3" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="XPObject" Index="2" ShowCaption="False" IsNewNode="True">
+                <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" IsNewNode="True" />
+              </LayoutGroup>
+            </LayoutGroup>
+            <LayoutGroup Id="SubtitleItems_Group" Index="0" Direction="Vertical" ShowCaption="True" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="SubtitleItems" ViewItem="SubtitleItems" ShowCaption="" Index="0" RelativeSize="100" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="Diff" ShowCaption="True" Index="1" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="SourceAndSymbolDiff" Index="0" RelativeSize="100" ViewItem="SourceAndSymbolDiffText" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="SizeableEditors" Index="1" ShowCaption="False" IsNewNode="True">
+              <LayoutItem Id="Text" ViewItem="Text" ShowCaption="" Index="0" IsNewNode="True" />
+              <LayoutItem Id="Source" ViewItem="Source" ShowCaption="" Index="1" IsNewNode="True" />
+              <LayoutItem Id="Result" ViewItem="Result" ShowCaption="" Index="2" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="Info" ShowCaption="True" Direction="Vertical" Index="2" RelativeSize="100" IsNewNode="True">
+              <LayoutGroup Id="@b734ed47-7127-4692-9339-ea53ab5bd418" ShowCaption="False" Index="2" RelativeSize="95.77329490874159" IsNewNode="True">
+                <LayoutItem Id="标点正确率" ViewItem="标点正确率" Index="0" RelativeSize="3.8424591738712777" IsNewNode="True" />
+                <LayoutItem Id="Result" ViewItem="Result" Index="1" RelativeSize="0.38424591738712777" IsNewNode="True" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </TabbedGroup>
+          <LayoutGroup Id="SimpleEditors" Removed="True" />
+          <LayoutGroup Id="SizeableEditors" Removed="True" />
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="VideoInfo_Audios_ListView" AllowEdit="True">
+      <Columns>
+        <ColumnInfo Id="AudioBook" Index="-1" Width="135" />
+        <ColumnInfo Id="Emotion" Index="-1" />
+        <ColumnInfo Id="Spreaker" Index="-1" />
+        <ColumnInfo Id="Subtitle" Index="-1" Width="124" />
+        <ColumnInfo Id="Volumn" Index="-1" />
+        <ColumnInfo Id="Index" Width="122" Index="0" />
+        <ColumnInfo Id="Subtitle.Duration" PropertyName="Subtitle.Duration" Index="1" Width="115" IsNewNode="True" />
+        <ColumnInfo Id="Duration" Index="2" Width="107" />
+        <ColumnInfo Id="Diffence" Index="3" Width="116" />
+        <ColumnInfo Id="AudioRole" Width="158" Index="4" />
+        <ColumnInfo Id="ArticleText" Index="5" Width="608" />
+        <ColumnInfo Id="OutputFileName" Width="305" Index="6" />
+        <ColumnInfo Id="State" Index="7" />
+      </Columns>
+    </ListView>
+    <DetailView Id="VideoInfo_DetailView">
+      <Items>
+        <PropertyEditor Id="声音角色" PropertyName="CnAudioSolution.Roles" IsNewNode="True" />
+        <PropertyEditor Id="音频输出路径" PropertyName="CnAudioSolution.OutputPath" IsNewNode="True" />
+        <ActionContainerViewItem Id="GenerateSTTPrompt" IsNewNode="True" />
+        <PropertyEditor Id="VideoScript.FilterComplexText" PropertyName="VideoScript.FilterComplexText" IsNewNode="True" />
+        <PropertyEditor Id="VideoScript.StartCommand" PropertyName="VideoScript.StartCommand" IsNewNode="True" />
+      </Items>
+      <Layout>
+        <LayoutGroup Id="Main">
+          <TabbedGroup Id="Tabs">
+            <LayoutGroup Id="ProjectInfo" Index="0" ShowCaption="True" Caption="项目信息" Direction="Vertical" IsNewNode="True">
+              <LayoutGroup Id="R1" Index="0" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="VideoURL" ViewItem="VideoURL" ShowCaption="" Index="0" IsNewNode="True" />
+                <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="1" RelativeSize="10" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="R2" Index="1" IsNewNode="True">
+                <LayoutItem Id="ProjectPath" ViewItem="ProjectPath" ShowCaption="" Index="1" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="Title" Index="2" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="Title" ViewItem="Title" ShowCaption="" Index="1" IsNewNode="True" />
+                <LayoutItem Id="TitleCn" ViewItem="TitleCn" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="Keywords" Index="3" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="Keywords" ViewItem="Keywords" ShowCaption="" Index="4" IsNewNode="True" />
+                <LayoutItem Id="KeywordsCn" ViewItem="KeywordsCn" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="Description" Index="4" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="Description" ViewItem="Description" ShowCaption="" Index="3" IsNewNode="True" />
+                <LayoutItem Id="DescriptionCn" ViewItem="DescriptionCn" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="Content" Index="5" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="ContentEn" ViewItem="ContentEn" Index="0" IsNewNode="True" />
+                <LayoutItem Id="ContentCn" ViewItem="ContentCn" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="VideoFile" Index="6" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="VideoFile" ViewItem="VideoFile" ShowCaption="" Index="1" IsNewNode="True" />
+                <LayoutItem Id="VideoFileCn" ViewItem="VideoFileCn" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="AudioFile" Index="7" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="AudioFile" ViewItem="AudioFile" Index="0" IsNewNode="True" />
+                <LayoutItem Id="AudioFileCn" ViewItem="AudioFileCn" Index="1" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="SRTFile" Index="8" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="VideoDefaultSRT" ViewItem="VideoDefaultSRT" ShowCaption="" Index="0" IsNewNode="True" />
+                <LayoutItem Id="VideoChineseSRT" ViewItem="VideoChineseSRT" Index="1" IsNewNode="True" />
+                <LayoutItem Id="VideoJsonSRT" ViewItem="VideoJsonSRT" Index="2" IsNewNode="True" />
+                <LayoutItem Id="CnAudioSolution" ViewItem="CnAudioSolution" Index="3" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="R3" Index="9" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="ViewCount" ViewItem="ViewCount" ShowCaption="" Index="0" IsNewNode="True" />
+                <LayoutItem Id="Like" ViewItem="Like" ShowCaption="" Index="1" IsNewNode="True" />
+                <LayoutItem Id="AverageRating" ViewItem="AverageRating" ShowCaption="" Index="2" IsNewNode="True" />
+                <LayoutItem Id="DisLike" ViewItem="DisLike" ShowCaption="" Index="3" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="R4" Index="10" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="Channel" ViewItem="Channel" ShowCaption="" Index="0" IsNewNode="True" />
+                <LayoutItem Id="Duration" ViewItem="Duration" ShowCaption="" Index="1" IsNewNode="True" />
+                <LayoutItem Id="UploadDate" ViewItem="UploadDate" ShowCaption="" Index="2" IsNewNode="True" />
+                <LayoutItem Id="ImageTitle" ViewItem="ImageTitle" ShowCaption="" Index="5" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="R5" Index="11" IsNewNode="True">
+                <LayoutItem Id="DownloadProgress" ViewItem="DownloadProgress" Index="0" IsNewNode="True" />
+                <LayoutItem Id="JianYingProjectFile" ViewItem="JianYingProjectFile" Index="1" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="Infos" Index="12" ShowCaption="True" IsNewNode="True">
+                <LayoutItem Id="Infos" ViewItem="Infos" ShowCaption="False" Index="0" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="SimpleXPObject" Index="13" ShowCaption="False" Direction="Horizontal" IsNewNode="True">
+                <LayoutItem Id="Createor" ViewItem="Createor" ShowCaption="" Index="0" IsNewNode="True" />
+                <LayoutItem Id="CreateTime" ViewItem="CreateTime" ShowCaption="" Index="1" IsNewNode="True" />
+                <LayoutItem Id="LastUpdator" ViewItem="LastUpdator" ShowCaption="" Index="2" IsNewNode="True" />
+                <LayoutItem Id="LastUpdateTime" ViewItem="LastUpdateTime" ShowCaption="" Index="3" IsNewNode="True" />
+              </LayoutGroup>
+            </LayoutGroup>
+            <LayoutGroup Id="设置" Index="1" ShowCaption="True" IsNewNode="True">
+              <LayoutGroup Id="语音识别文本" Index="0" ShowCaption="True" IsNewNode="True">
+                <LayoutItem Id="STTModel" ViewItem="STTModel" Index="1" IsNewNode="True" />
+                <LayoutItem Id="GenerateSTTPrompt" ViewItem="GenerateSTTPrompt" Index="2" IsNewNode="True" />
+                <LayoutItem Id="STTPrompt" ViewItem="STTPrompt" Index="4" IsNewNode="True" />
+                <LayoutItem Id="ParseSpreaker" ViewItem="ParseSpreaker" Index="6" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="英文字幕修复" Index="1" IsNewNode="True">
+                <LayoutItem Id="FixSRTIncludeContext" ViewItem="FixSRTIncludeContext" IsNewNode="True" />
+                <LayoutItem Id="FixSRTPrompt" ViewItem="FixSRTPrompt" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="字幕翻译" Index="2" ShowCaption="True" IsNewNode="True">
+                <LayoutItem Id="Model" ViewItem="Model" ShowCaption="" Index="4" IsNewNode="True" />
+                <LayoutItem Id="TranslateTaskPrompt" ViewItem="TranslateTaskPrompt" ShowCaption="" Index="5" IsNewNode="True" />
+                <LayoutItem Id="TranslateIgnoreWords" ViewItem="TranslateIgnoreWords" IsNewNode="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="中文语音生成" ShowCaption="True" Index="3" IsNewNode="True">
+                <LayoutItem Id="音频输出路径" ViewItem="音频输出路径" Index="0" IsNewNode="True" />
+                <LayoutGroup Id="Roles" IsNewNode="True">
+                  <LayoutItem Id="声音角色" ViewItem="声音角色" IsNewNode="True" />
+                </LayoutGroup>
+              </LayoutGroup>
+            </LayoutGroup>
+            <LayoutGroup Id="Subtitles" Index="2" />
+            <LayoutGroup Id="Audios" Index="3" />
+            <LayoutGroup Id="视频角本" IsNewNode="True">
+              <LayoutItem Id="FilterComplex" ViewItem="VideoScript.FilterComplexText" IsNewNode="True" />
+              <LayoutItem Id="StartCommand" ViewItem="VideoScript.StartCommand" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="Infos" Removed="True" />
+          </TabbedGroup>
+          <LayoutGroup Id="SimpleEditors" Removed="True" />
+          <LayoutGroup Id="SizeableEditors" Removed="True" />
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="VideoInfo_ListView">
+      <Columns>
+        <ColumnInfo Id="CnAudioSolution" Width="145" Index="-1" />
+        <ColumnInfo Id="ContentCn" Index="-1" />
+        <ColumnInfo Id="ContentEn" Index="-1" />
+        <ColumnInfo Id="FixSRTIncludeContext" Width="204" Index="-1" />
+        <ColumnInfo Id="Model" Width="193" Index="-1" />
+        <ColumnInfo Id="ParseSpreaker" Width="115" Index="-1" />
+        <ColumnInfo Id="STTModel" Width="165" Index="-1" />
+        <ColumnInfo Id="Oid" Index="0" Width="73" />
+        <ColumnInfo Id="Title" Width="171" Index="1" />
+        <ColumnInfo Id="TitleCn" Width="286" Index="2" />
+        <ColumnInfo Id="DownloadProgress" Width="227" Index="3" />
+        <ColumnInfo Id="Channel" Width="171" Index="4" />
+        <ColumnInfo Id="Duration" Width="139" Index="5" />
+        <ColumnInfo Id="ViewCount" Width="96" Index="6" />
+        <ColumnInfo Id="Like" Width="97" Index="7" />
+        <ColumnInfo Id="DisLike" Width="111" Index="8" />
+        <ColumnInfo Id="AverageRating" Width="155" Index="9" />
+        <ColumnInfo Id="UploadDate" Width="197" Index="10" />
+      </Columns>
+    </ListView>
+    <ListView Id="VideoInfo_Subtitles_ListView" AllowEdit="True">
+      <Columns>
+        <ColumnInfo Id="Video" Index="-1" />
+        <ColumnInfo Id="Index" Width="69" Index="0" />
+        <ColumnInfo Id="StartTime" Width="149" Index="1" />
+        <ColumnInfo Id="EndTime" Width="114" Index="2" />
+        <ColumnInfo Id="Duration" Width="113" Index="3" />
+        <ColumnInfo Id="PlainText" Index="5" Width="614" />
+        <ColumnInfo Id="CnText" Index="6" Width="927" />
+      </Columns>
+    </ListView>
     <ListView Id="VoiceSolution_ListView" AllowEdit="True" />
     <ListView Id="VoiceSolution_LookupListView" Filter="[CommonlyUsed] = True">
       <Columns>
@@ -349,5 +679,22 @@
         <ColumnInfo Id="Memo" PropertyName="Memo" Index="4" Width="464" IsNewNode="True" />
       </Columns>
     </ListView>
+    <DetailView Id="WordDocumentRecord_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main">
+          <LayoutGroup Id="SimpleEditors">
+            <LayoutGroup Id="WordDocumentRecord" Direction="Horizontal">
+              <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="XPObject" Removed="True">
+              <LayoutItem Id="Oid" Removed="True" />
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutGroup Id="WordDocument_Group">
+            <LayoutItem Id="WordDocument" CaptionLocation="Top" ShowCaption="False" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
   </Views>
 </Application>

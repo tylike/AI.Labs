@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net7.0-windows8.0</TargetFramework>
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>ExpressApp.ico</ApplicationIcon>
@@ -12,6 +12,21 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Controllers\YoutubeExplode.cs" />
+  </ItemGroup>
   <ItemGroup>
 	<Using Include="DevExpress.ExpressApp.ListView" Alias="ListView" />
   </ItemGroup>
@@ -57,12 +72,21 @@
     <PackageReference Include="DevExpress.RichEdit.Export" Version="23.1.6" />
     <PackageReference Include="DevExpress.Win.Design" Version="23.1.6" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
+    <PackageReference Include="VideoLibrary" Version="3.2.3" />
+    <PackageReference Include="WebView2.DevTools.Dom" Version="3.0.1" />
+	  <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.9.2" />
+
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AI.Labs.Module\AI.Labs.Module.csproj" />
+    <ProjectReference Include="..\IPlugin\IPlugin.csproj" />
     <ProjectReference Include="..\STT\STT.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Controllers\ChatGPT\FrmChatGPT.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -76,6 +100,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Update="ai.labs.s3db">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="inject.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Database\readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -92,6 +122,27 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="UnusableNodes.xml">
+      <DependentUpon>Model.xafml</DependentUpon>
+    </None>
+    <None Update="UnusableNodes1.xml">
+      <DependentUpon>Model.xafml</DependentUpon>
+    </None>
+    <None Update="UnusableNodes2.xml">
+      <DependentUpon>Model.xafml</DependentUpon>
+    </None>
+    <None Update="UnusableNodes3.xml">
+      <DependentUpon>Model.xafml</DependentUpon>
+    </None>
+    <None Update="UnusableNodes4.xml">
+      <DependentUpon>Model.xafml</DependentUpon>
+    </None>
+    <None Update="UnusableNodes5.xml">
+      <DependentUpon>Model.xafml</DependentUpon>
+    </None>
+    <None Update="UnusableNodes6.xml">
+      <DependentUpon>Model.xafml</DependentUpon>
+    </None>
+    <None Update="UnusableNodes_zh-Hans.xml">
       <DependentUpon>Model.xafml</DependentUpon>
     </None>
     <None Update="voice.json">

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <ActionDesign Id="ActionDesign">
+    <Actions Id="Actions">
+      <Action Id="ContinueWrite" ImageName="ModelEditor_GenerateContent" PaintStyle="CaptionAndImage" />
+      <Action Id="FunctionHelp" ImageName="BindingEditorHelpIcon" />
+      <Action Id="Summarize" ImageName="Weather_Umbrella" PaintStyle="CaptionAndImage" />
+      <Action Id="TranslateToChinese" ImageName="Action_StateMachine" />
+      <Action Id="TranslateToEnglish" ImageName="Action_Translate" PaintStyle="CaptionAndImage" />
+      <Action Id="TranslateToJapanese" ImageName="ModelEditor_Localization" PaintStyle="CaptionAndImage" />
+      <Action Id="TranslateToKorean" ImageName="BO_Localization" PaintStyle="CaptionAndImage" />
+      <Action Id="WriteFunction" ImageName="ShowFormulas" />
+    </Actions>
+  </ActionDesign>
+</Application>

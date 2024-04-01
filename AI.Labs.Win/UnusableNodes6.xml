@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <Views Id="Views">
+    <ListView Id="VideoInfo_TranslateTasks_ListView">
+      <Columns Id="Columns">
+        <ColumnInfo Id="Title" Width="95" />
+        <ColumnInfo Id="Index" Width="124" />
+        <ColumnInfo Id="标点正确率" Width="168" />
+      </Columns>
+    </ListView>
+  </Views>
+</Application>

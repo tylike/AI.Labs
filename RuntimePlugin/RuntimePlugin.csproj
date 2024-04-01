@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net7.0-windows</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Version>1.0.0.1</Version>
+		<Deterministic>false</Deterministic>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\AI.Labs.Module\AI.Labs.Module.csproj" />
+		<ProjectReference Include="..\IPlugin\IPlugin.csproj" />
+	</ItemGroup>
+
+	
+</Project>

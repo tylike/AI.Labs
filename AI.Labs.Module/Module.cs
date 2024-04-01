@@ -13,12 +13,14 @@ using DevExpress.ExpressApp.Model.DomainLogics;
 using DevExpress.ExpressApp.Model.NodeGenerators;
 using DevExpress.Xpo;
 using DevExpress.ExpressApp.Xpo;
+using AI.Labs.Module.BusinessObjects.VideoTranslate;
 
 namespace AI.Labs.Module;
 
 // For more typical usage scenarios, be sure to check out https://docs.devexpress.com/eXpressAppFramework/DevExpress.ExpressApp.ModuleBase.
 public sealed class LabsModule : ModuleBase {
     public const string HtmlTemplateItemsPropertyEditor = "HtmlTemplateItems";
+    public const string HtmlPropertyEditor = "HtmlContentPropertyEditor";
     public LabsModule() {
         // 
         // LabsModule
@@ -44,7 +46,7 @@ public sealed class LabsModule : ModuleBase {
 		RequiredModuleTypes.Add(typeof(DevExpress.ExpressApp.Validation.ValidationModule));
 		RequiredModuleTypes.Add(typeof(DevExpress.ExpressApp.ViewVariantsModule.ViewVariantsModule));
         //RequiredModuleTypes.Add(typeof(XPOHolder));
-
+        
     }
 
     private System.Reflection.Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
@@ -58,6 +60,7 @@ public sealed class LabsModule : ModuleBase {
     }
     public override void Setup(XafApplication application) {
         base.Setup(application);
+        VideoInfo.Application = this.Application;
         // Manage various aspects of the application UI and behavior at the module level.
     }
     public override void CustomizeTypesInfo(ITypesInfo typesInfo) {

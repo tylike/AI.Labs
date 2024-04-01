@@ -1,0 +1,16 @@
+﻿@using DevExpress.ExpressApp.Blazor.Services
+<h3>Component</h3>
+@inject IXafApplicationProvider app
+@code {
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        appx = app;
+    }
+    static IXafApplicationProvider appx;
+    static void hello()
+    {
+        var xaf = appx.GetApplication();
+    }
+
+}

@@ -1,91 +1,227 @@
 ﻿using AI.Labs.Module.BusinessObjects;
+using AI.Labs.Module.BusinessObjects.ChatInfo;
+using AI.Labs.Module.Translate;
 using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Actions;
 using DevExpress.ExpressApp.Office.Win;
+using DevExpress.ExpressApp.Templates;
+using DevExpress.XtraReports.Design.CodeCompletion;
+using DevExpress.XtraRichEdit.API.Native;
+using NAudio.CoreAudioApi;
+using System.Security.Cryptography;
+using System.Windows.Interop;
 
 namespace AI.Labs.Win.Controllers
 {
-    public class ExcelViewController : ObjectViewController<DetailView, SpreadSheetDocument>
+    public class CreateAssistantViewController : ObjectViewController<ObjectView, IAssistant>
     {
-        public ExcelViewController()
+        public CreateAssistantViewController()
         {
-            var functionHelp = new SimpleAction(this, "FunctionHelp", null);
-            functionHelp.Execute += FunctionHelp_Execute;
-        }
-        SpreadsheetPropertyEditor editor;
-        protected override void OnActivated()
-        {
-            base.OnActivated();
-            editor = View.GetItems<SpreadsheetPropertyEditor>().First();
+            var create = new SimpleAction(this, "CreateAssistant", null);
+            create.Execute += Create_Execute;
         }
 
-        private async void FunctionHelp_Execute(object sender, SimpleActionExecuteEventArgs e)
+        private void Create_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            var f = editor.SpreadsheetControl.SelectedCell.Formula;
-            var rst = await AIHelper.Ask("#你的任务是解释excel中的公式.", $"#请解释这个公式的作用:{f}", "http://127.0.0.1:8000");
-            if (!rst.IsError)
-            {
-                MessageBox.Show(rst.Message);
-            }
+            var os = Application.CreateObjectSpace(typeof(PredefinedRole));
+            var chat = os.CreateObject<PredefinedRole>();
+            chat.Shortcut = true;
+            chat.ShortcutCaption = "请输入名称";
+            chat.Business = this.View.Model.ModelClass.Name;
+            e.ShowViewParameters.CreatedView = Application.CreateDetailView(os, chat);
+            e.ShowViewParameters.TargetWindow = TargetWindow.NewModalWindow;
+            e.ShowViewParameters.Context = TemplateContext.View;
+
+            //var assistant = ObjectSpace.CreateObject<BusinessKnowledgeBase>();
+            //assistant.Title = ViewCurrentObject.Title;
+            //assistant.Summary = ViewCurrentObject.Summary;
+            //assistant.Keyword = ViewCurrentObject.Keyword;
+            //assistant.Response = ViewCurrentObject.Response;
+            //assistant.Text = ViewCurrentObject.Text;
+            //assistant.Save();
+            //ObjectSpace.CommitChanges();
+            //ViewCurrentObject.Assistant = assistant;
         }
     }
-    public class WordDocumentViewController : ObjectViewController<DetailView, IWordDocument>
+
+    public abstract class CustomizeDialogViewController<TView, TBusinessObject> : ObjectViewController<TView, TBusinessObject>
+        where TView : ObjectView
+    {
+        public CustomizeDialogViewController()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                var act = new SimpleAction(this, $"{this.GetType().Name}_RuntimeAction{i}", null);
+                act.Active["visible"] = false;
+                actions.Add(act);
+            }
+        }
+
+        List<ActionBase> actions = new List<ActionBase>();
+        ActionBase GetHideAction()
+        {
+            return actions.FirstOrDefault(t => t.Active["visible"] == false);
+        }
+
+        protected override void OnViewControlsCreated()
+        {
+            base.OnViewControlsCreated();
+            var infos = ObjectSpace.GetObjectsQuery<PredefinedRole>().Where(t => t.Business == this.View.Model.ModelClass.Name).ToArray();
+
+            foreach (var item in infos)
+            {
+                var act = GetHideAction();
+                if (act == null)
+                {
+                    break;
+                }
+                act.Caption = item.ShortcutCaption;
+                act.Tag = item;
+                act.ToolTip = item.ShortcutTooltip;
+                act.Executed += RuntimeAction_Executed;
+                if (!string.IsNullOrEmpty(item.ShortcutImageName))
+                    act.ImageName = item.ShortcutImageName;
+                act.Active["visible"] = true;
+            }
+        }
+        protected virtual async void RuntimeAction_Executed(object sender, ActionBaseEventArgs e)
+        {
+            await Task.CompletedTask;
+        }
+        public static async Task AskAI(SimpleAction action, string userMessage, AIModel aiModel, Action<OpenAI.ObjectModels.RequestModels.ChatMessage> processAction)
+        {
+            var role = action.Tag as PredefinedRole;
+            if (role == null)
+            {
+                throw new UserFriendlyException("错误,按钮不是一个快捷可执行问AI类型!");
+            }
+            await AIHelper.Ask(aiModel, role, userMessage, processAction, streamOut: true);
+        }
+
+    }
+
+    public class WordDocumentViewController : CustomizeDialogViewController<DetailView, IWordDocument>
     {
         public WordDocumentViewController()
         {
-            var continueWrite = new SimpleAction(this, "ContinueWrite", null);
-            continueWrite.Execute += ContinueWrite_Execute;
 
-            var summarize = new SimpleAction(this, "Summarize", null);
-            summarize.Execute += Summarize_Execute;
 
-            var translateToEnglish = new SimpleAction(this, "TranslateToEnglish", null);
-            translateToEnglish.Execute += TranslateToEnglish_Execute;
+            //var continueWrite = new SimpleAction(this, "ContinueWrite", null);
+            //continueWrite.Execute += ContinueWrite_Execute;
 
-            var translateToJapanese = new SimpleAction(this, "TranslateToJapanese", null);
-            translateToJapanese.Execute += TranslateToJapanese_Execute;
+            //var summarize = new SimpleAction(this, "Summarize", null);
+            //summarize.Execute += Summarize_Execute;
 
-            var translateToKorean = new SimpleAction(this, "TranslateToKorean", null);
-            translateToKorean.Execute += TranslateToKorean_Execute;
+            //var translateToEnglish = new SimpleAction(this, "TranslateToEnglish", null);
+            //translateToEnglish.Execute += TranslateToEnglish_Execute;
 
+            //var translateToJapanese = new SimpleAction(this, "TranslateToJapanese", null);
+            //translateToJapanese.Execute += TranslateToJapanese_Execute;
+
+            //var translateToKorean = new SimpleAction(this, "TranslateToKorean", null);
+            //translateToKorean.Execute += TranslateToKorean_Execute;
+
+            //var translateToChinese = new SimpleAction(this, "TranslateToChinese", null);
+            //translateToChinese.Execute += TranslateToChinese_Execute;
+
+            //var translateToEnglishBaidu = new SimpleAction(this, "TranslateToEnglishBaidu", null);
+            //translateToEnglishBaidu.Execute += TranslateToEnglishBaidu_Execute;
         }
 
-        private async void TranslateToKorean_Execute(object sender, SimpleActionExecuteEventArgs e)
+        private string GetSelectionText(out Document doc)
         {
-            await TranslateTo("韩语");
+            doc = editor.RichEditControl.Document;
+            return doc.GetText(doc.Selection);
         }
-
-        private async void TranslateToJapanese_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            await TranslateTo("日语");
-        }
-
-        private async void TranslateToEnglish_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            await TranslateTo("英文");
-        }
-
-        private async Task TranslateTo(string targetLanguage)
+        private string GetSelectionText()
         {
             var doc = editor.RichEditControl.Document;
-            var text = doc.GetText(doc.Selection);
-            var rst = await AIHelper.Ask("#内容:\n" + text, $"#将给出的文字翻译为:{targetLanguage}", "http://127.0.0.1:8000");
-            if (!rst.IsError)
+            return doc.GetText(doc.Selection);
+        }
+        protected override async void RuntimeAction_Executed(object sender, ActionBaseEventArgs e)
+        {
+
+            Document doc;
+            string userSelectedDocumentText = GetSelectionText(out doc);
+            var pos = doc.InsertText(doc.Selection.End, "\n------------------------------------------------------------------------------\n").End;
+            var txt = "";
+            var role = (PredefinedRole)((SimpleAction)sender).Tag;
+            if (!string.IsNullOrEmpty(role.ShortcutMessageTemplate))
             {
-                doc.InsertText(doc.Selection.End, "\n---------------------------\n" + rst.Message + "\n---------------------------\n");
+                if (role.ShortcutMessageTemplate.Contains("{T}"))
+                    txt = role.ShortcutMessageTemplate.Replace("{T}", userSelectedDocumentText);
+                else
+                    txt = role.ShortcutMessageTemplate;
             }
+
+            await AskAI((SimpleAction)sender, txt, ViewCurrentObject.AIModel, t =>
+            {
+                pos = doc.InsertText(pos, t.Content).End;
+                Application.UIThreadDoEvents();
+            });
+
+            doc.InsertText(pos, "\n------------------------------------------------------------------------------");
         }
 
-        private async void Summarize_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            var doc = editor.RichEditControl.Document;
-            var text = doc.GetText(doc.Selection);
-            var rst = await AIHelper.Ask("#内容:\n" + text, "#简要总结选中文字要表达的内容:", "http://127.0.0.1:8000");
-            if (!rst.IsError)
-            {
-                doc.InsertText(doc.Selection.End, "\n---------------------------\n" + rst.Message + "\n---------------------------\n");
-            }
-        }
+
+        #region old version
+        //private async void TranslateToEnglishBaidu_Execute(object sender, SimpleActionExecuteEventArgs e)
+        //{
+        //    editor.RichEditControl.Document.AppendText(await MicrosoftTranslate.Main(GetSelectionText(), false));
+        //}
+
+        //private async void TranslateToChinese_Execute(object sender, SimpleActionExecuteEventArgs e)
+        //{
+        //    await TranslateTo("中文");
+        //}
+
+        //private async void TranslateToKorean_Execute(object sender, SimpleActionExecuteEventArgs e)
+        //{
+        //    await TranslateTo("韩语");
+        //}
+
+        //private async void TranslateToJapanese_Execute(object sender, SimpleActionExecuteEventArgs e)
+        //{
+        //    await TranslateTo("日语");
+        //}
+
+        //private async void TranslateToEnglish_Execute(object sender, SimpleActionExecuteEventArgs e)
+        //{
+        //    await TranslateTo("英文");
+        //}
+
+        //private async Task TranslateTo(string targetLanguage)
+        //{
+        //    await AskAI($"#将给出的文字翻译为:{targetLanguage}");
+        //}
+
+        //private async Task AskAI(string userPrompt)
+        //{
+        //    Document doc;
+        //    string text = GetSelectionText(out doc);
+        //    var pos = doc.InsertText(doc.Selection.End, "\n------------------------------------------------------------------------------\n").End;
+        //    var txt = userPrompt + "\n#内容:\n" + text;
+        //    await Application.Ask("你是一个实用写作助手.", txt, ViewCurrentObject.AIModel,
+        //    t => { },
+        //    t =>
+        //    {
+        //        pos = doc.InsertText(pos, t).End;
+        //    }, streamOut: true);
+
+        //    doc.InsertText(pos, "\n------------------------------------------------------------------------------");
+        //}
+
+
+
+        //private async void Summarize_Execute(object sender, SimpleActionExecuteEventArgs e)
+        //{
+        //    await AskAI("#简要总结选中文字要表达的内容:");
+        //} 
+        //private async void ContinueWrite_Execute(object sender, SimpleActionExecuteEventArgs e)
+        //{
+        //    await AskAI("#使用相同的文风，续写这段话:");
+        //}
+        #endregion
 
         RichTextPropertyEditor editor;
         protected override void OnActivated()
@@ -106,15 +242,6 @@ namespace AI.Labs.Win.Controllers
             ViewCurrentObject.Content = editor.RichEditControl.Document.Text;
         }
 
-        private async void ContinueWrite_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            var doc = editor.RichEditControl.Document;
-            var text = doc.GetText(doc.Selection);
-            var rst = await AIHelper.Ask("#内容:\n" + text, "#使用相同的文风，续写这段话:", "http://127.0.0.1:8000");
-            if (!rst.IsError)
-            {
-                doc.InsertText(doc.Selection.End, "\n---------------------------\n" + rst.Message + "\n---------------------------\n");
-            }
-        }
+
     }
 }

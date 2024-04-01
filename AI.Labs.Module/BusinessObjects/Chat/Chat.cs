@@ -14,6 +14,7 @@ using AI.Labs.Module.BusinessObjects.TTS;
 using DevExpress.ExpressApp.ConditionalAppearance;
 using System.Security.Cryptography;
 using System.Diagnostics;
+using DevExpress.CodeParser;
 
 namespace AI.Labs.Module.BusinessObjects.ChatInfo
 {
@@ -33,7 +34,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
         {
             base.AfterConstruction();
             DateTime = DateTime.Now;
-            Model = Session.Query<AIModel>().FirstOrDefault(t => t.Default);
+            Model = Session.Query<AIModel>().FirstOrDefault(t => t.IsDefault);
             MultiRoundChat = true;
             //ReadMessage = true;
         }
@@ -80,10 +81,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
             get { return GetPropertyValue<bool>(nameof(ReadMessage)); }
             set { SetPropertyValue(nameof(ReadMessage), value); }
         }
-
         
-
-
         public bool SendMessageAfterClear
         {
             get { return GetPropertyValue<bool>(nameof(SendMessageAfterClear)); }
@@ -127,7 +125,6 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
             get { return GetPropertyValue<bool>(nameof(AutoSendSTT)); }
             set { SetPropertyValue(nameof(AutoSendSTT), value); }
         }
-
 
         [Association, DevExpress.Xpo.Aggregated
             //,EditorAlias(LabsModule.HtmlTemplateItemsPropertyEditor)
@@ -212,6 +209,14 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
             get { return GetPropertyValue<string>(nameof(Message)); }
             set { SetPropertyValue(nameof(Message), value); }
         }
+        [XafDisplayName("消息")]
+        [Size(-1)]
+        public string EnglishMessage
+        {
+            get { return GetPropertyValue<string>(nameof(EnglishMessage)); }
+            set { SetPropertyValue(nameof(EnglishMessage), value); }
+        }
+
     }
     public enum ChatRole
     {
@@ -285,6 +290,21 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
             get { return GetPropertyValue<string>(nameof(Message)); }
             set { SetPropertyValue(nameof(Message), value); }
         }
+
+        [XafDisplayName("英文消息")]
+        [Size(-1)]
+        public string EnglishMessage
+        {
+            get { return GetPropertyValue<string>(nameof(EnglishMessage)); }
+            set { SetPropertyValue(nameof(EnglishMessage), value); }
+        }
+
+        public string DisplayMessage
+        {
+            get => Message + "\n" + EnglishMessage;
+        }
+
+
         public void AddLog(string message)
         {
             var crlf = !string.IsNullOrEmpty(Log) ? "\r\n" : "";
@@ -344,7 +364,8 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                 var sw = Stopwatch.StartNew();
                 var msg = this.Message;
                 var chat = this.Chat;
-                await TTSEngine.ReadText(msg, chat.VoiceSolution?.DisplayName, chat.ReadUseSystem);
+                chat.VoiceSolution.Read(msg);
+                //await TTSEngine.ReadText(msg, chat.VoiceSolution?.DisplayName, chat.ReadUseSystem);
                 sw.Stop();
                 this.AddLog($"朗读消息用时:{sw.ElapsedMilliseconds}");
             }

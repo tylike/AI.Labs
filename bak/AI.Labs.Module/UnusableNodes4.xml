@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <Views Id="Views">
+    <DetailView Id="Chat_DetailView">
+      <Layout Id="Layout">
+        <TabbedGroup Id="Tabs">
+          <LayoutGroup Id="Main">
+            <LayoutGroup Id="SizeableEditors">
+              <LayoutGroup Id="R2">
+                <LayoutItem Id="ChatAction" ViewItem="ChatAction" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </LayoutGroup>
+        </TabbedGroup>
+      </Layout>
+    </DetailView>
+  </Views>
+</Application>

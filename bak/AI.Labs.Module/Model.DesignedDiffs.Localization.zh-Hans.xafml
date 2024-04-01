@@ -1,0 +1,274 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application Title="云梯人工智工融合实验室">
+  <ActionDesign>
+    <Actions>
+      <Action Id="AudioBookTextAudioItem.ParseArticleText" Caption="智能识别" />
+      <Action Id="Cancel" Caption="取消" />
+      <Action Id="CancelAction" Caption="取消" />
+      <Action Id="ChangePasswordByUser" Caption="修改我的密码" />
+      <Action Id="ChangeVariant" Caption="视图" />
+      <Action Id="CloneObject" Caption="克隆..." ToolTip="克隆对象" />
+      <Action Id="CopyModelDifference" Caption="复制模型差异" />
+      <Action Id="CopyPredefinedReport" Caption="复制内置报表" />
+      <Action Id="CreateDashboard" Caption="创建Dashboard" />
+      <Action Id="CreateModelDifferences" Caption="创建模型差异" />
+      <Action Id="Delete" Caption="删除" />
+      <Action Id="Delete Item" Caption="删除条目" />
+      <Action Id="DeleteDashboard" Caption="删除Dashboard" />
+      <Action Id="Diagnostic Info" Caption="诊断" />
+      <Action Id="Diagnostic Info.Actions Info" Caption="诊断.按钮信息">
+        <ChoiceActionItems>
+          <ChoiceActionItem Id="Actions Info" Caption="按钮信息" />
+        </ChoiceActionItems>
+      </Action>
+      <Action Id="Diagnostic Info.View Info">
+        <ChoiceActionItems>
+          <ChoiceActionItem Id="View Info" Caption="视图信息" />
+        </ChoiceActionItems>
+      </Action>
+      <Action Id="DialogCancel" Caption="取消" />
+      <Action Id="DialogClose" Caption="关闭" />
+      <Action Id="DialogOK" Caption="确定" />
+      <Action Id="FullTextSearch" ShortCaption="搜索" Caption="按文本过滤" NullValuePrompt="搜索文本..." />
+      <Action Id="GenerateTextAudioItem" Caption="生成音频" ToolTip="将选中的（一条或批量）段落使用指定的声音生成音频内容" />
+      <Action Id="Link" Caption="链接" />
+      <Action Id="ListViewShowObject" Caption="打开" />
+      <Action Id="Logoff" Caption="退出" />
+      <Action Id="Logon" Caption="登录" />
+      <Action Id="MergeAction" Caption="合并" />
+      <Action Id="MyDetails" Caption="我的信息" />
+      <Action Id="NavigateBack" Caption="后退" />
+      <Action Id="NavigateForward" Caption="前进" />
+      <Action Id="New" Caption="新建" />
+      <Action Id="NextObject" Caption="下一条记录" />
+      <Action Id="PlayWav" Caption="播放" />
+      <Action Id="PreviousObject" Caption="上一条" />
+      <Action Id="Refresh" Caption="刷新" />
+      <Action Id="RefreshAction" Caption="刷新" ToolTip="刷新" />
+      <Action Id="RefreshNotifications" Caption="刷新" />
+      <Action Id="ReportViewerDialogControllerV2_Close" Caption="关闭" />
+      <Action Id="ResetModelDifferences" Caption="重置模型" />
+      <Action Id="ResetPassword" Caption="重置密码" />
+      <Action Id="ResetViewSettings" Caption="重置视图设置" />
+      <Action Id="Save" Caption="保存" />
+      <Action Id="SaveAndClose" Caption="保存并关闭" />
+      <Action Id="SaveAndNew" Caption="保存并新建" />
+      <Action Id="SetFilter" Caption="过滤" />
+      <Action Id="ShowAllContexts" Caption="验证" />
+      <Action Id="ShowNavigationItem" Caption="导航" />
+      <Action Id="StartSTTService" Caption="开始" />
+      <Action Id="StopSTTService" Caption="停止" />
+      <Action Id="Unlink" Caption="取消链接" />
+    </Actions>
+    <DisableReasons>
+      <Reason Id="Security" Caption="没有权限" />
+    </DisableReasons>
+  </ActionDesign>
+  <BOModel>
+    <Class Name="AI.Labs.Module.BusinessObjects.AIModel" Caption="语言模型" />
+    <Class Name="AI.Labs.Module.BusinessObjects.ApplicationUser" Caption="用户">
+      <OwnMembers>
+        <Member Name="NickName" Caption="昵称" />
+        <Member Name="Photo" Caption="照片" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.ChatInfo.Chat" Caption="聊天对话">
+      <OwnMembers>
+        <Member Name="AutoSendSTT" Caption="自动发送" ToolTip="语音识别完成后自动发送消息" />
+        <Member Name="Items" Caption="聊天记录" />
+        <Member Name="Model" Caption="语言模型" />
+        <Member Name="SendMessageAfterClear" Caption="自动清除" ToolTip="发送消息成功后自动清除聊天框中的消息" />
+        <Member Name="VoiceSolution" Caption="朗读音色" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.ChatInfo.ChatItem">
+      <OwnMembers>
+        <Member Name="Log" Caption="日志" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.SimpleXPObject">
+      <OwnMembers>
+        <Member Name="Createor" Caption="创建人" />
+        <Member Name="CreateTime" Caption="创建时间" />
+        <Member Name="LastUpdateTime" Caption="修改时间" />
+        <Member Name="LastUpdator" Caption="修改人" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.SpreadSheetDocument" Caption="Excel集成">
+      <OwnMembers>
+        <Member Name="DocumentData" Caption="文档数据" />
+        <Member Name="Title" Caption="标题" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.STT.AzureMicrophoneInput" Caption="微软实时语音识别" />
+    <Class Name="AI.Labs.Module.BusinessObjects.STT.MeetingNotes" Caption="会议记录">
+      <OwnMembers>
+        <Member Name="Absentees" Caption="缺席者" ToolTip="列出被邀请但未能出席会议的人员名单。" />
+        <Member Name="ActionItems" Caption="行动计划" />
+        <Member Name="Attachments" Caption="文件附件" />
+        <Member Name="Attendees" Caption="与会人员" />
+        <Member Name="BeginTime" Caption="开始时间" ToolTip="会议实际发生的日期。" />
+        <Member Name="Chairperson" Caption="主持人" />
+        <Member Name="ContentText" Caption="发言内容" />
+        <Member Name="DecisionsMade" Caption="决定事项" />
+        <Member Name="EndDateTime" Caption="结束时间" />
+        <Member Name="Issues_Concerns" Caption="跟进事项" ToolTip="未解决的问题，后续需要解决的事项" />
+        <Member Name="Items" Caption="发言明细" />
+        <Member Name="Keywords" Caption="关键词" />
+        <Member Name="MeetingLocation" Caption="会议地点" ToolTip="会议举行的地点或平台（如线上会议工具的名称）。" />
+        <Member Name="Memo" Caption="发言摘要" ToolTip="其他需要记录的信息，如特别通知、下一次会议的安排等。" />
+        <Member Name="Recorder" Caption="记录人" />
+        <Member Name="Remarks" Caption="其他备注" />
+        <Member Name="Title" Caption="会议标题" ToolTip="记录会议的主题或名称。" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.STT.STTModel" Caption="语音识别模型">
+      <OwnMembers>
+        <Member Name="Description" Caption="说明" />
+        <Member Name="ModelFilePath" Caption="模型文件路径" />
+        <Member Name="Name" Caption="模型名称" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.STT.STTService" Caption="语音识别服务">
+      <OwnMembers>
+        <Member Name="CurrentModel" Caption="当前模型" />
+        <Member Name="Logs" Caption="日志" />
+        <Member Name="State" Caption="状态" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.STT.STTServiceLog" Caption="语音识别日志">
+      <OwnMembers>
+        <Member Name="LogMessage" Caption="日志消息" />
+        <Member Name="Time" Caption="时间" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.STT.TextItem" Caption="实时语音识别结果">
+      <OwnMembers>
+        <Member Name="Begin" Caption="开始" />
+        <Member Name="End" Caption="结束" />
+        <Member Name="Spreaker" Caption="发言者" />
+        <Member Name="Text" Caption="内容" />
+        <Member Name="Time" Caption="时间" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.STT.VoiceContentBase" Caption="声音基类">
+      <OwnMembers>
+        <Member Name="Model" Caption="模型" />
+        <Member Name="Prompt" Caption="提示词" />
+        <Member Name="TranslateToEnglish" Caption="翻译为英文" />
+      </OwnMembers>
+    </Class>
+    <Class Name="AI.Labs.Module.BusinessObjects.TTS.VoiceSolution" Caption="朗读音色" />
+    <Class Name="DevExpress.ExpressApp.Security.AuthenticationStandardLogonParameters">
+      <OwnMembers>
+        <Member Name="Password" Caption="密码" />
+        <Member Name="UserName" Caption="用户" />
+      </OwnMembers>
+    </Class>
+    <Class Name="DevExpress.Persistent.BaseImpl.DashboardData" Caption="数据看板" />
+    <Class Name="DevExpress.Persistent.BaseImpl.FileData">
+      <OwnMembers>
+        <Member Name="FileName" Caption="文件名称" />
+        <Member Name="Size" Caption="文件尺寸" />
+      </OwnMembers>
+    </Class>
+    <Class Name="DevExpress.Persistent.BaseImpl.PermissionPolicy.PermissionPolicyRole" Caption="角色" />
+  </BOModel>
+  <Localization>
+    <LocalizationGroup Name="AI.Labs.Define">
+      <LocalizationItem Name="STTService.Started" Value="语音识别系统启动!" />
+    </LocalizationGroup>
+    <LocalizationGroup Name="Enums">
+      <LocalizationGroup Name="AI.Labs.Messages">
+        <LocalizationItem Name="STTServiceStarted" Value="语音识别服务启动成功! 用时:{0}毫秒." />
+        <LocalizationItem Name="STTServiceStopped" Value="语音识别服务停止!" />
+      </LocalizationGroup>
+      <LocalizationGroup Name="AI.Labs.Module.BusinessObjects.TTS.Gender">
+        <LocalizationItem Name="Female" Value="女" />
+        <LocalizationItem Name="Male" Value="男" />
+        <LocalizationItem Name="Unknown" Value="未知" />
+      </LocalizationGroup>
+    </LocalizationGroup>
+  </Localization>
+  <NavigationItems>
+    <Items>
+      <Item Id="应用场景">
+        <Items>
+          <Item Id="MeetingNotes_ListView" Caption="会议记录" />
+        </Items>
+      </Item>
+      <Item Id="STT" Caption="语音识别">
+        <Items>
+          <Item Id="MeetingNotes_ListView" Caption="会议记录" />
+          <Item Id="SpeechRecognition_ListView" Caption="语音识别" />
+        </Items>
+      </Item>
+      <Item Id="Default" Caption="企业业务" />
+      <Item Id="Reports" Caption="报表">
+        <Items>
+          <Item Id="Dashboards" Caption="数据看板" />
+          <Item Id="ReportsV2" Caption="报表" />
+        </Items>
+      </Item>
+      <Item Id="设置">
+        <Items>
+          <Item Id="ApplicationUser_ListView" Caption="用户" />
+          <Item Id="MyDetails" Caption="我的信息" />
+          <Item Id="STTModel_ListView" Caption="语音识别模型" />
+          <Item Id="STTService" Caption="语音识别服务" />
+        </Items>
+      </Item>
+    </Items>
+  </NavigationItems>
+  <Views>
+    <DetailView Id="AudioBook_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main">
+          <TabbedGroup Id="Tabs">
+            <LayoutGroup Id="Content" Caption="文章内容" />
+            <LayoutGroup Id="Description" Caption="设置" />
+            <LayoutGroup Id="MultiPerson" Caption="灵活多人对话" />
+          </TabbedGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <DetailView Id="AuthenticationStandardLogonParameters_DetailView">
+      <Items>
+        <StaticText Id="LogonText" Text="欢迎使用!请在下面输入您的用户名和密码,如果没有做过修改用户名是Admin，无密码。区分大小写。" />
+      </Items>
+    </DetailView>
+    <DetailView Id="Chat_DetailView">
+      <Layout>
+        <TabbedGroup Id="Tabs">
+          <LayoutGroup Id="Main" Caption="聊天" />
+          <LayoutGroup Id="Settings" Caption="设置">
+            <LayoutGroup Id="R1" Caption="基本信息" />
+            <LayoutGroup Id="Input" Caption="输入" />
+            <LayoutGroup Id="LLM" Caption="模型" />
+            <LayoutGroup Id="Output" Caption="输出" />
+          </LayoutGroup>
+        </TabbedGroup>
+      </Layout>
+    </DetailView>
+    <DetailView Id="MeetingNotes_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main">
+          <TabbedGroup Id="Tabs">
+            <LayoutGroup Id="Attachments" Caption="会议内容">
+              <LayoutGroup Id="R1" Caption="" />
+              <LayoutGroup Id="R2" Caption="" />
+              <LayoutGroup Id="R4" Caption="" />
+              <LayoutGroup Id="R5" Caption="" />
+              <LayoutGroup Id="Remark" Caption="" />
+              <LayoutGroup Id="AttachmentsGroup" Caption="文件附件" />
+            </LayoutGroup>
+            <LayoutGroup Id="Items" Caption="发言内容" />
+            <LayoutGroup Id="Setup">
+              <LayoutGroup Id="XPObject" Caption="Oid" />
+            </LayoutGroup>
+          </TabbedGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+  </Views>
+</Application>

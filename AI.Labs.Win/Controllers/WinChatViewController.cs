@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 namespace AI.Labs.Win.Controllers
 {
 
-    public class WinChatViewController:ChatViewController
+    public class WinChatViewController : ChatViewController
     {
         public WinChatViewController()
         {
-            
+
         }
         protected override void OnActivated()
         {

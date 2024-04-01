@@ -26,6 +26,7 @@ public partial class OpenAIService : IOpenAIService, IDisposable
         {
             _disposeHttpClient = true;
             _httpClient = new HttpClient();
+            _httpClient.Timeout = new TimeSpan(0,5,0);
         }
         else
         {

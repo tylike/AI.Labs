@@ -9,9 +9,19 @@ using AI.Labs.Module.BusinessObjects.STT;
 using AI.Labs.Module.BusinessObjects.TTS;
 using OpenAI.Utilities.FunctionCalling;
 using AI.Labs.Module.BusinessObjects.Sales;
+using AI.Labs.Module.Translate;
 
 namespace AI.Labs.Module.BusinessObjects.ChatInfo
 {
+    public class ChatActionPlaceHolder : ObjectViewController<ObjectView, Chat>
+    {
+        public ChatActionPlaceHolder()
+        {
+            var action = new SimpleAction(this, "ChatActionPlaceHolder", "ChatAction");
+            action.Active["display"] = false;
+        }
+    }
+
     [SupportedOSPlatform("windows")]
     public abstract class ChatViewController : ObjectViewController<ObjectView, Chat>
     {
@@ -114,7 +124,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                     {
                         throw new UserFriendlyException("应该先设置所使用的语言模型");
                     }
-                    aiService = AIHelper.CreateOpenAIService(baseDomain: ViewCurrentObject.Model.ApiUrlBase, apiKey: ViewCurrentObject.Model.ApiKey);
+                    aiService = AIHelper.CreateOpenAIService(ViewCurrentObject.Model);
                     currentUsedModelOid = ViewCurrentObject.Model.Oid;
                     //baseDomain: @"https://api.closeai-proxy.xyz"
                     //baseDomain: @"http://192.168.137.3:8000"
@@ -143,7 +153,12 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
 
                         foreach (var item in role.Prompts)
                         {
-                            _history.Messages.Add(new ChatMessage(item.ChatRole.ToString(), item.Message));
+                            var msg = item.EnglishMessage;
+                            if (string.IsNullOrEmpty(msg))
+                            {
+                                msg = MicrosoftTranslate.Main( item.Message).Result;
+                            }
+                            _history.Messages.Add(new ChatMessage(item.ChatRole.ToString(), msg));
                         }
                     }
                     ViewCurrentObject.InitializeData(_history, ObjectSpace);
@@ -151,7 +166,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                 return _history;
             }
         }
-
+        //System.MissingMethodException:“Method not found: '!!0 OpenAI.Utilities.FunctionCalling.FunctionCallingHelper.CallFunction(OpenAI.ObjectModels.RequestModels.FunctionCall, System.Object)'.”
         protected override void OnActivated()
         {
             base.OnActivated();
@@ -170,8 +185,6 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                 }
             }
         }
-
-
 
         //WhisperEngine sttengine;
         static object playing = new object();
@@ -226,6 +239,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
 
             //应先记录用户说了什么.
             userTextChatItem.Message = userText;
+            userTextChatItem.EnglishMessage = await MicrosoftTranslate.Main(userText);
             userTextChatItem.EndVerb();
 
             Application.UIThreadDoEvents();
@@ -235,6 +249,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
 
             var AINeedToExecuteAFunction = false;
 
+            #region old
             //if (chat.Model.Category == AIModelCategory.GoogleGeminiPro)
             //{
             //    //如果只有一条消息,则上面的处理
@@ -303,7 +318,8 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
             //        Application.ShowViewStrategy.ShowMessage(rst.Error.Message + "\ncode:" + rst.Error.Code, InformationType.Error);
             //    }
             //}
-            //else
+            //else 
+            #endregion
             {
 
                 do
@@ -349,7 +365,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                                     var msg = item.Choices.FirstOrDefault()?.Message.Content;
                                     if (!string.IsNullOrEmpty(msg))
                                     {
-                                        replyChatItem.Message += msg;
+                                        replyChatItem.EnglishMessage += msg;
                                         Application.UIThreadDoEvents();
                                     }
                                 }
@@ -359,9 +375,9 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                                 }
                             }
 
-                            if (chat.MultiRoundChat && !string.IsNullOrEmpty(replyChatItem.Message))
+                            if (chat.MultiRoundChat && !string.IsNullOrEmpty(replyChatItem.EnglishMessage))
                             {
-                                history.Messages.Add(ChatMessage.FromAssistant(replyChatItem.Message));
+                                history.Messages.Add(ChatMessage.FromAssistant(replyChatItem.EnglishMessage));
                             }
                         }
                         #endregion
@@ -374,7 +390,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
 
                             if (!reply.Successful)
                             {
-                                replyChatItem.Message = reply.Error?.Message;
+                                replyChatItem.EnglishMessage = reply.Error?.Message;
                                 //如果是函数调用时,出错则不在循环,否则可能就是死循环
                                 break;
                             }
@@ -387,7 +403,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                                 functionCall = response;
                                 AINeedToExecuteAFunction = response.ToolCalls?.Any() ?? false;
 
-                                replyChatItem.Message = response.Content;
+                                replyChatItem.EnglishMessage = response.Content;
                                 if (AINeedToExecuteAFunction)
                                 {
                                     //如果是调用函数，则统一到一个地方去处理
@@ -400,7 +416,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                                 }
                             }
 
-                            if (AINeedToExecuteAFunction || chat.MultiRoundChat && !string.IsNullOrEmpty(replyChatItem.Message))
+                            if (AINeedToExecuteAFunction || chat.MultiRoundChat && !string.IsNullOrEmpty(replyChatItem.EnglishMessage))
                             {
                                 history.Messages.Add(functionCall);
                             }
@@ -409,6 +425,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                     }
                     finally
                     {
+                        replyChatItem.Message = await MicrosoftTranslate.Main(replyChatItem.EnglishMessage, false);
                         replyChatItem.EndVerb();
                         Application.UIThreadDoEvents();
                     }
@@ -433,19 +450,19 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                             try
                             {
                                 var rst = FunctionCallingHelper.CallFunction<string>(item.FunctionCall, helper);
-                                replyChatItem.Message = $"{item.FunctionCall.Name}({item.FunctionCall.Arguments})\n";
-                                replyChatItem.Message += "调用结果:" + rst;
+                                replyChatItem.EnglishMessage = $"{item.FunctionCall.Name}({item.FunctionCall.Arguments})\n";
+                                replyChatItem.EnglishMessage += "调用结果:" + rst;
                                 history.Messages.Add(ChatMessage.FromTool(rst, item.Id));
                                 //functionCall.Content = rst;
                             }
                             catch (Exception ex)
                             {
-                                replyChatItem.Message += "报错了:" + ex.Message;
+                                replyChatItem.EnglishMessage += "报错了:" + ex.Message;
                                 var errorMessage = "请根据报错信息考虑重新调用?报错信息:" + ex.Message;
                                 if (ex.InnerException != null)
                                 {
                                     errorMessage += ex.InnerException.Message;
-                                    replyChatItem.Message += ex.InnerException.Message;
+                                    replyChatItem.EnglishMessage += ex.InnerException.Message;
                                 }
                                 history.Messages.Add(ChatMessage.FromTool(errorMessage, item.Id));
                             }

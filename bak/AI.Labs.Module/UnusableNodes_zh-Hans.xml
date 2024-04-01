@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <ActionDesign Id="ActionDesign">
+    <Actions Id="Actions">
+      <Action Id="CreateProductData" Caption="创建测试数据" />
+      <Action Id="CreateTestBookData" Caption="创建测试数据" />
+    </Actions>
+  </ActionDesign>
+</Application>

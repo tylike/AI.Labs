@@ -5,11 +5,11 @@
       <Action Id="AddFromFile" Caption="从文件填加..." />
       <Action Id="EditReportControllerV2.Edit" Caption="编辑" />
       <Action Id="ExecuteReportV2" Caption="执行报表" />
-      <Action Id="Office_Open" ShortCaption="打开" Caption="打开" />
-      <Action Id="Office_SaveAs" ToolTip="另存为" Caption="另存为" />
-      <Action Id="Open" ShortCaption="打开..." Caption="打开..." />
+      <Action Id="Office_Open" Caption="打开" ShortCaption="打开" />
+      <Action Id="Office_SaveAs" Caption="另存为" ToolTip="另存为" />
+      <Action Id="Open" Caption="打开..." ShortCaption="打开..." />
       <Action Id="PrintDashboard" ToolTip="打印预览" />
-      <Action Id="SaveTo" ShortCaption="另存为..." Caption="另存为..." />
+      <Action Id="SaveTo" Caption="另存为..." ShortCaption="另存为..." />
       <Action Id="ShowReportDesignerV2" Caption="显示报表设计器" />
     </Actions>
     <ActionToContainerMapping>

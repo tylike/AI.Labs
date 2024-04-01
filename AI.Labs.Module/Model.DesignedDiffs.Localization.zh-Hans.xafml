@@ -12,8 +12,6 @@
       <Action Id="CopyPredefinedReport" Caption="复制内置报表" />
       <Action Id="CreateDashboard" Caption="创建Dashboard" />
       <Action Id="CreateModelDifferences" Caption="创建模型差异" />
-      <Action Id="CreateProductData" Caption="创建测试数据" />
-      <Action Id="CreateTestBookData" Caption="创建测试数据" />
       <Action Id="Delete" Caption="删除" />
       <Action Id="Delete Item" Caption="删除条目" />
       <Action Id="DeleteDashboard" Caption="删除Dashboard" />
@@ -194,6 +192,11 @@
   </Localization>
   <NavigationItems>
     <Items>
+      <Item Id="应用场景">
+        <Items>
+          <Item Id="MeetingNotes_ListView" Caption="会议记录" />
+        </Items>
+      </Item>
       <Item Id="STT" Caption="语音识别">
         <Items>
           <Item Id="MeetingNotes_ListView" Caption="会议记录" />
@@ -209,14 +212,10 @@
       </Item>
       <Item Id="设置">
         <Items>
-          <Item Id="STT" Caption="语音识别">
-            <Items>
-              <Item Id="STTModel_ListView" Caption="语音识别模型" />
-              <Item Id="STTService" Caption="语音识别服务" />
-            </Items>
-          </Item>
           <Item Id="ApplicationUser_ListView" Caption="用户" />
           <Item Id="MyDetails" Caption="我的信息" />
+          <Item Id="STTModel_ListView" Caption="语音识别模型" />
+          <Item Id="STTService" Caption="语音识别服务" />
         </Items>
       </Item>
     </Items>
@@ -228,6 +227,7 @@
           <TabbedGroup Id="Tabs">
             <LayoutGroup Id="Content" Caption="文章内容" />
             <LayoutGroup Id="Description" Caption="设置" />
+            <LayoutGroup Id="MultiPerson" Caption="灵活多人对话" />
           </TabbedGroup>
         </LayoutGroup>
       </Layout>
@@ -238,9 +238,6 @@
       </Items>
     </DetailView>
     <DetailView Id="Chat_DetailView">
-      <Items>
-        <ActionContainerViewItem Id="ChatAction" Caption="ChatAction(6)" />
-      </Items>
       <Layout>
         <TabbedGroup Id="Tabs">
           <LayoutGroup Id="Main" Caption="聊天" />
@@ -269,6 +266,22 @@
             <LayoutGroup Id="Setup">
               <LayoutGroup Id="XPObject" Caption="Oid" />
             </LayoutGroup>
+          </TabbedGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <DetailView Id="SpreadSheetDocument_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main">
+          <LayoutGroup Id="SimpleEditors" Caption="信息" />
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <DetailView Id="VideoInfo_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main">
+          <TabbedGroup Id="Tabs">
+            <LayoutGroup Id="Audios" Caption="中文音频" />
           </TabbedGroup>
         </LayoutGroup>
       </Layout>
