@@ -1,6 +1,6 @@
 ﻿namespace IPlugins
 {
-    public interface IPlugin
+    public interface IPlugin:IDisposable
     {
 
     }

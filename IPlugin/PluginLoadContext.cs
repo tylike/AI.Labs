@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using DevExpress.ExpressApp;
+using System.Reflection;
 using System.Runtime.Loader;
 
 namespace IPlugins
@@ -7,7 +8,7 @@ namespace IPlugins
 
     public interface IPlugin<T> : IPlugin
     {
-        void Invoke(T video);
+        void Invoke(T video,Controller controller);
     }
 
     public class PluginLoadContext : AssemblyLoadContext
@@ -22,9 +23,7 @@ namespace IPlugins
         }
         protected override Assembly Load(AssemblyName assemblyName)
         {
-            if (assemblyName.Name == "IPlugin" || assemblyName.Name == "AI.Labs.Module")
-            //if (assemblyName.Name == typeof(主程序集中的一个类名).Assembly.FullName == assemblyName.FullName)  这样可以吗?
-
+            if (assemblyName.Name == "IPlugin" || assemblyName.Name == "AI.Labs.Module" || assemblyName.Name.StartsWith("DevExpress"))
             {
                 return AssemblyLoadContext.Default.LoadFromAssemblyName(assemblyName);
             }

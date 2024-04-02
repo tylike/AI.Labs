@@ -10,6 +10,8 @@
 	<ItemGroup>
 		<ProjectReference Include="..\AI.Labs.Module\AI.Labs.Module.csproj" />
 		<ProjectReference Include="..\IPlugin\IPlugin.csproj" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.9.2" />
+
 	</ItemGroup>
 
 	

@@ -742,6 +742,10 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 Logs.Add(log);
             });
         }
+        public void Output(string str)
+        {
+            this.VideoScript.Output += $"{Environment.NewLine} {DateTime.Now.TimeOfDay} {str}";
+        }
     }
 
     public class Log:XPObject

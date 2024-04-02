@@ -63,6 +63,15 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         }
         private async void RunVideoScript_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
+            await Task.Run(() =>
+            {
+                RunVideoScriptCore();
+            });
+        }
+
+        private void RunVideoScriptCore()
+        {
+            var video = ViewCurrentObject;
             WeakReference weakReference;
 
             LoadRun(out weakReference);
@@ -78,58 +87,14 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
                 if (!weakReference.IsAlive)
                 {
-                    Application.ShowViewStrategy.ShowMessage("插件执行完毕,卸载完成!", InformationType.Success);
+                    video.Output("成功:插件执行完毕,卸载完成!");
                     break;
                 }
             }
 
             if (weakReference.IsAlive)
             {
-                Application.ShowViewStrategy.ShowMessage("上下文尚未完全卸载。可能需要进一步检查持有的引用。", InformationType.Error);
-            }
-
-            // 加载插件类型和创建实例
-            //var pluginType = assembly.GetTypes().FirstOrDefault(t => typeof(IPlugin).IsAssignableFrom(t));
-            //if (pluginType != null)
-            //{
-            //    var plugin = (IPlugin<VideoInfo>)Activator.CreateInstance(pluginType);
-            //    plugin.Invoke(ViewCurrentObject);
-            //    // ... 使用插件
-            //}
-
-            // 清理临时文件
-            //Directory.Delete(tempDirectory, true);
-            return;
-
-            var t = Path.Combine(ViewCurrentObject.ProjectPath, "FilterComplexScript.txt");
-
-            if (File.Exists(t))
-            {
-                File.Delete(t);
-            }
-            File.WriteAllText(t, ViewCurrentObject.VideoScript.FilterComplexText);
-
-            var p = new Process();
-            var info = new ProcessStartInfo();
-            p.StartInfo = info;
-            p.StartInfo.FileName = @"d:\ffmpeg.gui\ffmpeg\bin\ffmpeg.exe";
-            p.StartInfo.Arguments = ViewCurrentObject.VideoScript.StartCommand;
-            p.StartInfo.CreateNoWindow = false;
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.OutputDataReceived += P_OutputDataReceived;
-            p.ErrorDataReceived += P_OutputDataReceived;
-            try
-            {
-                p.Start();
-                p.BeginOutputReadLine();
-                p.BeginErrorReadLine();
-                p.WaitForExit(10000);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                video.Output("错误:上下文尚未完全卸载。可能需要进一步检查持有的引用。");
             }
         }
 
@@ -139,6 +104,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             try
             {
+                var video = ViewCurrentObject;
                 var IPlugin = typeof(IPlugin);
                 var pluginLoadContext = new PluginLoadContext(pluginPath);
                 var assembly = pluginLoadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(pluginPath)));
@@ -147,19 +113,30 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
                 if (pluginType == null)
                 {
-                    throw new InvalidOperationException("Plugin does not implement the IPlugin interface correctly or is abstract.");
+                    video.Output("插件没有实现IPlugin接口或是抽象的!");
                 }
 
                 var pluginInstance = (IPlugin<VideoInfo>)Activator.CreateInstance(pluginType);
                 // 传入所需的参数
-                pluginInstance.Invoke(this.ViewCurrentObject);
+                try
+                {
+                    pluginInstance.Invoke(this.ViewCurrentObject, this);
+                }
+                catch (Exception ex)
+                {
+                    video.Output("执行报错:");
+                    video.Output(ex.Message);
+                }
+                finally
+                {
+                    pluginInstance.Dispose();
+                }
 
 
-                weakReference = new WeakReference(pluginLoadContext,true);
+                weakReference = new WeakReference(pluginLoadContext, true);
 
                 pluginLoadContext.Unload();
                 pluginLoadContext = null;
-
 
             }
             catch (Exception ex)
@@ -170,16 +147,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
         }
 
-        private void P_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            if (e.Data != null)
-            {
-                Application.UIThreadInvoke(() =>
-                {
-                    ViewCurrentObject.VideoScript.Output += e.Data + Environment.NewLine;
-                });
-            }
-        }
+
 
 
     }
