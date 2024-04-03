@@ -19,30 +19,39 @@ namespace RuntimePlugin
     {
         public static string DefaultFont = "C:\\Windows\\Fonts\\simhei.ttf";
     }
-    public class MediaSegment
+
+    public abstract class FilterCommand
     {
         public static int GlobalID { get; set; } = 0;
-
         public TimeSpan Start { get; set; }
         public TimeSpan End { get; set; }
-
         public List<MediaSegment> Inputs { get; } = new List<MediaSegment>();
         public List<MediaSegment> Outputs { get; } = new List<MediaSegment>();
-
         public virtual string GetCommand() => "";
         public string Label { get; protected set; }
         public virtual void CreateLabel() { Label = $"[v{GlobalID++}]"; }
         public string InputLabels => string.Join("", Inputs.Select(t => t.Label));
-        public MediaSegment()
+        public FilterCommand()
         {
             CreateLabel();
         }
     }
 
-    public class VideoObject : MediaSegment
+    public class FilterCommands : MediaSegment
+    {
+
+        public List<FilterCommand> Commands { get; } = new List<FilterCommand>();
+    }
+
+    public class MediaSegment
+    {
+
+    }
+
+    public class MediaObject : MediaSegment
     {
         static int InputVideoGlobalID = 0;
-        public VideoObject(string fileName)
+        public MediaObject(string fileName)
         {
 
         }
@@ -56,7 +65,7 @@ namespace RuntimePlugin
         }
     }
 
-    public class MediaSelect : MediaSegment
+    public class MediaSelect : FilterCommand
     {
         public MediaSelect()
         {
@@ -64,22 +73,13 @@ namespace RuntimePlugin
         //在FFmpeg中，`t`是时间（time）的缩写，它通常用于时间选择或时间基点操作。
         //`select`滤镜基于时间`t`来选择视频流的帧，
         //`between(t, 0, 3)`表示选择0到3秒的时间段。
-        //- `pad`滤镜用于在视频帧的尺寸上进行扩展或填充。
-        //`iw`和`ih`分别代表输入视频的宽度（width）和高度（height），
-        //`pad = iw:s = ih`表示按照原始宽度和高度填充空白，保留1: 1的宽高比。
-        //这里的`s`是一个小写的`s`，实际上是`sar`（sample aspect ratio）的误拼，FFmpeg的文档中是指原始的宽高比，实际上应该是`ih`，表示填充高度与宽度相同。
-        //- `format = mp4`是将输出的视频流转换为MPEG - 4（H.264编码，MP4文件格式）。
-        //这个部分是可选的，如果你希望保留原始格式，可以省略。但如果你的输出目标是MP4文件，或者需要与后续处理兼容，建议保留。
-        //注意：在进行输出时，FFmpeg会根据滤镜的输出进行编码，如果省略`format`，FFmpeg会默认选择一个编码器来处理输出。
-        //如果你省略了`format`，FFmpeg可能会以不同的格式进行编码，这可能与你的预期不符。因此，根据你的目标输出格式，最好明确指定`format`。
-
         public override string GetCommand()
         {
-            return $"{InputLabels}select='between(t,{Start.TotalSeconds},{Start.TotalSeconds})',pad=iw:s=ih,format=mp4{Label};";
+            return $"select='between(t,{Start.TotalSeconds},{Start.TotalSeconds})'";
         }
     }
 
-    public class MediaDelay : MediaSegment
+    public class MediaDelay : FilterCommand
     {
         public MediaDelay()
         {
@@ -87,21 +87,19 @@ namespace RuntimePlugin
         public float Delay { get; set; }
         public override string GetCommand()
         {
-            var inputs = string.Join("", Inputs.Select(t => t.GetCommand()));
-            return $"{InputLabels}trim=end={Delay.ToString("0.000")},setpts=PTS-STARTPTS{Label}";
+            return $"trim=end={Delay.ToString("0.000")}";
         }
     }
 
-    public class MediaAdjustSpeed:MediaSegment
+    public class MediaAdjustSpeed:FilterCommand
     {
         public override string GetCommand()
         {
-
             return base.GetCommand();
         }
     }
 
-    public class MediaConcat : MediaSegment
+    public class MediaConcat : FilterCommand
     {        
         public override string GetCommand()
         {
@@ -110,8 +108,7 @@ namespace RuntimePlugin
         }
     }
 
-
-    public class AddSubtitles : MediaSegment
+    public class AddSubtitles : FilterCommand
     {
         public string SubtitleFile { get; set; }
         public SubtitleBorderStyle BoxStyle { get; set; } = SubtitleBorderStyle.Box;
@@ -129,9 +126,9 @@ namespace RuntimePlugin
         }
         public override string GetCommand()
         {
-            var command = $"{InputLabels}subtitles={SubtitleFile}";
+            var command = $"subtitles={SubtitleFile}";
             command += $":box={BoxStyle}:boxborderw={BoxBorderWidth}:color={BoxBorderColor}:boxborderh={BoxBorderHeight}:boxbordera={BoxBorderAlpha}";
-            command += $",fontfile={FontPath}:fontsize={FontSize}:fontcolor={FontColor}{Label}";
+            command += $",fontfile={FontPath}:fontsize={FontSize}:fontcolor={FontColor}";
             return command;
         }
     }
@@ -174,13 +171,24 @@ namespace RuntimePlugin
         }
     }
 
+    public class Test
+    {
+        public static void Run()
+        {
+            var video = new MediaObject(@"d:\videoinfo\abc.mp4");
+            var selected = video.Select(0, 10);
+            
+
+        }
+    }
+
     public class MediaSelection
     {
         public TimeSpan Start { get; set; }
         public TimeSpan End { get; set; }
     }
 
-    public class DrawTextOptions : MediaSegment
+    public class DrawTextOptions : FilterCommand
     {
         public string FontPath { get; set; } = FFmpegGlobalSettings.DefaultFont;
         public string Text { get; set; }
@@ -194,7 +202,6 @@ namespace RuntimePlugin
 
         public DrawTextOptions(string text,bool commandIncludeInputAndOutputLabes = true)
         {
-            this.CommandIncludeInputAndOutputLabels = commandIncludeInputAndOutputLabes;
             Text = text;
         }
 
@@ -203,7 +210,6 @@ namespace RuntimePlugin
             base.CreateLabel();
         }
 
-        public bool CommandIncludeInputAndOutputLabels = true;
         public override string GetCommand()
         {
             var command = $"drawtext=fontfile={FontPath}: text='{Text}': x={Position.X}: y={Position.Y}";
@@ -212,24 +218,7 @@ namespace RuntimePlugin
                 command += $", box={BoxStyle}:boxborderw={BoxBorderWidth}:boxborderh={BoxBorderHeight}:boxbordera={BoxBorderAlpha}";
             }
             command += $", color={Color}: fontsize={FontSize}";
-
-
-            if (CommandIncludeInputAndOutputLabels)
-            {
-                command = $"{InputLabels}{command}{Label}";
-            }
-
             return command;
-        }
-    }
-
-    public class DrawManyTextOptions : MediaSegment
-    {
-        public List<DrawTextOptions> Options { get; } = new List<DrawTextOptions>();
-        public override string GetCommand()
-        {
-            var commands =string.Join(";", Options.Select(t => t.GetCommand()));
-            return $"{InputLabels}{commands}{Label}";
         }
     }
 
