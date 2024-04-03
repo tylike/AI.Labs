@@ -14,6 +14,7 @@ using System.Reflection;
 using DevExpress.Xpo.DB;
 using AI.Labs.Module.BusinessObjects.VideoTranslate;
 using AI.Labs.Module.BusinessObjects;
+using System.IO;
 
 namespace AI.Labs.Win;
 
@@ -72,7 +73,8 @@ static class Program {
         //if(ConfigurationManager.ConnectionStrings["ConnectionString"] != null) {
         //    connectionString = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
         //}
-        connectionString = DevExpress.Xpo.DB.SQLiteConnectionProvider.GetConnectionString("D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db");
+        var dbPath = Path.Combine(Application.StartupPath, "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
+        connectionString = DevExpress.Xpo.DB.SQLiteConnectionProvider.GetConnectionString(dbPath);
 #if EASYTEST
         if(ConfigurationManager.ConnectionStrings["EasyTestConnectionString"] != null) {
             connectionString = ConfigurationManager.ConnectionStrings["EasyTestConnectionString"].ConnectionString;

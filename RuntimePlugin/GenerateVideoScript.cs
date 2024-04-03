@@ -1,4 +1,5 @@
 ﻿using AI.Labs.Module;
+using AI.Labs.Module.BusinessObjects;
 using AI.Labs.Module.BusinessObjects.VideoTranslate;
 using DevExpress.ExpressApp;
 using IPlugins;
@@ -159,7 +160,7 @@ namespace RuntimePlugin
             video.Output("开始ffmpeg");
             var error = Path.Combine(video.ProjectPath, "error.txt");
             var bat = Path.Combine(video.ProjectPath, "bat.bat");
-            var masterCommand = $@"d:\ffmpeg.gui\ffmpeg\bin\ffmpeg.exe -/filter_complex {filterComplexScript} {video.VideoScript.StartCommand}";
+            var masterCommand = $@"{AudioHelper.ffmpegFile} -/filter_complex {filterComplexScript} {video.VideoScript.StartCommand}";
             var batContent = @$"{masterCommand}
 ";
             File.WriteAllText(

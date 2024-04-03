@@ -67,7 +67,7 @@ namespace AI.Labs.Module.BusinessObjects
             // 这里添加执行 ffmpeg 命令的代码
             // 例如，使用 System.Diagnostics.Process.Start()
             var pi = new ProcessStartInfo();
-            pi.FileName = $@"D:\ffmpeg.gui\ffmpeg\bin\ffmpeg.exe";
+            pi.FileName = ffmpegFile; //$@"D:\ffmpeg.gui\ffmpeg\bin\ffmpeg.exe";
             pi.Arguments = command;
             pi.UseShellExecute = true;
             var inf = Process.Start(pi);
@@ -76,8 +76,8 @@ namespace AI.Labs.Module.BusinessObjects
         }
 
 
-        const string ffprobe = @"D:\ffmpeg.gui\ffprobe\bin\ffprobe.exe";
-        public const string ffmpegFile = @"D:\ffmpeg.gui\ffmpeg\bin\ffmpeg.exe";
+        const string ffprobe = @"D:\ffmpeg.gui\ffprobe\last\ffprobe.exe";
+        public const string ffmpegFile = @"D:\ffmpeg.gui\ffmpeg\last\ffmpeg.exe";
         public static async Task<IMediaInfo> GetAudioFileInfo(string filePath)
         {
             return await FFmpeg.GetMediaInfo(filePath);

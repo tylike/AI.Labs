@@ -380,7 +380,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             {
                 File.Delete(wavFileName);
             }
-            pi.FileName = $@"D:\ffmpeg.gui\ffmpeg\bin\ffmpeg.exe";
+            pi.FileName = AudioHelper.ffmpegFile;// $@"D:\ffmpeg.gui\ffmpeg\bin\ffmpeg.exe";
             pi.Arguments = $"-i \"{obj.VideoFile}\" -ar 16000 -acodec pcm_s16le \"{wavFileName}\"";
             pi.UseShellExecute = true;
             var inf = Process.Start(pi);
