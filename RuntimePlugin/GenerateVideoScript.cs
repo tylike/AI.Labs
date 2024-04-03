@@ -202,7 +202,6 @@ namespace RuntimePlugin
         {
             base.CreateLabel();
         }
-
         public bool CommandIncludeInputAndOutputLabels = true;
         public override string GetCommand()
         {
