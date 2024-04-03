@@ -75,9 +75,8 @@ namespace AI.Labs.Module.BusinessObjects
             Debug.WriteLine($"{pi.FileName} {pi.Arguments}");
         }
 
-
-        const string ffprobe = @"D:\ffmpeg.gui\ffprobe\last\ffprobe.exe";
-        public const string ffmpegFile = @"D:\ffmpeg.gui\ffmpeg\last\ffmpeg.exe";
+        const string ffprobe = @"D:\ffmpeg.gui\last\ffprobe.exe";
+        public const string ffmpegFile = @"D:\ffmpeg.gui\last\ffmpeg.exe";
         public static async Task<IMediaInfo> GetAudioFileInfo(string filePath)
         {
             return await FFmpeg.GetMediaInfo(filePath);
