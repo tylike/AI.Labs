@@ -81,6 +81,8 @@
 
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
 
+		<PackageReference Include="VisioForge.DotNet.Core" Version="15.8.54" />
+
 		<PackageReference Include="Xabe.FFmpeg" Version="5.2.6" />
 
 		<PackageReference Include="Xabe.FFmpeg.Downloader" Version="5.2.6" />

@@ -63,6 +63,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         }
         private async void RunVideoScript_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
+            Output("开始执行脚本!");
             await Task.Run(() =>
             {
                 RunVideoScriptCore();
@@ -87,20 +88,27 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
                 if (!weakReference.IsAlive)
                 {
-                    video.Output("成功:插件执行完毕,卸载完成!");
+                    Output("成功:插件执行完毕,卸载完成!");
                     break;
                 }
             }
 
             if (weakReference.IsAlive)
             {
-                video.Output("错误:上下文尚未完全卸载。可能需要进一步检查持有的引用。");
+                Output("强制卸载之后,仍然没有成功卸载\n报错:上下文尚未完全卸载。可能需要进一步检查持有的引用。");
             }
+        }
+        void Output(string msg)
+        {
+            Application.UIThreadInvoke(() =>
+            {
+                ViewCurrentObject.Output(msg);
+            });
         }
 
         private void LoadRun(out WeakReference weakReference)
         {
-            string pluginPath = @"D:\dev\AI.Labs\RuntimePlugin\bin\Debug\net7.0-windows\runtimeplugin.dll";
+            string pluginPath = @"D:\dev\AI.Labs\RuntimePlugin\bin\Debug\net7.0-windows\RuntimePlugin.dll";
 
             try
             {
@@ -113,7 +121,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
                 if (pluginType == null)
                 {
-                    video.Output("插件没有实现IPlugin接口或是抽象的!");
+                    Output("插件没有实现IPlugin接口或是抽象的!");
                 }
 
                 var pluginInstance = (IPlugin<VideoInfo>)Activator.CreateInstance(pluginType);
@@ -121,15 +129,17 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 try
                 {
                     pluginInstance.Invoke(this.ViewCurrentObject, this);
+                    Output("插件执行完成,等待卸载!");
                 }
                 catch (Exception ex)
                 {
-                    video.Output("执行报错:");
-                    video.Output(ex.Message);
+                    Output("执行报错:");
+                    Output(ex.Message);
                 }
                 finally
                 {
                     pluginInstance.Dispose();
+                    pluginInstance = null;
                 }
 
 

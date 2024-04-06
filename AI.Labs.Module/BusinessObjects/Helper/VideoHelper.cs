@@ -220,7 +220,7 @@ namespace AI.Labs.Module.BusinessObjects
         public static (bool, string) RunFFmpeg(string argument, string taskTitle, IDictionary<string, string> env = null)
         {
             var logs = new StringBuilder();
-            var cmdForLog = $"{taskTitle}\n{AudioHelper.ffmpegFile} {argument}";
+            var cmdForLog = $"{taskTitle}\n{FFmpegHelper.ffmpegFile} {argument}";
             logs.Log(cmdForLog, showDebug: true);
             //argument = argument.Replace("\"", "\\\"");
             //var fa = $"/c \"{AudioHelper.ffmpegFile} {argument}\" && echo 按键退出 &&  pause ";
@@ -229,7 +229,7 @@ namespace AI.Labs.Module.BusinessObjects
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = AudioHelper.ffmpegFile,
+                    FileName = FFmpegHelper.ffmpegFile,
                     Arguments = fa,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -250,7 +250,7 @@ namespace AI.Labs.Module.BusinessObjects
             process.OutputDataReceived += (s, e) => logs.Log(e.Data, false);
 
             //process.Exited += (s, e) => logs.Log("退出", false);
-            cmdForLog = $"{AudioHelper.ffmpegFile} {argument}";
+            cmdForLog = $"{FFmpegHelper.ffmpegFile} {argument}";
             Debug.WriteLine(cmdForLog);
 
             process.Start();
@@ -284,7 +284,7 @@ namespace AI.Labs.Module.BusinessObjects
             // Set up the process start information for FFmpeg
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
-                FileName = AudioHelper.ffmpegFile,
+                FileName = FFmpegHelper.ffmpegFile,
                 Arguments = $"-i \"{inputVideoPath}\" -filter_complex \"{filterComplex}\" -map \"[v]\" -c:v libx264 -preset fast -crf 22 -y \"{outputVideoPath}\"",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -357,10 +357,10 @@ namespace AI.Labs.Module.BusinessObjects
 
         static VideoHelper()
         {
-            ffmpeg.SetExecutablesPath(Path.GetDirectoryName(AudioHelper.ffmpegFile));
+            ffmpeg.SetExecutablesPath(Path.GetDirectoryName(FFmpegHelper.ffmpegFile));
             GlobalFFOptions.Configure(new FFOptions
             {
-                BinaryFolder = Path.GetDirectoryName(AudioHelper.ffmpegFile),
+                BinaryFolder = Path.GetDirectoryName(FFmpegHelper.ffmpegFile),
             });
         }
 

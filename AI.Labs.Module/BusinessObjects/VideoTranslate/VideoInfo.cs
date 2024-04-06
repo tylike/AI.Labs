@@ -182,8 +182,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             get { return GetPropertyValue<string>(nameof(Output)); }
             set { SetPropertyValue(nameof(Output), value); }
         }
-
-
     }
 
     [XafDisplayName("视频")]

@@ -1,5 +1,4 @@
 ﻿using NAudio.Wave;
-using System.Diagnostics;
 using System.Text.Json;
 using SoundTouch.Net.NAudioSupport;
 using NAudio.Wave.SampleProviders;
@@ -8,6 +7,7 @@ using DevExpress.XtraRichEdit.Layout.Engine;
 
 namespace AI.Labs.Module.BusinessObjects
 {
+
     //public class AudioFileInfo
     //{
     //    public string Format { get; set; }
@@ -17,7 +17,7 @@ namespace AI.Labs.Module.BusinessObjects
     {
         static AudioHelper()
         {
-            FFmpeg.SetExecutablesPath(Path.GetDirectoryName(ffmpegFile));
+            FFmpeg.SetExecutablesPath(Path.GetDirectoryName(FFmpegHelper.ffmpegFile));
         }
 
         public static (bool 已调整, int 调整后时长, string 输出文件) FixAudio(string wavFileName, int subtitleDurationMs, int? audioDuration = null)
@@ -59,24 +59,12 @@ namespace AI.Labs.Module.BusinessObjects
             string ffmpegCommand = $" -i \"{inputFilePath}\" -filter:a \"atempo={newSpeed}\" -vn \"{outputFilePath}\"";
 
             // 执行 ffmpeg 命令
-            ExecuteFfmpegCommand(ffmpegCommand);
+           FFmpegHelper.ExecuteCommand(ffmpegCommand);
         }
 
-        private static void ExecuteFfmpegCommand(string command)
-        {
-            // 这里添加执行 ffmpeg 命令的代码
-            // 例如，使用 System.Diagnostics.Process.Start()
-            var pi = new ProcessStartInfo();
-            pi.FileName = ffmpegFile; //$@"D:\ffmpeg.gui\ffmpeg\bin\ffmpeg.exe";
-            pi.Arguments = command;
-            pi.UseShellExecute = true;
-            var inf = Process.Start(pi);
-            inf.WaitForExit();
-            Debug.WriteLine($"{pi.FileName} {pi.Arguments}");
-        }
 
-        const string ffprobe = @"D:\ffmpeg.gui\last\ffprobe.exe";
-        public const string ffmpegFile = @"D:\ffmpeg.gui\last\ffmpeg.exe";
+
+
         public static async Task<IMediaInfo> GetAudioFileInfo(string filePath)
         {
             return await FFmpeg.GetMediaInfo(filePath);

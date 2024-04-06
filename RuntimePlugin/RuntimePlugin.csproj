@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
+	<PropertyGroup>		
 		<TargetFramework>net7.0-windows</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
+		<Nullable>disable</Nullable>
 		<Version>1.0.0.1</Version>
 		<Deterministic>false</Deterministic>
 	</PropertyGroup>
@@ -10,8 +10,13 @@
 	<ItemGroup>
 		<ProjectReference Include="..\AI.Labs.Module\AI.Labs.Module.csproj" />
 		<ProjectReference Include="..\IPlugin\IPlugin.csproj" />
-		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.9.2" />
 
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="System.Runtime.WindowsRuntime">
+	    <HintPath>C:\Program Files (x86)\Microsoft SDKs\UWPNuGetPackages\microsoft.netcore.universalwindowsplatform\6.2.14\ref\uap10.0.15138\System.Runtime.WindowsRuntime.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 	
