@@ -100,7 +100,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Update="ai.labs.s3db">
+    <None Update="ai.labs.1.s3db">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="inject.js">
