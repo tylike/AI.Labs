@@ -55,8 +55,13 @@ public abstract class MediaSegment : ISegmentSource
         return t;
     }
 
-    public virtual string GetCommand(int ident,List<string> outLabels)
+    public virtual string GetCommand(int ident,List<MediaSegment> outLabels)
     {
+        if(ChildSegment.Count == 0)
+        {
+            outLabels.Add(this);
+        }
+
         var ids = ident.GetIdent();
 
         var pcmd = string.Join(",\n", _commands.Select(t => t.GetCommand(ident+1)));

@@ -20,7 +20,7 @@ public abstract class Track<T> where T : MediaSegment
         return string.Join(";", Segments.Select(t => t.ToString()));
     }
 
-    public string GetCommand(int ident,List<string> outLabels)
+    public string GetCommand(int ident,List<MediaSegment> outLabels)
     {
         var cmds = string.Join(";\n", Segments.Select(t => t.GetCommand(ident + 1,outLabels)));
         var ids = ident.GetIdent();

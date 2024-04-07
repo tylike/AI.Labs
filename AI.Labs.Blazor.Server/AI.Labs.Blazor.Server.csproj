@@ -18,17 +18,17 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DevExpress.ExpressApp.Api.Xpo.All" Version="23.1.6" />
-    <PackageReference Include="DevExpress.ExpressApp.Blazor" Version="23.1.6" />
-    <PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="23.1.6" />
-    <PackageReference Include="DevExpress.ExpressApp.Dashboards.Blazor" Version="23.1.6" />
-    <PackageReference Include="DevExpress.ExpressApp.FileAttachment.Blazor" Version="23.1.6" />
-    <PackageReference Include="DevExpress.ExpressApp.Office.Blazor" Version="23.1.6" />
-    <PackageReference Include="DevExpress.ExpressApp.ReportsV2" Version="23.1.6" />
-    <PackageReference Include="DevExpress.ExpressApp.ReportsV2.Blazor" Version="23.1.6" />
-    <PackageReference Include="DevExpress.ExpressApp.Security.Xpo" Version="23.1.6" />
-    <PackageReference Include="DevExpress.ExpressApp.Validation" Version="23.1.6" />
-    <PackageReference Include="DevExpress.ExpressApp.Validation.Blazor" Version="23.1.6" />
+    <PackageReference Include="DevExpress.ExpressApp.Api.Xpo.All" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.Blazor" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.Dashboards.Blazor" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.FileAttachment.Blazor" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.Office.Blazor" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.ReportsV2" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.ReportsV2.Blazor" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.Security.Xpo" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.Validation" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.Validation.Blazor" Version="23.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />

@@ -108,7 +108,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private void LoadRun(out WeakReference weakReference)
         {
-            string pluginPath = @"D:\dev\AI.Labs\RuntimePlugin\bin\Debug\net7.0-windows\RuntimePlugin.dll";
+            string pluginPath = @"D:\VideoInfo\Debug\net7.0-windows\RuntimePlugin.dll";// D:\dev\AI.Labs\RuntimePlugin\bin\Debug\net7.0-windows\RuntimePlugin.dll";
 
             try
             {

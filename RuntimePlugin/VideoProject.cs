@@ -1,4 +1,5 @@
 ﻿using AI.Labs.Module.BusinessObjects;
+using JiebaNet.Segmenter.Common;
 
 namespace RuntimePlugin;
 
@@ -100,18 +101,78 @@ public class VideoProject
         var inputAudios = string.Join(" ", audios.Select(t => $" -i {t.FileName}"));
 
         //输入的视频文件、音频、输出文件
-        var args = $"{inputVideos} {inputAudios} {output}";
-        if (overrideExits)
-        {
-            args += " -y";
-        }
+
+        var videoLables = new List<MediaSegment>();
+        var audioLables = new List<MediaSegment>();
         // string.Join(";", MainVideoTrack.Segments.Select(t => t.GetCommand(0)));
-        var filterComplex = MainVideoTrack.GetCommand(0);
-        var audioCommands = MainAudioTrack.GetCommand(0);
+        var filterComplex = MainVideoTrack.GetCommand(0, videoLables);
+        var audioCommands = MainAudioTrack.GetCommand(0, audioLables);
 
         //MainVideoTrack.Segments
+        //var videoSegment = new VideoSegment();
+        var list = new MediaSegmentList(videoLables);
+        list.VideoLabel = "[vout]";
+        list.OutputVideo = true;
+        var rst = list.GetConcatCommand();
+
+        filterComplex = $"{filterComplex};{rst}";
+
+        var lines = filterComplex.SplitLines();
+
+        filterComplex = string.Join("\n", lines.Where(t => !t.Trim().StartsWith("#")));
+        var overrideOptions = "";
+        if (overrideExits)
+        {
+            overrideOptions = " -y";
+        }
+
+        var args = $"{inputVideos} {inputAudios} -map \"{list.VideoLabel}\" {overrideOptions} {output}";
+        
+
 
         var basePath = Path.GetDirectoryName(output);
         FFmpegHelper.ExecuteCommand(args, filterComplex, basePath: basePath);
     }
+}
+public class MediaSegmentList : IVideoSegmentSource
+{
+    public MediaSegmentList(IEnumerable<ISegmentSource> segments)
+    {
+        this.segments = segments;
+        this.Label = string.Join("", segments.Select(t => t.Label));
+    }
+    IEnumerable<ISegmentSource> segments;
+    public string Label { get; }
+
+    public ISegmentSource CreateChildSegment()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool OutputVideo { get; set; }
+    public bool OutputAudio { get; set; }
+    public string AudioLabel { get; set; }
+    public string VideoLabel { get; set; }
+
+    public string GetConcatCommand()
+    {
+        if (!this.segments.Any())
+        {
+            throw new Exception("错误，没有来源segment!");
+        }
+
+        var input = string.Join("", segments.Select(t => t.Label));
+        var output = "";
+        if (OutputVideo)
+        {
+            output = VideoLabel;
+        }
+
+        if (OutputAudio)
+        {
+            output += AudioLabel;
+        }
+        return $"{input}concat=n={this.segments.Count()}{output}";
+    }
+
 }

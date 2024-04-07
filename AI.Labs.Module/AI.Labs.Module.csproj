@@ -39,22 +39,22 @@
 	<ItemGroup>
 		<PackageReference Include="Betalgo.OpenAI" Version="7.4.3" />
 		<PackageReference Include="BingChat" Version="0.8.0" />
-		<PackageReference Include="DevExpress.ExpressApp" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.CloneObject.Xpo" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.ConditionalAppearance" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.Dashboards" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.Notifications" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.Objects" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.Office" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.ReportsV2" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.Security.Xpo" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.TreeListEditors" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.Validation" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.ViewVariantsModule" Version="23.1.6" />
-		<PackageReference Include="DevExpress.ExpressApp.Xpo" Version="23.1.6" />
-		<PackageReference Include="DevExpress.Persistent.Base" Version="23.1.6" />
-		<PackageReference Include="DevExpress.Persistent.BaseImpl.Xpo" Version="23.1.6" />
+		<PackageReference Include="DevExpress.ExpressApp" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.CloneObject.Xpo" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.ConditionalAppearance" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Dashboards" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Notifications" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Objects" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Office" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.ReportsV2" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Security.Xpo" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.TreeListEditors" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Validation" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.ViewVariantsModule" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Xpo" Version="23.1.4" />
+		<PackageReference Include="DevExpress.Persistent.Base" Version="23.1.4" />
+		<PackageReference Include="DevExpress.Persistent.BaseImpl.Xpo" Version="23.1.4" />
 		<PackageReference Include="DiffPlex" Version="1.7.2" />
 		<PackageReference Include="FFMpegCore" Version="5.1.0" />
 		<PackageReference Include="jieba.NET" Version="0.42.2" />

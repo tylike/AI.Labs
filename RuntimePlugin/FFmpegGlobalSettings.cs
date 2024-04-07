@@ -2,5 +2,5 @@
 
 public class FFmpegGlobalSettings
 {
-    public static string DefaultFont = "C:\\Windows\\Fonts\\simhei.ttf";
+    public static string DefaultFont = @"d:\videoinfo\msyh.ttc";
 }

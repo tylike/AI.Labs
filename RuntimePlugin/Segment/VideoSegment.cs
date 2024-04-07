@@ -5,6 +5,10 @@ namespace RuntimePlugin;
 public class VideoSegment : MediaSegment,IVideoSegmentSource
 {
     static int GlobalID = 0;
+    public VideoSegment(IEnumerable<IVideoSegmentSource> sources) : this( new MediaSegmentList(sources) )
+    {
+
+    }
     public VideoSegment(IVideoSegmentSource source) : base(source)
     {
         Label = $"[v{GlobalID++}]";

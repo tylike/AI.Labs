@@ -1,10 +1,5 @@
 ﻿namespace RuntimePlugin;
 
-//public class FilterCommands : MediaSegment
-//{
-//    public List<FilterCommand> Commands { get; } = new List<FilterCommand>();
-//}
-
 /// <summary>
 /// 指可以做为一个segment的源，可以是一个文件，也可以是一个segment
 /// 主要取得segment的名称，即label

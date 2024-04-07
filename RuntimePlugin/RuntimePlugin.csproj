@@ -5,6 +5,7 @@
 		<Nullable>disable</Nullable>
 		<Version>1.0.0.1</Version>
 		<Deterministic>false</Deterministic>
+		<BaseOutputPath>D:\VideoInfo</BaseOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>

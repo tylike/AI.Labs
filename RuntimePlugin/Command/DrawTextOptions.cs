@@ -24,12 +24,12 @@ public class DrawTextOptions : TextOptionBase
 
     public override string GetCommand(int ident)
     {
-        var command = $"{ident.GetIdent()}drawtext=fontfile={FontPath}: text='{Text}': x={X}: y={Y}";
+        var command = $"{ident.GetIdent()}drawtext=font='微软雅黑': text='{Text}': x={X}: y={Y}: fontsize={FontSize}";
         if (BoxStyle != SubtitleBorderStyle.None)
         {
-            command += $", box={BoxStyle}:boxborderw={BoxBorderWidth}:boxborderh={BoxBorderHeight}:boxbordera={BoxBorderAlpha}:color={BoxBorderColor}";
+            command += $": box=1";//:boxborderw={BoxBorderWidth}:boxborderh={BoxBorderHeight}:boxbordera={BoxBorderAlpha}";//:color={BoxBorderColor}
         }
-        command += $", color={FontColor}: fontsize={FontSize}";
+        //command += $"";//color={FontColor}:
         return command;
     }
 }

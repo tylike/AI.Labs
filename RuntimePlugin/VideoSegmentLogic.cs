@@ -67,6 +67,12 @@ public static class VideoSegmentLogic
         segment.AddCommand(md);
         return segment;
     }
+    //public static MediaSegment Concat(this MediaSegment segment)
+    //{
+    //    var concat = new MediaConcatCommand();
+    //    segment.AddCommand(concat);
+    //    return segment;
+    //}
 
     public static AddSubtitleCommand AddSubtitles(this MediaSegment segment, string srtFile)
     {

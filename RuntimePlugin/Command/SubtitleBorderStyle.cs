@@ -2,6 +2,6 @@
 
 public enum SubtitleBorderStyle
 {
-    None,
-    Box
+    None =0 ,
+    Box =1
 }
