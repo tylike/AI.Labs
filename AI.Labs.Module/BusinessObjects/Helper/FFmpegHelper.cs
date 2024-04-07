@@ -76,7 +76,7 @@ namespace AI.Labs.Module.BusinessObjects
                 if (e.Data != null)
                 {
                     outputLog?.Invoke(e.Data);
-                    Debug.WriteLine(e.Data);
+                    Debug.WriteLine("dbg:" + e.Data);
                     output.AppendLine(e.Data);
                 }
             }

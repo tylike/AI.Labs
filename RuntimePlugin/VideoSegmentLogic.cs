@@ -19,9 +19,9 @@ public static class VideoSegmentLogic
         return seg;
     }
 
-    public static MediaSegment DrawText(this MediaSegment seg, string text, int x, int y, TimeSpan? start = null, TimeSpan? end = null)
+    public static MediaSegment DrawText(this MediaSegment seg, string text, int x, int y, TimeSpan? start = null, TimeSpan? end = null,int fontSize = 36)
     {
-        var cmd = new DrawTextOptions(text, x, y, start.HasValue ? start.Value : seg.Start, end.HasValue ? end.Value : seg.End);
+        var cmd = new DrawTextOptions(text, x, y, start.HasValue ? start.Value : seg.Start, end.HasValue ? end.Value : seg.End) { FontSize = fontSize };
         seg.AddCommand(cmd);
         return seg;
     }
