@@ -106,34 +106,40 @@ public class VideoProject
         //输入的视频文件、音频、输出文件
 
         var videoLables = new List<MediaSegment>();
-        var audioLables = new List<MediaSegment>();
+
         // string.Join(";", MainVideoTrack.Segments.Select(t => t.GetCommand(0)));
-        var filterComplex = MainVideoTrack.GetCommand(0, videoLables);
-        var audioCommands = MainAudioTrack.GetCommand(0, audioLables);
+        var videoFilterComplex = MainVideoTrack.GetCommand(0, videoLables);
+        var videoLastSegments = new MediaSegmentList(videoLables);
+        videoLastSegments.VideoLabel = "[vout]";
+        videoLastSegments.OutputVideo = true;
+        var videoLastCommand = videoLastSegments.GetConcatCommand();
+        
+
+
+        var audioLables = new List<MediaSegment>();
+        var audioFilterComplex = MainAudioTrack.GetCommand(0, audioLables);
+        var audioLastSegments = new MediaSegmentList(audioLables);
+        audioLastSegments.VideoLabel = "[vout]";
+        audioLastSegments.OutputAudio = true;
+        var audioLastCommand = audioLastSegments.GetConcatCommand();
+        
+        var filterComplex = $"{videoFilterComplex};{audioFilterComplex};{videoLastCommand};{audioLastCommand}";
 
         //MainVideoTrack.Segments
         //var videoSegment = new VideoSegment();
-        var list = new MediaSegmentList(videoLables);
-        list.VideoLabel = "[vout]";
-        list.OutputVideo = true;
-        var rst = list.GetConcatCommand();
-
-        filterComplex = $"{filterComplex};{rst}";
-
         var lines = filterComplex.SplitLines();
+        var finalFilterComplex = string.Join("\n", lines.Where(t => !t.Trim().StartsWith("#")));
 
-        filterComplex = string.Join("\n", lines.Where(t => !t.Trim().StartsWith("#")));
         var overrideOptions = "";
         if (overrideExits)
         {
             overrideOptions = " -y";
         }
 
-        var args = $"{inputVideos} {inputAudios} -map \"{list.VideoLabel}\" {overrideOptions} {output} -progress pipe:1";
+        var args = $"{inputVideos} {inputAudios} -map \"{videoLastSegments.VideoLabel}\" -map \"{audioLastSegments.AudioLabel}\" {overrideOptions} {output} -progress pipe:1";
         var basePath = Path.GetDirectoryName(output);
         //var task = RunHttp();
-        FFmpegHelper.ExecuteCommand(args, filterComplex, basePath: basePath);
-
+        FFmpegHelper.ExecuteCommand(args, finalFilterComplex, basePath: basePath);
         //https://github.com/cmxl/FFmpeg.NET/blob/master/src/FFmpeg.NET/RegexEngine.cs#L44
         // FFmpeg 完成后，取消所有待处理和后续的操作
         //cancellationTokenSource.Cancel();
@@ -142,6 +148,7 @@ public class VideoProject
         //task.Stop();
         //task.Close();
     }
+
     //static HttpListener listener;
     //static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
