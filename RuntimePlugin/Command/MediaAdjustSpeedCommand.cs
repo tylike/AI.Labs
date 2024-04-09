@@ -11,7 +11,7 @@ public class MediaAdjustSpeedCommand : FilterCommand
 
     public override string GetCommand(int ident)
     {
-        return $"{ident.GetIdent()}setpts=PTS/{Speed.ToString("0.0000")}";
+        return $"setpts=PTS/{Speed.ToString("0.0000")}";
     }
     public override string CommandName => $"调速:{Speed.ToString("0.0000")}";
 }

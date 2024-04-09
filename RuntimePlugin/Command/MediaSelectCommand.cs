@@ -9,6 +9,6 @@ public class MediaSelectCommand : FilterCommand
     //`between(t, 0, 3)`表示选择0到3秒的时间段。
     public override string GetCommand(int ident)
     {
-        return $"{ident.GetIdent()}select='between(t,{Start.TotalSeconds},{End.TotalSeconds})'";
+        return $"select='between(t, {Start.TotalSeconds}";
     }
 }

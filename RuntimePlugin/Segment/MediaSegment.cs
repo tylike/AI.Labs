@@ -11,11 +11,12 @@ namespace RuntimePlugin;
 /// </summary>
 public abstract class MediaSegment : ISegmentSource
 {
+    public bool IsEmpty { get => _commands.Any() && !ChildSegment.Any(); }
     public ISegmentSource FromSegment { get; set; }
 
     public MediaSegment(ISegmentSource fromSegment)
     {
-        this.FromSegment = fromSegment;        
+        this.FromSegment = fromSegment;
     }
 
     public int Duration { get => (int)(End - Start).TotalMilliseconds; }
@@ -55,33 +56,33 @@ public abstract class MediaSegment : ISegmentSource
         return t;
     }
 
-    public virtual string GetCommand(int ident,List<MediaSegment> outLabels)
+    public virtual string GetCommand(int ident, List<MediaSegment> outLabels)
     {
-        if(ChildSegment.Count == 0)
+        if (ChildSegment.Count == 0)
         {
             outLabels.Add(this);
         }
 
         var ids = ident.GetIdent();
 
-        var pcmd = string.Join(",\n", _commands.Select(t => t.GetCommand(ident+1)));
-        
-        var selfCmd = @$"{ids}{FromSegment.Label}
-{pcmd}
-{ids}{Label}";
-        if(_commands.Count == 0)
+        var pcmd = string.Join(",", _commands.Select(t => t.GetCommand(ident + 1)));
+
+        var selfCmd = @$"{ids}{FromSegment.Label}{pcmd}{Label}";
+
+        if (_commands.Count == 0)
         {
             selfCmd = "";
         }
         var ccmd = string.Join(
-            $"{ids};\n", 
-            ChildSegment.Select(t => t.GetCommand(ident+1, outLabels))
+            $";\n#连接子级Segment\n",
+            ChildSegment.Select(t => t.GetCommand(ident + 1, outLabels))
             );
-
-
-
-        return @$"{ids}# Segment:
-{selfCmd}
-{ccmd}";
+        var rst = @$"{ids}# Segment:
+{selfCmd}";
+        if (!string.IsNullOrEmpty(ccmd))
+        {
+            rst += $";\n{ids}{ccmd}";
+        }
+        return rst.ToString();
     }
 }

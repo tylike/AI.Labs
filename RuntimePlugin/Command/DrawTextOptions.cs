@@ -28,7 +28,7 @@ public class DrawTextOptions : TextOptionBase
 
     public override string GetCommand(int ident)
     {
-        var command = $"{ident.GetIdent()}drawtext=font='微软雅黑': text='{FixText(Text)}': x={X}: y={Y}: fontsize={FontSize}: enable='between(t,{Start.TotalSeconds},{End.TotalSeconds})'";
+        var command = $"drawtext=font='微软雅黑': text='{FixText(Text)}': x={X}: y={Y}: fontsize={FontSize}: enable='between(t,{Start.TotalSeconds},{End.TotalSeconds})'";
         if (BoxStyle != SubtitleBorderStyle.None)
         {
             command += $": box=1";//:boxborderw={BoxBorderWidth}:boxborderh={BoxBorderHeight}:boxbordera={BoxBorderAlpha}";//:color={BoxBorderColor}

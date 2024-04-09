@@ -119,11 +119,13 @@ public class VideoProject
         var audioLables = new List<MediaSegment>();
         var audioFilterComplex = MainAudioTrack.GetCommand(0, audioLables);
         var audioLastSegments = new MediaSegmentList(audioLables);
-        audioLastSegments.VideoLabel = "[vout]";
+        audioLastSegments.AudioLabel = "[aout]";
         audioLastSegments.OutputAudio = true;
         var audioLastCommand = audioLastSegments.GetConcatCommand();
         
-        var filterComplex = $"{videoFilterComplex};{audioFilterComplex};{videoLastCommand};{audioLastCommand}";
+
+
+        var filterComplex = $"{videoFilterComplex};\n{audioFilterComplex};\n{videoLastCommand};\n{audioLastCommand};";
 
         //MainVideoTrack.Segments
         //var videoSegment = new VideoSegment();

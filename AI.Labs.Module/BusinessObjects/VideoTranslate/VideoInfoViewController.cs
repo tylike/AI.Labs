@@ -728,6 +728,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             foreach (SubtitleItem item in subtitles)
             {
                 await TranslateSubtitle(t, subtitles, item, this, ObjectSpace, true);
+                
             }
             SaveSRTToFile(t, SrtLanguage.中文);
             ObjectSpace.CommitChanges();
@@ -803,6 +804,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 streamOut: true,
                 temperature: 0.1f
                 );
+            item.CnText = item.CnText.Replace("[PAD151643]", "").Replace("[PAD151645]","");
             objectSpace.CommitChanges();
         }
         #endregion
