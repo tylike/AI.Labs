@@ -205,7 +205,7 @@ public class GenerateVideoScript : IPlugin<VideoInfo>, IDisposable
                 var 加速1点3倍后中文音频 = 当前原始中文音频片断.ChangeSpeed(准备调速);
                 //*****************************************************************
                 var 英文字幕对应的视频片断 = mainVideo.CreateSegmentWithSelect(当前1条英文字幕.StartTime, 当前1条英文字幕.EndTime);
-                英文字幕对应的视频片断.DrawText("中文语音加速", 100, 100, 当前1条英文字幕.StartTime, 当前1条英文字幕.EndTime);
+                英文字幕对应的视频片断.DrawText($"中文语音加速{准备调速.ToString("0.0000")}", 100, 100, 当前1条英文字幕.StartTime, 当前1条英文字幕.EndTime);
                 //1.2如果快放后仍然中文太长，则慢放视频速度，最慢为0.7倍速。
                 if (加速1点3倍后中文音频.Duration > 当前1条英文字幕.Duration)
                 {
@@ -217,7 +217,7 @@ public class GenerateVideoScript : IPlugin<VideoInfo>, IDisposable
                     var 实际视频倍速 = Math.Min(0.7, 计划视频调速);
                     //*****************************************************************
                     var 慢放视频0点7倍 = 英文字幕对应的视频片断.ChangeSpeed(实际视频倍速);
-                    慢放视频0点7倍.DrawText($"慢放视频:{实际视频倍速.ToString("0.0000")}", 100, 100, 当前1条英文字幕.StartTime, 当前1条英文字幕.EndTime);
+                    慢放视频0点7倍.DrawText($"慢放视频:{实际视频倍速.ToString("0.0000")}", 100, 200, 当前1条英文字幕.StartTime, 当前1条英文字幕.EndTime);
 
                     //如果慢放后仍然不够，则延长
                     if (慢放视频0点7倍.Duration < 当前中文音频信息.Duration)

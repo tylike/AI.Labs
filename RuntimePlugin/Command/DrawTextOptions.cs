@@ -21,10 +21,14 @@ public class DrawTextOptions : TextOptionBase
         End = end;
     }
 
+    string FixText(string txt)
+    {
+        return txt.Replace("\\","\\\\").Replace(":","\\:");
+    }
 
     public override string GetCommand(int ident)
     {
-        var command = $"{ident.GetIdent()}drawtext=font='微软雅黑': text='{Text}': x={X}: y={Y}: fontsize={FontSize}";
+        var command = $"{ident.GetIdent()}drawtext=font='微软雅黑': text='{FixText(Text)}': x={X}: y={Y}: fontsize={FontSize}: enable='between(t,{Start.TotalSeconds},{End.TotalSeconds})'";
         if (BoxStyle != SubtitleBorderStyle.None)
         {
             command += $": box=1";//:boxborderw={BoxBorderWidth}:boxborderh={BoxBorderHeight}:boxbordera={BoxBorderAlpha}";//:color={BoxBorderColor}

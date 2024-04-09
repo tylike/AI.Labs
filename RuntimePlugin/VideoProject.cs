@@ -1,5 +1,8 @@
 ﻿using AI.Labs.Module.BusinessObjects;
 using JiebaNet.Segmenter.Common;
+using System.Diagnostics;
+using System.Net;
+using System.Text;
 
 namespace RuntimePlugin;
 
@@ -126,13 +129,94 @@ public class VideoProject
             overrideOptions = " -y";
         }
 
-        var args = $"{inputVideos} {inputAudios} -map \"{list.VideoLabel}\" {overrideOptions} {output}";
-        
-
-
+        var args = $"{inputVideos} {inputAudios} -map \"{list.VideoLabel}\" {overrideOptions} {output} -progress pipe:1";
         var basePath = Path.GetDirectoryName(output);
+        //var task = RunHttp();
         FFmpegHelper.ExecuteCommand(args, filterComplex, basePath: basePath);
+
+        //https://github.com/cmxl/FFmpeg.NET/blob/master/src/FFmpeg.NET/RegexEngine.cs#L44
+        // FFmpeg 完成后，取消所有待处理和后续的操作
+        //cancellationTokenSource.Cancel();
+        //Task.Delay(10000).Wait();
+        // 等待 HttpListener 处理当前的连接请求
+        //task.Stop();
+        //task.Close();
     }
+    //static HttpListener listener;
+    //static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    //static HttpListener RunHttp()
+    //{
+    //    // 创建和配置HttpListener
+    //    listener = new HttpListener();
+    //    listener.Prefixes.Add("http://127.0.0.1:19012/");
+    //    listener.Start();
+    //    Console.WriteLine("HTTP Listener started.");
+    //    // 在后台线程中处理连接
+    //    Task.Run(() => HandleIncomingConnections(cancellationTokenSource.Token));
+
+    //    return listener;
+    //}
+
+    //static bool runServer = true;
+
+    //private static void HandleIncomingConnections(CancellationToken token)
+    //{
+    //    try
+    //    {
+    //        while (!token.IsCancellationRequested)
+    //        {
+    //            if (listener.IsListening)
+    //            {
+    //                IAsyncResult result = listener.BeginGetContext(new AsyncCallback(ListenerCallback), listener);
+    //                // 等待请求到达或取消请求
+    //                if (WaitHandle.WaitAny(new[] { result.AsyncWaitHandle, token.WaitHandle }) == 1)
+    //                {
+    //                    // Cancel was signaled
+    //                    break;
+    //                }
+    //                listener.EndGetContext(result);
+    //            }
+    //        }
+    //    }
+    //    catch (HttpListenerException)
+    //    {
+    //        // HttpListenerException 可能在调用 Close() 时抛出
+    //    }
+    //}
+
+    //private static void ListenerCallback(IAsyncResult result)
+    //{
+    //    if (result.AsyncState is HttpListener listener)
+    //    {
+    //        try
+    //        {
+    //            // 调用 EndGetContext 来完成异步操作
+    //            HttpListenerContext context = listener.EndGetContext(result);
+    //            HttpListenerRequest request = context.Request;
+    //            HttpListenerResponse response = context.Response;
+
+    //            // 从请求中读取 POST 数据
+    //            using (StreamReader reader = new StreamReader(request.InputStream, request.ContentEncoding))
+    //            {
+    //                string postData = reader.ReadToEnd();
+    //                Debug.WriteLine($"http:{postData}");
+    //                //Console.WriteLine(postData);
+    //            }
+
+    //            // 发送响应
+    //            string responseString = "Progress received.";
+    //            byte[] buffer = Encoding.UTF8.GetBytes(responseString);
+    //            response.ContentLength64 = buffer.Length;
+    //            response.OutputStream.Write(buffer, 0, buffer.Length);
+    //            response.OutputStream.Close();
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Console.WriteLine(ex.Message);
+    //        }
+    //    }
+    //}
 }
 public class MediaSegmentList : IVideoSegmentSource
 {
