@@ -23,6 +23,34 @@ public class VideoScriptProject : BaseObject
         set { SetPropertyValue(nameof(VideoInfo), value); }
     }
 
+    List<AudioClip> AudioTrack = new List<AudioClip>();
+    List<VideoClip> VideoTrack = new List<VideoClip>();
+    
+    public string GetVideoScript()
+    {
+        var videoClips = string.Join(";\n", VideoTrack.Select( (t,idx) => $"[0:v]trim=0.11:7,setpts=PTS-STARTPTS[v{idx}]"));
+        return videoClips;
+    }
+    public string GetAudioScript()
+    {
+        var audioClips = string.Join(";\n", VideoTrack.Select( (t,idx) => $"[{idx+1}:a]asetpts=PTS*1.0000[a{idx}];"));
+        return audioClips;
+    }
+    public string GetConcatScript()
+    {
+        var videoClips = string.Join("", VideoTrack.Select((t, idx) => $"[v{idx}]"));
+        var audioClips = string.Join("", AudioTrack.Select((t, idx) => $"[a{idx}]"));
+        return $"[{videoClips}]concat=n={VideoTrack.Count}:v=1:a=0[v];[{audioClips}]concat=n={AudioTrack.Count}:v=0:a=1[a]";
+    }
+    public string GetComplexScript()
+    {
+
+    }
+    public string ExportVideo()
+    {
+        return $"[v][a]concatn=1:a=1:v=1[MediaOut];";
+    }
+
     public void CreateProject()
     {
         foreach (var item in VideoInfo.Audios)
@@ -36,6 +64,9 @@ public class VideoScriptProject : BaseObject
             var videoClip = new VideoClip(Session) { Parent = clip };
             clip.VideoClip = videoClip;
             MediaClips.Add(clip);
+
+            AudioTrack.Add(audioClip);
+            VideoTrack.Add(videoClip);
         }
     }
 
