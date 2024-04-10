@@ -90,7 +90,6 @@ public class VideoProject
 
     }
     public List<MediaFile> Sources { get; } = new List<MediaFile>();
-
     public List<AudioTrack> AudioTracks { get; } = new List<AudioTrack>();
     public List<VideoTrack> VideoTracks { get; } = new List<VideoTrack>();
     public List<SubtitleTrack> SubtitleTracks { get; } = new List<SubtitleTrack>();
@@ -131,17 +130,11 @@ public class VideoProject
         //var videoSegment = new VideoSegment();
         var lines = filterComplex.SplitLines();
         var finalFilterComplex = string.Join("\n", lines.Where(t => !t.Trim().StartsWith("#")));
-
-        var overrideOptions = "";
-        if (overrideExits)
-        {
-            overrideOptions = " -y";
-        }
-
-        var args = $"{inputVideos} {inputAudios} -map \"{videoLastSegments.VideoLabel}\" -map \"{audioLastSegments.AudioLabel}\" {overrideOptions} {output} -progress pipe:1";
+                
+        var args = $"{inputVideos} {inputAudios} -map \"{videoLastSegments.VideoLabel}\" -map \"{audioLastSegments.AudioLabel}\" {output} -progress pipe:1";
         var basePath = Path.GetDirectoryName(output);
         //var task = RunHttp();
-        FFmpegHelper.ExecuteCommand(args, finalFilterComplex, basePath: basePath);
+        //FFmpegHelper.ExecuteCommand(args, finalFilterComplex, overrideExits,basePath: basePath);
         //https://github.com/cmxl/FFmpeg.NET/blob/master/src/FFmpeg.NET/RegexEngine.cs#L44
         // FFmpeg 完成后，取消所有待处理和后续的操作
         //cancellationTokenSource.Cancel();
@@ -269,3 +262,5 @@ public class MediaSegmentList : IVideoSegmentSource
     }
 
 }
+
+

@@ -160,7 +160,7 @@ public class GenerateVideoScript : IPlugin<VideoInfo>, IDisposable
     Controller controller;
     void IPlugin<VideoInfo>.Invoke(VideoInfo video, Controller controller)
     {
-        Debugger.Break();
+        //Debugger.Break();
         this.video = video;
         this.controller = controller;
 
@@ -173,10 +173,17 @@ public class GenerateVideoScript : IPlugin<VideoInfo>, IDisposable
 
     void Output(string msg)
     {
-        controller.Application.UIThreadInvoke(() =>
+        if (controller != null)
         {
-            video.Output(msg);
-        });
+            controller.Application.UIThreadInvoke(() =>
+            {
+                video.Output(msg);
+            });
+        }
+        else
+        {
+            Console.WriteLine(msg);
+        }
     }
 
     VideoProject Core(VideoInfo info)

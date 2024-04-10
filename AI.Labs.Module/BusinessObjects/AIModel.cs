@@ -8,7 +8,6 @@ using DevExpress.XtraRichEdit.Import.Doc;
 namespace AI.Labs.Module.BusinessObjects
 {
 
-
     [XafDisplayName("模型")]
     [NavigationItem()]
     public class AIModel : XPObject

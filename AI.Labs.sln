@@ -19,13 +19,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI", "OpenAI.SDK\OpenAI
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureTest", "AzureTest\AzureTest.csproj", "{81D0A9E6-982C-472B-8FBD-F35390AD52B7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLama.WebAPI", "..\..\Llama\LLamaSharp-master\LLama.WebAPI\LLama.WebAPI.csproj", "{8B5FEE7E-4892-4A71-9098-976A689C5BF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLama.WebAPI", "..\Llama\LLamaSharp-master\LLama.WebAPI\LLama.WebAPI.csproj", "{8B5FEE7E-4892-4A71-9098-976A689C5BF0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLamaSharp.SemanticKernel", "..\..\Llama\LLamaSharp-master\LLama.SemanticKernel\LLamaSharp.SemanticKernel.csproj", "{82BA2606-1019-45DE-A8A6-23578534127B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLamaSharp.SemanticKernel", "..\Llama\LLamaSharp-master\LLama.SemanticKernel\LLamaSharp.SemanticKernel.csproj", "{82BA2606-1019-45DE-A8A6-23578534127B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SK_LLamaSharpWebApi", "..\..\Llama\semantic-kernel-LLamaSharp-main\samples\SK_LLamaSharpWebApi\SK_LLamaSharpWebApi.csproj", "{6291BDF2-A7DD-4431-98B9-EE4EFCB2CA5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SK_LLamaSharpWebApi", "..\Llama\semantic-kernel-LLamaSharp-main\samples\SK_LLamaSharpWebApi\SK_LLamaSharpWebApi.csproj", "{6291BDF2-A7DD-4431-98B9-EE4EFCB2CA5F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Connectors.AI.LLamaSharp", "..\..\Llama\semantic-kernel-LLamaSharp-main\src\Connectors.AI.LLamaSharp\Connectors.AI.LLamaSharp.csproj", "{A61182B7-FD0C-4539-8BD4-F16ED76B4111}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Connectors.AI.LLamaSharp", "..\Llama\semantic-kernel-LLamaSharp-main\src\Connectors.AI.LLamaSharp\Connectors.AI.LLamaSharp.csproj", "{A61182B7-FD0C-4539-8BD4-F16ED76B4111}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge_tts_sharp", "Edge_tts_sharp\Edge_tts_sharp.csproj", "{F53204BB-85CC-4B19-A7D2-3A26980A4C4B}"
 EndProject
@@ -35,7 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		VideoScript.csx = VideoScript.csx
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VR", "VR\VR.csproj", "{4E7ACEC6-30AD-4BC0-A6DD-9400618D3148}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VR", "VR\VR.csproj", "{4E7ACEC6-30AD-4BC0-A6DD-9400618D3148}"
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "LlamaIndex.Labs", "LlamaIndex.Labs\LlamaIndex.Labs.pyproj", "{07442246-9667-4078-B220-94A9B98B85EF}"
 EndProject
@@ -55,7 +55,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaEditing", "MediaEditin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaEditingConsole", "MediaEditingConsole\MediaEditingConsole.csproj", "{03A2AE7B-7897-42C5-881A-668B49AF4F37}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpServer", "HttpServer\HttpServer.csproj", "{E73DEB4C-4BAE-4263-876F-63AD10ED6B53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpServer", "HttpServer\HttpServer.csproj", "{E73DEB4C-4BAE-4263-876F-63AD10ED6B53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoEditTest", "VideoEditTest\VideoEditTest.csproj", "{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -772,6 +774,36 @@ Global
 		{E73DEB4C-4BAE-4263-876F-63AD10ED6B53}.Release|x64.Build.0 = Release|Any CPU
 		{E73DEB4C-4BAE-4263-876F-63AD10ED6B53}.Release|x86.ActiveCfg = Release|Any CPU
 		{E73DEB4C-4BAE-4263-876F-63AD10ED6B53}.Release|x86.Build.0 = Release|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Debug|ARM.Build.0 = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Debug|Arm64.ActiveCfg = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Debug|Arm64.Build.0 = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Debug|x64.Build.0 = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Debug|x86.Build.0 = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.GPU|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.GPU|Any CPU.Build.0 = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.GPU|ARM.ActiveCfg = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.GPU|ARM.Build.0 = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.GPU|Arm64.ActiveCfg = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.GPU|Arm64.Build.0 = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.GPU|x64.ActiveCfg = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.GPU|x64.Build.0 = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.GPU|x86.ActiveCfg = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.GPU|x86.Build.0 = Debug|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Release|ARM.ActiveCfg = Release|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Release|ARM.Build.0 = Release|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Release|Arm64.ActiveCfg = Release|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Release|Arm64.Build.0 = Release|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Release|x64.ActiveCfg = Release|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Release|x64.Build.0 = Release|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Release|x86.ActiveCfg = Release|Any CPU
+		{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

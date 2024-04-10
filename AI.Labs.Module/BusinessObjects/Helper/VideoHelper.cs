@@ -106,37 +106,38 @@ namespace AI.Labs.Module.BusinessObjects
 
         public static string AddDelayWithText(VideoInfo video, string videoPath,string outputFile = "已加字幕.mp4")
         {
-            //如果音频时长超时了,则取到这些音频，并增加视频的时长
-            var groups = video.Audios.GroupWhile(
-                (pre, current) =>
-                {
-                    return current.Diffence <= 0;
-                }
-                );
+            ////如果音频时长超时了,则取到这些音频，并增加视频的时长
+            //var groups = video.Audios.GroupWhile(
+            //    (pre, current) =>
+            //    {
+            //        return current.Diffence <= 0;
+            //    }
+            //    );
 
-            var srts = groups.Select(t => t.Last().Duration).ToList();
-            //分隔的视频            
-            var files = SplitVideo(groups, video, videoPath);
+            //var srts = groups.Select(t => t.Last().Duration).ToList();
+            ////分隔的视频            
+            //var files = SplitVideo(groups, video, videoPath);
 
-            var fileAddDuration = srts.Zip(files, (d, f) => (File: f, Duration: d)).ToArray();
-            //增加时长
-            var fixedSubtitle = Path.Combine(video.ProjectPath, "已修正时长.mp4");
-            Debug.WriteLine("===============");
-            Debug.WriteLine("为每个小段增加时长,与音频时长相同:");
-            var logs = 增加时长(fileAddDuration, fixedSubtitle);
-            video.AddLog("增加时长完成", logs.Item2);
+            //var fileAddDuration = srts.Zip(files, (d, f) => (File: f, Duration: d)).ToArray();
+            ////增加时长
+            //var fixedSubtitle = Path.Combine(video.ProjectPath, "已修正时长.mp4");
+            //Debug.WriteLine("===============");
+            //Debug.WriteLine("为每个小段增加时长,与音频时长相同:");
+            //var logs = 增加时长(fileAddDuration, fixedSubtitle);
+            //video.AddLog("增加时长完成", logs.Item2);
 
 
-            var addTexted = Path.Combine(video.ProjectPath, outputFile);
+            //var addTexted = Path.Combine(video.ProjectPath, outputFile);
 
-            Debug.WriteLine("===============");
-            Debug.WriteLine("填加说明文字:");
-            logs = AddText(
-                groups.Select(t => (Time: t.Last().Subtitle.EndTime, Duration: t.Last().Diffence)).ToArray(),
-                fixedSubtitle, addTexted, new DrawTextOptions { }
-                );
-            video.AddLog("填加说明文字完成", logs.Item2);
-            return addTexted;
+            //Debug.WriteLine("===============");
+            //Debug.WriteLine("填加说明文字:");
+            //logs = AddText(
+            //    groups.Select(t => (Time: t.Last().Subtitle.EndTime, Duration: t.Last().Diffence)).ToArray(),
+            //    fixedSubtitle, addTexted, new DrawTextOptions { }
+            //    );
+            //video.AddLog("填加说明文字完成", logs.Item2);
+            //return addTexted;
+            return null;
         }
 
         public static string[] SplitVideo(IEnumerable<IEnumerable<AudioBookTextAudioItem>> groups, VideoInfo video, string videoPath)

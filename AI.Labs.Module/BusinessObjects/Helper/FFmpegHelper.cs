@@ -28,18 +28,29 @@ namespace AI.Labs.Module.BusinessObjects
         /// <param name="filterComplex"></param>
         /// <param name="basePath"></param>
         /// <param name="pause">ffmpeg执行完成后,是否暂停</param>
-        public static string ExecuteCommand(string mainParameter, string filterComplex, string basePath = null, bool pause = false, Action<string> outputLog = null)
+        public static string ExecuteCommand(
+            string inputFiles,
+            string outputFiles,
+            string mainParameter, string filterComplex,
+            bool overWriteExist, 
+            double duration ,
+            string basePath = null, 
+            bool pause = false, 
+            Action<string> outputLog = null
+            )
         {
             if (string.IsNullOrEmpty(filterComplex))
             {
                 throw new ArgumentException("滤镜脚本为空!退出！", nameof(filterComplex));
             }
-
-
+            if (duration == 0)
+                throw new ArgumentException("视频时长不能为0",nameof(duration));
             if (basePath == null)
             {
                 basePath = Environment.GetEnvironmentVariable("TEMP");
             }
+
+
 
             var filterComplexScript = Path.Combine(basePath, "FilterComplexScript.txt");
             if (File.Exists(filterComplexScript))
@@ -50,8 +61,16 @@ namespace AI.Labs.Module.BusinessObjects
 
             //Output("开始ffmpeg");
             //var error = Path.Combine(basePath, "error.txt");
+
+
+            var overrideOptions = "";
+            if (overWriteExist)
+            {
+                overrideOptions = " -y";
+            }
+
             var bat = Path.Combine(basePath, "bat.bat");
-            var masterCommand = $@"{FFmpegHelper.ffmpegFile} -/filter_complex {filterComplexScript} {mainParameter}";
+            var masterCommand = $@"{FFmpegHelper.ffmpegFile} {inputFiles} -/filter_complex {filterComplexScript} {mainParameter} -t {duration.ToString("0.000")} {overrideOptions} {outputFiles}";
             var batContent = @$"{masterCommand}
 ";
             File.WriteAllText(bat, batContent);
@@ -77,6 +96,7 @@ namespace AI.Labs.Module.BusinessObjects
                 {
                     outputLog?.Invoke(e.Data);
                     Debug.WriteLine("dbg:" + e.Data);
+                    Console.WriteLine(e.Data);
                     output.AppendLine(e.Data);
                 }
             }
