@@ -1,10 +1,12 @@
-﻿using System.Diagnostics;
+﻿using DevExpress.Charts.Native;
+using Microsoft.CodeAnalysis.Operations;
+using System.Diagnostics;
 using System.Text;
 using YoutubeExplode.Videos;
 
 namespace AI.Labs.Module.BusinessObjects
 {
-    public class FFmpegHelper
+    public static class FFmpegHelper
     {
         const string ffprobe = @"D:\ffmpeg.gui\last\ffprobe.exe";
         public const string ffmpegFile = @"D:\ffmpeg.gui\last\ffmpeg.exe";
@@ -32,10 +34,10 @@ namespace AI.Labs.Module.BusinessObjects
             string inputFiles,
             string outputFiles,
             string mainParameter, string filterComplex,
-            bool overWriteExist, 
-            double duration ,
-            string basePath = null, 
-            bool pause = false, 
+            bool overWriteExist,
+            double duration,
+            string basePath = null,
+            bool pause = false,
             Action<string> outputLog = null
             )
         {
@@ -44,7 +46,7 @@ namespace AI.Labs.Module.BusinessObjects
                 throw new ArgumentException("滤镜脚本为空!退出！", nameof(filterComplex));
             }
             if (duration == 0)
-                throw new ArgumentException("视频时长不能为0",nameof(duration));
+                throw new ArgumentException("视频时长不能为0", nameof(duration));
             if (basePath == null)
             {
                 basePath = Environment.GetEnvironmentVariable("TEMP");
@@ -116,6 +118,48 @@ namespace AI.Labs.Module.BusinessObjects
             {
                 throw ex;
             }
+        }
+
+
+        public static string ChangeVideoSpeed(decimal targetSpeed, string inputLables = null, string outputLables = null)
+        {
+            var sb = new StringBuilder();
+            sb.ChangeAudioSpeed(targetSpeed, inputLables, outputLables);
+            return sb.ToString();
+        }
+
+        public static void ChangeAudioSpeed(this StringBuilder sb,decimal targetSpeed, string inputLables = null, string outputLables = null)
+        {
+            //[0:v]trim=0.11:7,setpts=PTS-STARTPTS[v{idx}]
+            sb.AppendNotEmptyOrNull(inputLables);
+            sb.Append($"asetpts=PTS*{targetSpeed.ToString("0.00000")}");
+            sb.AppendNotEmptyOrNull(outputLables);
+        }
+
+        public static void AppendNotEmptyOrNull(this StringBuilder sb, string text, bool appendLine = false)
+        {
+            if (!string.IsNullOrEmpty(text))
+            {
+                sb.Append(text);
+                if (appendLine)
+                    sb.AppendLine();
+            }
+        }
+        public static string Join(this IEnumerable<string> values, string separator = "")
+        {
+            return string.Join(separator, values);
+        }
+        public static string ToFFmpegSeconds(this TimeSpan time)
+        {
+            return time.TotalSeconds.ToString("0.0#####");
+        }
+        public static TimeSpan AddMilliseconds(this TimeSpan time, double milliseconds)
+        {
+            return time.Add(TimeSpan.FromMilliseconds(milliseconds));
+        }
+        public static TimeSpan Subtract(this TimeSpan time, double substract)
+        {
+            return time.Subtract(TimeSpan.FromMilliseconds(substract));
         }
     }
 }

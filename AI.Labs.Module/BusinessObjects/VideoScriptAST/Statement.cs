@@ -1,4 +1,5 @@
-﻿using DevExpress.Persistent.BaseImpl;
+﻿using AI.Labs.Module.BusinessObjects.VideoScriptAST.V3;
+using DevExpress.Persistent.BaseImpl;
 using DevExpress.Xpo;
 using System.Drawing;
 
