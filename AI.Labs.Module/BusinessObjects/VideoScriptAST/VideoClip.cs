@@ -11,6 +11,7 @@ public class VideoClip : ClipBase<VideoClip>
     {
 
     }
+
     public string GetScript()
     {
         //加文字说明
@@ -36,14 +37,22 @@ public class VideoClip : ClipBase<VideoClip>
     {
         return $"[v{Parent.Index}]";
     }
-
+    /// <summary>
+    /// 根据音频时长调整视频时长
+    /// 因为音频时长可能更长
+    /// </summary>
+    /// <returns></returns>
     public double 计算延时()
     {
         //如果音频的时长 大于 当前视频的时长
-        if (this.Parent.AudioClip.Duration > Duration)
+        var diff = (int)(Parent.AudioClip.Duration - Duration).TotalMilliseconds;
+        if (diff>10)
         {
+            var oldDuration = (int)this.Duration.TotalMilliseconds;
             //延时：音频时长-视频时长
-            this.Delay = (int)(this.Parent.AudioClip.Duration - Duration).TotalMilliseconds;
+            this.Delay = diff;
+
+            this.End = this.End.AddMilliseconds(Delay.Value);
 
             var text = $"视频延时{Delay}";
             //显示调试信息：
@@ -53,23 +62,30 @@ public class VideoClip : ClipBase<VideoClip>
                 End,
                 End.Add(TimeSpan.FromMilliseconds(Delay.Value))
                 );
+
+            ChangeLog("按音频时长延时视频","","",oldDuration, (int)Duration.TotalMilliseconds, 0, this.Delay.Value, (int)Parent.AudioClip.Duration.TotalMilliseconds - (int)Duration.TotalMilliseconds);
+
+
             return this.Delay.Value;
         }
         return 0;
     }
 
-
-
-
-
+    /// <summary>
+    /// 根据音频时长调整视频时长
+    /// 因为音频时长可能更长
+    /// </summary>
+    /// <returns></returns>
     public double 计算调速()
     {
         //计算如果播放完整,应该用多快的速度
         //*****************************************************************
         if (Parent.AudioClip.Duration > Duration)
         {
-            var 计划速度 = Duration.TotalMilliseconds / Parent.AudioInfo.Duration;
+            var 计划速度 = Duration.TotalMilliseconds / Parent.AudioClip.Duration.TotalMilliseconds;
             var 实际倍速 = Math.Max(计划速度, 0.7d);
+
+            var oldDuration = (int)this.Parent.AudioClip.Duration.TotalMilliseconds;
 
             End = Start.AddMilliseconds( Duration.TotalMilliseconds / 实际倍速);
             ChangeSpeed = 实际倍速;
@@ -78,6 +94,11 @@ public class VideoClip : ClipBase<VideoClip>
             //drawtext=fontfile=font.ttf:fontsize=24:fontcolor=white:box=1:boxcolor=black@0.5:boxborderw=5:x=0:y=(h-text_h)/2
             //drawtext=fontfile=font.ttf:fontsize=24:fontcolor=white:box=1:boxcolor=black@0.5:boxborderw=5:x=w-tw:y=(h-text_h)/2
             Parent.Project.DrawText("w-tw", "0", $"视频变速:{ChangeSpeed:0.0#####}", 24, Parent.AudioInfo.Subtitle.StartTime, Parent.AudioInfo.Subtitle.EndTime);
+
+
+
+            ChangeLog("按音频时长慢放视频", "", "", oldDuration, (int)Duration.TotalMilliseconds, 计划速度, 实际倍速, (int)Duration.TotalMilliseconds - (int)this.Parent.AudioClip.Duration.TotalMilliseconds);
+
             return ChangeSpeed.Value;
         }
         else
@@ -85,6 +106,15 @@ public class VideoClip : ClipBase<VideoClip>
             Parent.Project.DrawText("w-tw", "0", $"视频无变速", 24, Parent.AudioInfo.Subtitle.StartTime, Parent.AudioInfo.Subtitle.EndTime);
         }
         return 1;
+    }
+
+    public void LogTitle()
+    {
+        Project.Log("操作,目标类型,目标内容,序号,调整前,调整后,调整后差异,计划变速,实际变速");
+    }
+    public void ChangeLog(string 操作, string 目标类型, string 目标内容, int 调整前, int 调整后, double 计划, double 实际, int 调整后差异)
+    {
+        Project.Log($"{操作},{目标类型},{目标内容},{this.Index},{调整前},{调整后},{调整后差异},{计划:0.0####},{实际:0.0####}");
     }
 
     //要在视频片段前添加2秒的黑屏,可以使用color滤镜生成一个黑色视频,然后使用concat滤镜将其与原视频连接起来:

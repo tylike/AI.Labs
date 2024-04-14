@@ -5,11 +5,12 @@ using Humanizer;
 
 namespace AI.Labs.Module.BusinessObjects;
 
-public abstract class ClipBase<T> : BaseObject
+
+
+public abstract class ClipBase : BaseObject
 {
     public ClipBase(Session s):base(s)
     {
-        
     }
     /// <summary>
     /// 代表了输入audio的序号
@@ -22,8 +23,6 @@ public abstract class ClipBase<T> : BaseObject
         get { return GetPropertyValue<int>(nameof(Index)); }
         set { SetPropertyValue(nameof(Index), value); }
     }
-
-
     public MediaClip Parent
     {
         get { return GetPropertyValue<MediaClip>(nameof(Parent)); }
@@ -31,19 +30,6 @@ public abstract class ClipBase<T> : BaseObject
     }
 
     public VideoScriptProject Project => Parent?.Project;
-
-    public T Before
-    {
-        get { return GetPropertyValue<T>(nameof(Before)); }
-        set { SetPropertyValue(nameof(Before), value); }
-    }
-
-    public T Next
-    {
-        get { return GetPropertyValue<T>(nameof(Next)); }
-        set { SetPropertyValue(nameof(Next), value); }
-    }
-
     public TimeSpan Start
     {
         get { return GetPropertyValue<TimeSpan>(nameof(Start)); }
@@ -71,34 +57,45 @@ public abstract class ClipBase<T> : BaseObject
     }
     public SubtitleItem Subtitle => Parent.Subtitle;
 
-    public void LogChangeSpeed()
+    [Association,Aggregated]
+    public XPCollection<ClipLog> Logs
     {
-        //int diffence,
-        int afterDiffence = (int)this.Duration.TotalMilliseconds - Subtitle.Duration;
+        get=>GetCollection<ClipLog>(nameof(Logs));
+    }
 
-        Project.Log($"{this.Index},{Subtitle.StartTime},{Subtitle.EndTime},{Subtitle.Duration},{(this.Duration.TotalMilliseconds - Subtitle.Duration) },{this.ChangeSpeed},{afterDiffence.ToString()},{this.GetType().Name}.调速");
-    }
-    public void LogDelay()
+}
+public abstract class ClipBase<T> : ClipBase
+{
+    public ClipBase(Session s):base(s)
     {
-        //int diffence,
-        int afterDiffence = (int)this.Duration.TotalMilliseconds - Subtitle.Duration;
-        Project.Log($"{this.Index},{Subtitle.StartTime},{Subtitle.EndTime},{Subtitle.Duration},{Parent.AudioInfo.Diffence},{this.Delay},{afterDiffence.ToString()},{this.GetType().Name}.延时");
+        
     }
-    protected override void OnChanged(string propertyName, object oldValue, object newValue)
+    public T Before
     {
-        base.OnChanged(propertyName, oldValue, newValue);
-        if (!IsLoading)
-        {
-            if (nameof(ChangeSpeed) == propertyName)
-            {
-                LogChangeSpeed();
-            }
-            if (nameof(Delay) == propertyName)
-            {
-                LogDelay();
-            }
-        }
+        get { return GetPropertyValue<T>(nameof(Before)); }
+        set { SetPropertyValue(nameof(Before), value); }
     }
+
+    public T Next
+    {
+        get { return GetPropertyValue<T>(nameof(Next)); }
+        set { SetPropertyValue(nameof(Next), value); }
+    }
+    //protected override void OnChanged(string propertyName, object oldValue, object newValue)
+    //{
+    //    base.OnChanged(propertyName, oldValue, newValue);
+    //    if (!IsLoading)
+    //    {
+    //        if (nameof(ChangeSpeed) == propertyName)
+    //        {
+    //            LogChangeSpeed();
+    //        }
+    //        if (nameof(Delay) == propertyName)
+    //        {
+    //            LogDelay();
+    //        }
+    //    }
+    //}
 
 
 }
