@@ -79,7 +79,8 @@ public class MediaClip : BaseObject
             Parent = this,
             Index = this.AudioInfo.Index + Project.VideoSources.Count,
             StartTime = this.AudioInfo.Subtitle.StartTime,
-            EndTime = TimeSpan.FromMilliseconds(this.AudioInfo.Subtitle.StartTime.TotalMilliseconds + this.AudioInfo.Duration)
+            EndTime = TimeSpan.FromMilliseconds(this.AudioInfo.Subtitle.StartTime.TotalMilliseconds + this.AudioInfo.Duration),
+            OutputFile = this.AudioInfo.OutputFileName
         };        
         return AudioClip;
     }

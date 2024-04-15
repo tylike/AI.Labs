@@ -229,7 +229,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private void SaveCNSRT_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            SaveSRTToFile(ViewCurrentObject, SrtLanguage.中文);
+            ViewCurrentObject.SaveSRTToFile(SrtLanguage.中文);
         }
 
         private async void GetDontTranslateWords_Execute(object sender, SimpleActionExecuteEventArgs e)
@@ -442,7 +442,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             #region 2.加载字幕内容到系统(数据库)
             LoadSrt();
             #endregion
-            SaveSRTToFile(ViewCurrentObject, SrtLanguage.英文);
+            ViewCurrentObject.SaveSRTToFile(SrtLanguage.英文);
         }
 
         private async void FixSrt_Execute(object sender, SimpleActionExecuteEventArgs e)
@@ -500,7 +500,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private void SaveENSr_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            SaveSRTToFile(ViewCurrentObject, SrtLanguage.英文);
+            ViewCurrentObject.SaveSRTToFile(SrtLanguage.英文);
         }
 
         private static readonly HashSet<string> Abbreviations = new HashSet<string>
@@ -730,17 +730,11 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 await TranslateSubtitle(t, subtitles, item, this, ObjectSpace, true);
                 
             }
-            SaveSRTToFile(t, SrtLanguage.中文);
+            t.SaveSRTToFile(SrtLanguage.中文);
             ObjectSpace.CommitChanges();
         }
 
-        private static void SaveSRTToFile(VideoInfo t, SrtLanguage lang)
-        {
-            //保存翻译结果
-            var fileName = Path.Combine(t.ProjectPath, $"{t.Oid}.{lang.ToString()}.srt");
-            SRTHelper.SaveToSrtFile(t.Subtitles, fileName, lang);
-            t.VideoChineseSRT = fileName;
-        }
+
 
         private async void TranslateSubtitlesV2_Execute(object sender, SimpleActionExecuteEventArgs e)
         {

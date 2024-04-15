@@ -16,6 +16,7 @@ using com.sun.org.apache.bcel.@internal.generic;
 using AI.Labs.Module.BusinessObjects.AudioBooks;
 using AI.Labs.Module.BusinessObjects.STT;
 using System.Security.Cryptography;
+using AI.Labs.Module.BusinessObjects.Helper;
 //using SubtitlesParser.Classes.Parsers;
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 {
@@ -743,6 +744,15 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         public void Output(string str)
         {
             this.VideoScript.Output += $"{Environment.NewLine} {DateTime.Now.TimeOfDay} {str}";
+        }
+
+        public void SaveSRTToFile(SrtLanguage lang)
+        {
+            var t = this;
+            //保存翻译结果
+            var fileName = Path.Combine(t.ProjectPath, $"{t.Oid}.{lang.ToString()}.srt");
+            SRTHelper.SaveToSrtFile(t.Subtitles, fileName, lang);
+            t.VideoChineseSRT = fileName;
         }
     }
 

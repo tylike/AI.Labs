@@ -140,6 +140,7 @@ public class VideoScriptProject : BaseObject
         set { SetPropertyValue(nameof(OutputVideoFile), value); }
     }
 
+
     public void Export()
     {
         var clips = MediaClips.OrderBy(t => t.Index).ToList();
@@ -174,15 +175,15 @@ public class VideoScriptProject : BaseObject
 
         File.WriteAllText(Path.Combine(basePath, "log.csv"), OperateLogs.Join("\n"));
 
-        FFmpegHelper.ExecuteCommand(
-            $"{GetInputVideosParameter()} {GetInputAudiosParameter()}",
-            OutputVideoFile,
-            args,
-            filterComplex,
-            true,
-            duration.TotalSeconds + 1,
-            basePath: basePath
-            );
+        //FFmpegHelper.ExecuteCommand(
+        //    $"{GetInputVideosParameter()} {GetInputAudiosParameter()}",
+        //    OutputVideoFile,
+        //    args,
+        //    filterComplex,
+        //    true,
+        //    duration.TotalSeconds + 1,
+        //    basePath: basePath
+        //    );
     }
 
     public string ReleaseProductScript => $"[v][a]concat=n=1:a=1:v=1[MediaOut];";
@@ -230,10 +231,19 @@ public class VideoScriptProject : BaseObject
     } 
     #endregion
 
-
     public void CreateProject()
     {
+        var subtitles = VideoInfo.Subtitles.OrderBy(t => t.Index).ToArray();
+        var sfirst = subtitles.First();
+        var slast = subtitles.Last();
+
+
+
         MediaClip last = null;
+        var videoClips = Path.Combine(VideoInfo.ProjectPath,"VideoClip","%4d.mp4");
+
+        FFmpegHelper.SplitVideo(VideoInfo.VideoFile, VideoInfo.Audios.Select(t=>t.Subtitle.EndTime.TotalSeconds).ToArray() ,videoClips);
+
         foreach (var item in VideoInfo.Audios.OrderBy(t=>t.Index))
         {
             var clip = new MediaClip(Session)
@@ -250,7 +260,7 @@ public class VideoScriptProject : BaseObject
                 clip.AudioClip.Before = last.AudioClip;
 
                 last.VideoClip.Next = clip.VideoClip;
-                last.AudioClip.Next = clip.AudioClip;                
+                last.AudioClip.Next = clip.AudioClip;
             }
             last = clip;
         }

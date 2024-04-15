@@ -5,6 +5,7 @@ using edu.stanford.nlp.trees.tregex.gui;
 using sun.tools.tree;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
+using System.Security.AccessControl;
 using VisioForge.Core.Types.MediaPlayer;
 using static com.sun.net.httpserver.Authenticator;
 
@@ -45,6 +46,10 @@ public class AudioClip : ClipBase<AudioClip>
             waitAdjustObject.ChangeSpeed = 实际倍速;
             //字幕为标准:
             ChangeSpeedLog(waitAdjust, target, waitAdjustObject, 计划倍速, 原时长);
+
+            var newOutputFile = Path.Combine(waitAdjustObject.Parent.Project.VideoInfo.ProjectPath,"audio", $"change_speed_{实际倍速:0.0###}_{waitAdjustObject.Index}.mp3");
+            FFmpegHelper.ChangeAudioSpeed(waitAdjustObject.OutputFile, 实际倍速, newOutputFile);
+            waitAdjustObject.OutputFile = newOutputFile;
             return 实际倍速;
         }
         else
@@ -57,6 +62,13 @@ public class AudioClip : ClipBase<AudioClip>
     public double 计算延时()
     {
         return 计算延时(this,Parent.VideoClip,this);        
+    }
+
+    public override void RunDelay(int delay)
+    {
+        var newOutputFile = Path.Combine(Parent.Project.VideoInfo.ProjectPath, "audio", $"delay_{delay}_{Index}.mp3");
+        FFmpegHelper.DelayAudio(this.OutputFile,delay,newOutputFile);
+        this.OutputFile = newOutputFile;
     }
 
 

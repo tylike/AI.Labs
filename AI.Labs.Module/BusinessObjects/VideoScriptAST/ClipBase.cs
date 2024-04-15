@@ -28,6 +28,15 @@ public abstract class ClipBase : BaseObject, IClip
     public ClipBase(Session s) : base(s)
     {
     }
+
+    [Size(-1)]
+    [ModelDefault("RowCount", "0")]
+    public string OutputFile
+    {
+        get { return GetPropertyValue<string>(nameof(OutputFile)); }
+        set { SetPropertyValue(nameof(OutputFile), value); }
+    }
+
     /// <summary>
     /// 代表了输入audio的序号
     /// 也将代表输出标签时使用
@@ -63,10 +72,7 @@ public abstract class ClipBase : BaseObject, IClip
 
     [ModelDefault("DisplayFormat", @"hh\:mm\:ss\.fff")]
     public TimeSpan Duration => EndTime - StartTime;
-
     public abstract string GetOutputLabel();
-    
-
     public int? Delay
     {
         get { return GetPropertyValue<int?>(nameof(Delay)); }
@@ -143,7 +149,7 @@ public abstract class ClipBase : BaseObject, IClip
            );
     }
 
-    public static double 计算延时(IClip waitAdjust, IClip target, ClipBase waitAdjustObject)
+    public double 计算延时(IClip waitAdjust, IClip target, ClipBase waitAdjustObject)
     {
         var waitAdjustType = waitAdjust.GetClipType();
         var targetType = target.GetClipType();
@@ -152,12 +158,13 @@ public abstract class ClipBase : BaseObject, IClip
             var oldDuration = waitAdjust.Duration;
             var oldEnd = waitAdjust.EndTime;
             waitAdjust.EndTime = target.EndTime;
-            waitAdjustObject.Delay = target.Duration - oldDuration;//(int)(Parent.VideoClip.Duration - this.Duration).TotalMilliseconds;
-                                                                   //var text = $"延时{Delay}";
-                                                                   //Parent.Project.DrawText(10, 60, text, 24,
-                                                                   //    TimeSpan.FromMilliseconds(Subtitle.StartTime.TotalMilliseconds + Subtitle.Duration),
-                                                                   //    Subtitle.EndTime
-                                                                   //    );
+            waitAdjustObject.Delay = target.Duration - oldDuration;
+            //(int)(Parent.VideoClip.Duration - this.Duration).TotalMilliseconds;
+            //var text = $"延时{Delay}";
+            //Parent.Project.DrawText(10, 60, text, 24,
+            //    TimeSpan.FromMilliseconds(Subtitle.StartTime.TotalMilliseconds + Subtitle.Duration),
+            //    Subtitle.EndTime
+            //    );
 
             var logText = $"{waitAdjustType}延时:{waitAdjustType}时间:{waitAdjust.StartTime.GetTimeString()}-{waitAdjust.EndTime.GetTimeString()}，" +
                  $"时长:{oldDuration}，计划将{waitAdjustType}从{oldDuration}ms=>{target.Duration}ms(+{waitAdjustObject.Delay}ms)，" +
@@ -173,9 +180,14 @@ public abstract class ClipBase : BaseObject, IClip
                 logText,
                 "必然成功"
                 );
+            RunDelay(waitAdjustObject.Delay.Value);
             return waitAdjustObject.Delay.Value;
         }
         return 0;
+    }
+    public virtual void RunDelay(int delay)
+    {
+        
     }
 
     public abstract string GetClipType();

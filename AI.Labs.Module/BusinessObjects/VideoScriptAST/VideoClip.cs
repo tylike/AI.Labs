@@ -60,7 +60,12 @@ public class VideoClip : ClipBase<VideoClip>
 
                 next.Parent.AudioClip.StartTime = next.Parent.AudioClip.StartTime.AddMilliseconds(rst);
                 next.Parent.AudioClip.EndTime = next.Parent.AudioClip.EndTime.AddMilliseconds(rst);
+
+                next.Parent.VideoClip.StartTime = next.Parent.VideoClip.StartTime.AddMilliseconds(rst);
+                next.Parent.VideoClip.EndTime = next.Parent.VideoClip.EndTime.AddMilliseconds(rst);
+
                 next.TextLogs += $"S+{rst};";
+                next.Parent.Commands +="音频后移"+rst+";";
                 next = next.Next;
             }
         }

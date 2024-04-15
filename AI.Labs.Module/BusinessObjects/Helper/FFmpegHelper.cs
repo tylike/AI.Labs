@@ -1,4 +1,5 @@
 ﻿using DevExpress.Charts.Native;
+using FFMpegCore.Enums;
 using Microsoft.CodeAnalysis.Operations;
 using System.Diagnostics;
 using System.Text;
@@ -10,12 +11,12 @@ namespace AI.Labs.Module.BusinessObjects
     {
         const string ffprobe = @"D:\ffmpeg.gui\last\ffprobe.exe";
         public const string ffmpegFile = @"D:\ffmpeg.gui\last\ffmpeg.exe";
-        public static void ExecuteCommand(string command)
+        public static void ExecuteCommand(string command, bool useShellExecute = false)
         {
             var pi = new ProcessStartInfo();
             pi.FileName = ffmpegFile;
             pi.Arguments = command;
-            pi.UseShellExecute = true;
+            pi.UseShellExecute = useShellExecute;
             var inf = Process.Start(pi);
             inf.WaitForExit();
             Debug.WriteLine($"{pi.FileName} {pi.Arguments}");
@@ -120,6 +121,10 @@ namespace AI.Labs.Module.BusinessObjects
             }
         }
 
+        public static void ChangeAudioSpeed(string inputFileName, double speed, string outputFile)
+        {
+            FFmpegHelper.ExecuteCommand($"-i {inputFileName} -filter:a:0 \"atempo={speed:0.0###}\" {outputFile} -y");
+        }
 
         public static string ChangeVideoSpeed(decimal targetSpeed, string inputLables = null, string outputLables = null)
         {
@@ -128,7 +133,7 @@ namespace AI.Labs.Module.BusinessObjects
             return sb.ToString();
         }
 
-        public static void ChangeAudioSpeed(this StringBuilder sb,decimal targetSpeed, string inputLables = null, string outputLables = null)
+        public static void ChangeAudioSpeed(this StringBuilder sb, decimal targetSpeed, string inputLables = null, string outputLables = null)
         {
             //[0:v]trim=0.11:7,setpts=PTS-STARTPTS[v{idx}]
             sb.AppendNotEmptyOrNull(inputLables);
@@ -164,6 +169,24 @@ namespace AI.Labs.Module.BusinessObjects
         public static string GetTimeString(this TimeSpan time)
         {
             return time.ToString(@"hh\:mm\:ss\.fff");
+        }
+
+        public static void DelayAudio(string inputFileName, double delay, string newOutputFile)
+        {
+            //-i input.mp3 -af apad=pad_dur=3000 output.mp3
+            ExecuteCommand($"-i {inputFileName} -af apad=pad_dur={(delay / 1000)} {newOutputFile} -y");
+        }
+
+        /// <summary>
+        /// D:\videoInfo\2\v\video_%04d.mp4
+        /// </summary>
+        /// <param name="inputFileName"></param>
+        /// <param name="times"></param>
+        /// <param name="outputFileNameTemplate"></param>
+        public static void SplitVideo(string inputFileName, double[] times, string outputFileNameTemplate)
+        {
+            //ffmpeg -i input.mp4 -f segment -segment_times 10.500,22.712,35.145,48.376 -c copy output_%03d.mp4
+            ExecuteCommand($"-i {inputFileName} -f segment -segment_times {string.Join(",", times.Select(t => t.ToString("0.000")))} {outputFileNameTemplate} -y");
         }
     }
 }
