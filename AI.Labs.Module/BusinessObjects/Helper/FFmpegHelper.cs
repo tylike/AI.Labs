@@ -183,7 +183,7 @@ namespace AI.Labs.Module.BusinessObjects
         /// <param name="inputFileName"></param>
         /// <param name="times"></param>
         /// <param name="outputFileNameTemplate"></param>
-        public static void SplitVideo(string inputFileName, double[] times, string outputFileNameTemplate)
+        public static void SplitVideo(string inputFileName, IEnumerable< double> times, string outputFileNameTemplate)
         {
             //ffmpeg -i input.mp4 -f segment -segment_times 10.500,22.712,35.145,48.376 -c copy output_%03d.mp4
             ExecuteCommand($"-i {inputFileName} -f segment -segment_times {string.Join(",", times.Select(t => t.ToString("0.000")))} {outputFileNameTemplate} -y");

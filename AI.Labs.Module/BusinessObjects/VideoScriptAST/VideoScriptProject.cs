@@ -234,15 +234,18 @@ public class VideoScriptProject : BaseObject
     public void CreateProject()
     {
         var subtitles = VideoInfo.Subtitles.OrderBy(t => t.Index).ToArray();
-        var sfirst = subtitles.First();
-        var slast = subtitles.Last();
 
+        var times = subtitles.Take(subtitles.Length - 1).Select(t => t.EndTime.TotalSeconds).ToList();
+        times.Add(subtitles.Last().StartTime.TotalSeconds);
+
+        //所有的结束时间，但除了最后一条用开始时间
+        
 
 
         MediaClip last = null;
         var videoClips = Path.Combine(VideoInfo.ProjectPath,"VideoClip","%4d.mp4");
 
-        FFmpegHelper.SplitVideo(VideoInfo.VideoFile, VideoInfo.Audios.Select(t=>t.Subtitle.EndTime.TotalSeconds).ToArray() ,videoClips);
+        FFmpegHelper.SplitVideo(VideoInfo.VideoFile, times ,videoClips);
 
         foreach (var item in VideoInfo.Audios.OrderBy(t=>t.Index))
         {
