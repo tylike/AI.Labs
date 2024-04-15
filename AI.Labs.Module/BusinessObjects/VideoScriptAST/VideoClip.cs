@@ -1,6 +1,9 @@
 ﻿using DevExpress.Xpo;
+using edu.stanford.nlp.trees.tregex.gui;
 using sun.security.provider;
+using System.Drawing.Drawing2D;
 using VisioForge.Core.Types.MediaPlayer;
+using static com.sun.net.httpserver.Authenticator;
 
 namespace AI.Labs.Module.BusinessObjects;
 
@@ -22,8 +25,8 @@ public class VideoClip : ClipBase<VideoClip>
 
         var inputLables = "[0:v]";
         var outputLables = $"[v{Parent.Index}]";
-        var start = Start.ToFFmpegSeconds();
-        var end = End.ToFFmpegSeconds();
+        var start = StartTime.ToFFmpegSeconds();
+        var end = EndTime.ToFFmpegSeconds();
         //setpts=PTS-STARTPTS 是修复视频时间戳，防止静止画面的出现
         var setpts = "setpts=PTS-STARTPTS";
         if (ChangeSpeed.HasValue && ChangeSpeed.Value != 1.0)
@@ -44,31 +47,53 @@ public class VideoClip : ClipBase<VideoClip>
     /// <returns></returns>
     public double 计算延时()
     {
-        //如果音频的时长 大于 当前视频的时长
-        var diff = (int)(Parent.AudioClip.Duration - Duration).TotalMilliseconds;
-        if (diff>10)
+        var rst = 计算延时(this, Parent.AudioClip, this);
+        //视频延长后,字幕需要后移
+        //由于延长了视频，所以把字幕时间与视频时间同步
+        if (rst > 0)
         {
-            var oldDuration = (int)this.Duration.TotalMilliseconds;
-            //延时：音频时长-视频时长
-            this.Delay = diff;
+            var next = this.Next;
+            while (next != null)
+            {
+                next.Subtitle.StartTime = next.Subtitle.StartTime.AddMilliseconds(rst);
+                next.Subtitle.EndTime = next.Subtitle.EndTime.AddMilliseconds(rst);
 
-            this.End = this.End.AddMilliseconds(Delay.Value);
-
-            var text = $"视频延时{Delay}";
-            //显示调试信息：
-            //开始时间:原视频结束时间
-            //结束时间:原视频结束时间+延时
-            Parent.Project.DrawText(500, 60, text, 24,
-                End,
-                End.Add(TimeSpan.FromMilliseconds(Delay.Value))
-                );
-
-            ChangeLog("按音频时长延时视频","","",oldDuration, (int)Duration.TotalMilliseconds, 0, this.Delay.Value, (int)Parent.AudioClip.Duration.TotalMilliseconds - (int)Duration.TotalMilliseconds);
-
-
-            return this.Delay.Value;
+                next.Parent.AudioClip.StartTime = next.Parent.AudioClip.StartTime.AddMilliseconds(rst);
+                next.Parent.AudioClip.EndTime = next.Parent.AudioClip.EndTime.AddMilliseconds(rst);
+                next.TextLogs += $"S+{rst};";
+                next = next.Next;
+            }
         }
-        return 0;
+        
+
+        return rst;
+        ////如果音频的时长 大于 当前视频的时长
+        //var diff = (int)(Parent.AudioClip.Duration - Duration).TotalMilliseconds;
+        //if (diff > 10)
+        //{
+        //    var oldDuration = (int)this.Duration.TotalMilliseconds;
+        //    var oldEnd = this.EndTime;
+        //    //延时：音频时长-视频时长
+        //    this.Delay = diff;
+
+        //    this.EndTime = this.EndTime.AddMilliseconds(Delay.Value);
+
+        //    var text = $"视频延时{Delay}";
+        //    //显示调试信息：
+        //    //开始时间:原视频结束时间
+        //    //结束时间:原视频结束时间+延时
+        //    Parent.Project.DrawText(500, 60, text, 24,
+        //        EndTime,
+        //        EndTime.Add(TimeSpan.FromMilliseconds(Delay.Value))
+        //        );
+        //    return this.Delay.Value;
+        //}
+        //return 0;
+    }
+
+    public override string GetClipType()
+    {
+        return "视频";
     }
 
     /// <summary>
@@ -80,42 +105,36 @@ public class VideoClip : ClipBase<VideoClip>
     {
         //计算如果播放完整,应该用多快的速度
         //*****************************************************************
-        if (Parent.AudioClip.Duration > Duration)
+        IClip waitAdjust = this;
+        IClip target = Parent.AudioClip;
+        if (target.Duration > waitAdjust.Duration)
         {
-            var 计划速度 = Duration.TotalMilliseconds / Parent.AudioClip.Duration.TotalMilliseconds;
-            var 实际倍速 = Math.Max(计划速度, 0.7d);
+            var 计划倍速 = waitAdjust.Duration / (double)target.Duration;
+            var 实际倍速 = Math.Max(计划倍速, 0.7d);
 
-            var oldDuration = (int)this.Parent.AudioClip.Duration.TotalMilliseconds;
-
-            End = Start.AddMilliseconds( Duration.TotalMilliseconds / 实际倍速);
+            var oldDuration = (int)Duration.TotalMilliseconds;
+            var oldEnd = this.EndTime;
+            EndTime = waitAdjust.StartTime.AddMilliseconds(waitAdjust.Duration / 实际倍速);
             ChangeSpeed = 实际倍速;
-
-
-            //drawtext=fontfile=font.ttf:fontsize=24:fontcolor=white:box=1:boxcolor=black@0.5:boxborderw=5:x=0:y=(h-text_h)/2
-            //drawtext=fontfile=font.ttf:fontsize=24:fontcolor=white:box=1:boxcolor=black@0.5:boxborderw=5:x=w-tw:y=(h-text_h)/2
-            Parent.Project.DrawText("w-tw", "0", $"视频变速:{ChangeSpeed:0.0#####}", 24, Parent.AudioInfo.Subtitle.StartTime, Parent.AudioInfo.Subtitle.EndTime);
-
-
-
-            ChangeLog("按音频时长慢放视频", "", "", oldDuration, (int)Duration.TotalMilliseconds, 计划速度, 实际倍速, (int)Duration.TotalMilliseconds - (int)this.Parent.AudioClip.Duration.TotalMilliseconds);
+            ChangeSpeedLog(waitAdjust, target, this, 计划倍速, oldDuration);
 
             return ChangeSpeed.Value;
         }
         else
         {
-            Parent.Project.DrawText("w-tw", "0", $"视频无变速", 24, Parent.AudioInfo.Subtitle.StartTime, Parent.AudioInfo.Subtitle.EndTime);
+            //Parent.Project.DrawText("w-tw", "0", $"视频无变速", 24, Parent.AudioInfo.Subtitle.StartTime, Parent.AudioInfo.Subtitle.EndTime);
         }
         return 1;
     }
 
-    public void LogTitle()
-    {
-        Project.Log("操作,目标类型,目标内容,序号,调整前,调整后,调整后差异,计划变速,实际变速");
-    }
-    public void ChangeLog(string 操作, string 目标类型, string 目标内容, int 调整前, int 调整后, double 计划, double 实际, int 调整后差异)
-    {
-        Project.Log($"{操作},{目标类型},{目标内容},{this.Index},{调整前},{调整后},{调整后差异},{计划:0.0####},{实际:0.0####}");
-    }
+    //public void LogTitle()
+    //{
+    //    Project.Log("操作,目标类型,目标内容,序号,调整前,调整后,调整后差异,计划变速,实际变速");
+    //}
+    //public void ChangeLog(string 操作, string 目标类型, string 目标内容, int 调整前, int 调整后, double 计划, double 实际, int 调整后差异)
+    //{
+    //    Project.Log($"{操作},{目标类型},{目标内容},{this.Index},{调整前},{调整后},{调整后差异},{计划:0.0####},{实际:0.0####}");
+    //}
 
     //要在视频片段前添加2秒的黑屏,可以使用color滤镜生成一个黑色视频,然后使用concat滤镜将其与原视频连接起来:
 

@@ -39,8 +39,8 @@ public class MediaClip : BaseObject
 #pragma warning disable CS0618 // 类型或成员已过时
         this.VideoClip = new VideoClip(Session)
         {
-            Start = this.AudioInfo.Subtitle.StartTime,
-            End = this.AudioInfo.Subtitle.EndTime,
+            StartTime = this.AudioInfo.Subtitle.StartTime,
+            EndTime = this.AudioInfo.Subtitle.EndTime,
             Index = this.AudioInfo.Subtitle.Index,
             Parent = this
         };
@@ -78,8 +78,8 @@ public class MediaClip : BaseObject
         {
             Parent = this,
             Index = this.AudioInfo.Index + Project.VideoSources.Count,
-            Start = this.AudioInfo.Subtitle.StartTime,
-            End = TimeSpan.FromMilliseconds(this.AudioInfo.Subtitle.StartTime.TotalMilliseconds + this.AudioInfo.Duration)
+            StartTime = this.AudioInfo.Subtitle.StartTime,
+            EndTime = TimeSpan.FromMilliseconds(this.AudioInfo.Subtitle.StartTime.TotalMilliseconds + this.AudioInfo.Duration)
         };        
         return AudioClip;
     }

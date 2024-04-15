@@ -1,18 +1,33 @@
 ﻿using AI.Labs.Module.BusinessObjects.AudioBooks;
 using AI.Labs.Module.BusinessObjects.VideoTranslate;
 using DevExpress.Charts.Native;
+using DevExpress.ExpressApp.DC;
+using DevExpress.ExpressApp.Model;
+using DevExpress.Persistent.Base;
 using DevExpress.Persistent.BaseImpl;
 using DevExpress.Xpo;
 using System.Drawing;
 
 namespace AI.Labs.Module.BusinessObjects;
-
+[NavigationItem("视频")]
 public class VideoScriptProject : BaseObject
 {
     public VideoScriptProject(Session s) : base(s)
     {
 
     }
+    [ModelDefault("DisplayFormat","yyyy-MM-dd HH:mm:ss.fff")]
+    public DateTime CreateDate
+    {
+        get { return GetPropertyValue<DateTime>(nameof(CreateDate)); }
+        set { SetPropertyValue(nameof(CreateDate), value); }
+    }
+    public override void AfterConstruction()
+    {
+        base.AfterConstruction();
+        this.CreateDate = DateTime.Now;
+    }
+
 
     public List<string> OperateLogs = new();
 
@@ -21,9 +36,9 @@ public class VideoScriptProject : BaseObject
         OperateLogs.Add(text);
     }
 
-    [Association, Aggregated]
+    [Association, DevExpress.Xpo.Aggregated]
     public XPCollection<VideoSource> VideoSources => GetCollection<VideoSource>(nameof(VideoSources));
-    [Association, Aggregated]
+    [Association, DevExpress.Xpo.Aggregated]
     public XPCollection<AudioSource> AudioSources => GetCollection<AudioSource>(nameof(AudioSources));
     public VideoSource ImportVideo(string path)
     {
@@ -125,7 +140,6 @@ public class VideoScriptProject : BaseObject
         set { SetPropertyValue(nameof(OutputVideoFile), value); }
     }
 
-
     public void Export()
     {
         var clips = MediaClips.OrderBy(t => t.Index).ToList();
@@ -138,11 +152,17 @@ public class VideoScriptProject : BaseObject
         clips.ForEach(t => t.VideoClip.计算延时());
         clips.ForEach(t => t.AudioClip.计算延时());
 
+        clips.ForEach(t => 
+        {
+            DrawText(10, 10, t.VideoClip.TextLogs, 16, t.VideoClip.StartTime, t.VideoClip.EndTime);
+            DrawText(10, 80, t.AudioClip.TextLogs, 16, t.AudioClip.StartTime, t.AudioClip.EndTime);
+        });
+
         TextTrack.Add(DrawCurrentTime());
         
 
         var filterComplex = ComplexScript;
-        var duration = MediaClips.Last().AudioInfo.Subtitle.EndTime;
+        var duration = MediaClips.Last().VideoClip.EndTime;
         Console.WriteLine("==============================================================");
         Console.WriteLine(filterComplex);
 
@@ -160,7 +180,7 @@ public class VideoScriptProject : BaseObject
             args,
             filterComplex,
             true,
-            duration.TotalSeconds,
+            duration.TotalSeconds + 1,
             basePath: basePath
             );
     }
@@ -186,8 +206,8 @@ public class VideoScriptProject : BaseObject
             Left = x.ToString(),
             Top = y.ToString(),
             Option = DefaultTextOption,
-            Start = start,
-            End = end
+            StartTime = start,
+            EndTime = end
         };
         textClip.SetText(text);
         TextTrack.Add(textClip);
@@ -201,8 +221,8 @@ public class VideoScriptProject : BaseObject
             Left = x.ToString(),
             Top = y.ToString(),
             Option = DefaultTextOption,
-            Start = TimeSpan.Zero,
-            End = TimeSpan.FromSeconds(90)
+            StartTime = TimeSpan.Zero,
+            EndTime = TimeSpan.FromSeconds(90)
         };
         var duration = AudioSources.Max(t => t.SourceInfo.Subtitle.EndTime);
         currentTime.SetDisplayCurrentVideoTime(duration);
@@ -213,7 +233,8 @@ public class VideoScriptProject : BaseObject
 
     public void CreateProject()
     {
-        foreach (var item in VideoInfo.Audios)
+        MediaClip last = null;
+        foreach (var item in VideoInfo.Audios.OrderBy(t=>t.Index))
         {
             var clip = new MediaClip(Session)
             {
@@ -223,6 +244,15 @@ public class VideoScriptProject : BaseObject
             };
             AudioTrack.Add(clip.CreateAudioClip());
             VideoTrack.Add(clip.CreateVideoClip());
+            if(last!=null)
+            {
+                clip.VideoClip.Before = last.VideoClip;
+                clip.AudioClip.Before = last.AudioClip;
+
+                last.VideoClip.Next = clip.VideoClip;
+                last.AudioClip.Next = clip.AudioClip;                
+            }
+            last = clip;
         }
 
         var vi = this.VideoInfo;

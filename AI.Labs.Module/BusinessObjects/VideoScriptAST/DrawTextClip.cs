@@ -8,6 +8,11 @@ public class DrawTextClip : ClipBase<DrawTextClip>
     {
     }
 
+    public override string GetClipType()
+    {
+        return "文字";
+    }
+
     public override string GetOutputLabel()
     {
         throw new NotImplementedException();
@@ -34,7 +39,9 @@ public class DrawTextClip : ClipBase<DrawTextClip>
     }
     string FixText(string txt)
     {
-        return txt.Replace("\\", "\\\\").Replace(":", "\\:");
+        if (txt == null)
+            return "";
+        return txt.Replace("\\", "\\\\").Replace(":", "\\:").Replace("|","\n");
     }
 
     public string GetScript()
@@ -42,9 +49,9 @@ public class DrawTextClip : ClipBase<DrawTextClip>
         var fontSize = Option?.FontSize ?? 24;
         var hasBorder = Option?.HasBoxBorder ?? false;
         var command = $"drawtext=font='微软雅黑': text='{Text}': fontcolor='white':x={Left}: y={Top}: fontsize={fontSize}";
-        if (Start!= TimeSpan.Zero && End != TimeSpan.Zero)
+        if (StartTime!= TimeSpan.Zero && EndTime != TimeSpan.Zero)
         {
-            command += $": enable='between(t,{Start.TotalSeconds},{End.TotalSeconds})'";
+            command += $": enable='between(t,{StartTime.TotalSeconds},{EndTime.TotalSeconds})'";
         }
         if (hasBorder)
         {

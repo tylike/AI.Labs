@@ -22,6 +22,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
     [Appearance("没有赋值声音角色", Criteria = "AudioRole is null", BackColor = "#FF0000", TargetItems = nameof(AudioRole))]
     [Appearance("音频时长超过字幕", Criteria = "Duration > Subtitle.Duration", BackColor = "#FF0000", TargetItems = "Subtitle.Duration;Duration")]
     [XafDisplayName("段落")]
+    [XafDefaultProperty(nameof(Index))]
     public class AudioBookTextAudioItem : TTSBase
     {
         public AudioBookTextAudioItem(Session s) : base(s)

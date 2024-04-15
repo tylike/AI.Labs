@@ -1,9 +1,12 @@
 ﻿using AI.Labs.Module.BusinessObjects.VideoTranslate;
 using DevExpress.DashboardCommon;
 using DevExpress.Xpo;
+using edu.stanford.nlp.trees.tregex.gui;
+using sun.tools.tree;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using VisioForge.Core.Types.MediaPlayer;
+using static com.sun.net.httpserver.Authenticator;
 
 namespace AI.Labs.Module.BusinessObjects;
 
@@ -14,93 +17,48 @@ public class AudioClip : ClipBase<AudioClip>
 
     }
 
+    public override string GetClipType()
+    {
+        return "音频";
+    }
 
-    /// <summary>
-    /// 根据字幕时长,计算音频的调整
-    /// </summary>
-    /// <returns></returns>
     public double 计算调速()
     {
-        var enSRt = Parent.AudioInfo.Subtitle;
+        return 计算调速(this, Parent.AudioInfo.Subtitle, this, t => Math.Min(t, 1.3d));
+    }
+    /// <summary>
+     /// 根据target时长,计算waitAdjust的调整
+     /// </summary>
+     /// <returns></returns>
+    public static double 计算调速(IClip waitAdjust, IClip target, ClipBase waitAdjustObject, Func<double, double> calc)
+    {
         //第一步:检查当前(中文音频)的时长 大于 字幕时长的,将快放中文音频,取最大1.3倍,与 “完全匹配倍速”
-        if (Duration.TotalMilliseconds > Subtitle.Duration)
+        if (waitAdjust.Duration > target.Duration)
         {
             //计算如果播放完整,应该用多快的速度
-            var 计划倍速 = (double)Duration.TotalMilliseconds / Subtitle.Duration;
+            var 计划倍速 = (double)waitAdjust.Duration / target.Duration;
             //*****************************************************************
-            //完全按最快播放也不行,这样听着不舒服
-            
-            var 实际倍速 = Math.Min(计划倍速, 1.3d);
-            var oldDuration = (int)this.Duration.TotalMilliseconds;
-
-            this.End = this.Start.AddMilliseconds(this.Duration.TotalMilliseconds / 实际倍速);
-            
-            this.ChangeSpeed = 实际倍速;
-
-            Project.DrawText(10, 10, $"音频变速:{ChangeSpeed.Value:0.0#####} 计划:{计划倍速:0.0#####} 实际:{实际倍速:0.0#####} {(计划倍速>实际倍速 ? "XXXX":"VVVV")}", 24,
-                enSRt.StartTime,enSRt.EndTime);
-
-            //字幕标准:
-            ChangeLog(
-                "根据字幕时间加速音频", 
-                "字幕", 
-                $"{Subtitle.StartTime}-{Subtitle.EndTime}:{Subtitle.Duration}",
-                oldDuration, 
-                (int)Duration.TotalMilliseconds, 
-                计划倍速, 
-                实际倍速, 
-                (int)Duration.TotalMilliseconds - Subtitle.Duration);
-
+            //完全按最快播放也不行,这样听着不舒服            
+            var 实际倍速 = calc(计划倍速);
+            var 原时长 = waitAdjust.Duration;
+            waitAdjust.EndTime = waitAdjust.StartTime.AddMilliseconds(waitAdjust.Duration / 实际倍速);
+            waitAdjustObject.ChangeSpeed = 实际倍速;
+            //字幕为标准:
+            ChangeSpeedLog(waitAdjust, target, waitAdjustObject, 计划倍速, 原时长);
             return 实际倍速;
         }
         else
         {
-            this.ChangeSpeed = null;
-            //Parent.Project.DrawText(10, 10, "音频无变速", 24, enSRt.StartTime, enSRt.EndTime);
-            //Project.Log($"音频:[{Index}]-[{Start}-{this.End}],无变速");
+            waitAdjustObject.ChangeSpeed = null;
         }
         return 1;
     }
 
     public double 计算延时()
     {
-        //如果当前音频的时长 小于 字幕时长
-        if (this.Duration.TotalMilliseconds < Subtitle.Duration)
-        {
-            var oldDuration = this.Duration.TotalMilliseconds;
-
-            this.End = Subtitle.EndTime;
-            this.Delay = Subtitle.Duration - (int)this.Duration.TotalMilliseconds;
-
-            var text = $"延时{Delay}";
-            Parent.Project.DrawText(10, 60, text, 24,
-                TimeSpan.FromMilliseconds(Subtitle.StartTime.TotalMilliseconds + Subtitle.Duration),
-                Subtitle.EndTime
-                );
-
-            ChangeLog("延时",
-                "字幕",
-                $"{Subtitle.StartTime}-{Subtitle.EndTime}:{Subtitle.Duration}",
-                (int)oldDuration, 
-                (int)Duration.TotalMilliseconds,
-                0, 
-                this.Delay.Value, 
-                (int)Duration.TotalMilliseconds - Subtitle.Duration
-                );
-
-
-            return this.Delay.Value;
-        }
-        return 0;
+        return 计算延时(this,Parent.VideoClip,this);        
     }
-    public void LogTitle()
-    {
-        Project.Log("操作,目标类型,目标内容,序号,调整前,调整后,调整后差异,计划变速,实际变速");
-    }
-    public void ChangeLog(string 操作,string 目标类型,string 目标内容,int 调整前,int 调整后,double 计划,double 实际,int 调整后差异)
-    {
-        Project.Log($"{操作},{目标类型},{目标内容},{this.Index},{调整前},{调整后},{调整后差异},{计划:0.0####},{实际:0.0####}");
-    }
+
 
     public string ChangeLogs
     {
@@ -122,9 +80,9 @@ public class AudioClip : ClipBase<AudioClip>
         var delay = "";
         if(Delay>0)
         {
-            delay = $",apad=pad_dur={(Delay.Value/1000d).ToString("0.0#####")}";
+            delay = $",apad=pad_dur={Delay.Value / 1000d:0.0#####}";
         }
-        return $"{inputLables}asetpts=PTS*{speed.ToString("0.0#####")}{delay}{outputLables}";
+        return $"{inputLables}asetpts=PTS*{speed:0.0#####}{delay}{outputLables}";
     }
     public override string GetOutputLabel()
     {

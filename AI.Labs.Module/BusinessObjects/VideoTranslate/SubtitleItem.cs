@@ -8,12 +8,14 @@ using System.ComponentModel;
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 {
     [XafDisplayName("字幕")]
-    public class SubtitleItem : SimpleXPObject,ISRT
+    [XafDefaultProperty(nameof(Index))]
+    public class SubtitleItem : SimpleXPObject,ISRT,IClip
     {
         public SubtitleItem(Session s) : base(s)
         {
 
         }
+        
 
         //[Association]
         //public NSubtitleItem NSubtitle
@@ -98,6 +100,8 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         }
 
         string ISRT.Text { get => PlainText; set => PlainText = value; }
+
+        string IClip.GetClipType() => "字幕";
 
 
 

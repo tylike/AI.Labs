@@ -12,8 +12,10 @@ XpoTypesInfoHelper.GetXpoTypeInfoSource();
 XafTypesInfo.Instance.RegisterEntity(typeof(VideoInfo));
 XafTypesInfo.Instance.RegisterEntity(typeof(VideoScriptProject));
 
+//笔记本
 var dbPath = Path.Combine("D:\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows8.0", "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
-dbPath = Path.Combine("D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows8.0", "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
+//家里台式机
+//dbPath = Path.Combine("D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows8.0", "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
 ;
 var connectionString = DevExpress.Xpo.DB.SQLiteConnectionProvider.GetConnectionString(dbPath);
 
@@ -21,7 +23,7 @@ XPObjectSpaceProvider osProvider = new XPObjectSpaceProvider(connectionString, n
 IObjectSpace objectSpace = osProvider.CreateObjectSpace();
 var vi = objectSpace.GetObjectsQuery<VideoInfo>().First(t => t.Oid == 2);
 
-var script = objectSpace.GetObjectsQuery<VideoScriptProject>().FirstOrDefault(t => t.Name == "test1");
+var script = objectSpace.GetObjectsQuery<VideoScriptProject>().FirstOrDefault(t => t.Name == "test1x");
 if (script == null)
 {
     script = objectSpace.CreateObject<VideoScriptProject>();
@@ -29,11 +31,11 @@ if (script == null)
     script.VideoInfo = vi;
     script.CreateProject();
     script.Export();
-
+    objectSpace.CommitChanges();
 }
 
-Console.WriteLine(vi.VideoURL);
+//Console.WriteLine(vi.VideoURL);
 
 //IPlugin<VideoInfo> engine = new GenerateVideoScript();
 //engine.Invoke(vi, null);
-Console.Read();
+//Console.Read();

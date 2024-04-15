@@ -161,5 +161,9 @@ namespace AI.Labs.Module.BusinessObjects
         {
             return time.Subtract(TimeSpan.FromMilliseconds(substract));
         }
+        public static string GetTimeString(this TimeSpan time)
+        {
+            return time.ToString(@"hh\:mm\:ss\.fff");
+        }
     }
 }
