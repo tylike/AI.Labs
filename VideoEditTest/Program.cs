@@ -15,24 +15,33 @@ XafTypesInfo.Instance.RegisterEntity(typeof(VideoScriptProject));
 //笔记本
 var dbPath = Path.Combine("D:\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows8.0", "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
 //家里台式机
-//dbPath = Path.Combine("D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows8.0", "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
+dbPath = Path.Combine("D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows8.0", "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
 
 var connectionString = DevExpress.Xpo.DB.SQLiteConnectionProvider.GetConnectionString(dbPath);
 
 XPObjectSpaceProvider osProvider = new XPObjectSpaceProvider(connectionString, null);
 IObjectSpace objectSpace = osProvider.CreateObjectSpace();
+
+
 var vi = objectSpace.GetObjectsQuery<VideoInfo>().First(t => t.Oid == 2);
 
 var script = objectSpace.GetObjectsQuery<VideoScriptProject>().FirstOrDefault(t => t.Name == "test1x");
+
 if (script == null)
 {
     script = objectSpace.CreateObject<VideoScriptProject>();
     script.Name = "test1";
     script.VideoInfo = vi;
-    script.CreateProject();
+    script.CreateProject(objectSpace);
+    
+    var modifiedObjects = objectSpace.ModifiedObjects.OfType<SubtitleItem>().ToList();
+
     script.Export();
     vi.SaveSRTToFile(AI.Labs.Module.BusinessObjects.Helper.SrtLanguage.中文, "fixed", true);
     vi.SaveSRTToFile(AI.Labs.Module.BusinessObjects.Helper.SrtLanguage.英文, "fixed", true);
+
+    modifiedObjects = objectSpace.ModifiedObjects.OfType<SubtitleItem>().ToList();
+
     objectSpace.CommitChanges();
 }
 

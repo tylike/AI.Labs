@@ -58,7 +58,17 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         public TimeSpan FixedStartTime
         {
             get { return GetPropertyValue<TimeSpan>(nameof(FixedStartTime)); }
-            set { SetPropertyValue(nameof(FixedStartTime), value); }
+            set 
+            {
+                if (!IsLoading)
+                {
+                    if (value == TimeSpan.Zero)
+                    {
+
+                    }
+                }
+                SetPropertyValue(nameof(FixedStartTime), value); 
+            }
         }
 
         public TimeSpan FixedEndTime

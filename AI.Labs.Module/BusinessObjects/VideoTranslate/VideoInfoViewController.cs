@@ -219,7 +219,32 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private async void GenerateVideo_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            await VideoHelper.MakeVideoAsync(ViewCurrentObject);
+            var objectSpace = this.ObjectSpace;
+
+            var vi = objectSpace.GetObjectsQuery<VideoInfo>().First(t => t.Oid == 2);
+
+            var script = objectSpace.GetObjectsQuery<VideoScriptProject>().FirstOrDefault(t => t.Name == "test1x");
+
+            if (script == null)
+            {
+                script = objectSpace.CreateObject<VideoScriptProject>();
+                script.Name = "test1";
+                script.VideoInfo = vi;
+                script.CreateProject(objectSpace);
+
+                var modifiedObjects = objectSpace.ModifiedObjects.OfType<SubtitleItem>().ToList();
+
+                script.Export();
+                vi.SaveSRTToFile(AI.Labs.Module.BusinessObjects.Helper.SrtLanguage.中文, "fixed", true);
+                vi.SaveSRTToFile(AI.Labs.Module.BusinessObjects.Helper.SrtLanguage.英文, "fixed", true);
+
+                modifiedObjects = objectSpace.ModifiedObjects.OfType<SubtitleItem>().ToList();
+
+                objectSpace.CommitChanges();
+            }
+
+
+            //await VideoHelper.MakeVideoAsync(ViewCurrentObject);
         }
 
         private void FixJianYingProSrtTime_Execute(object sender, SimpleActionExecuteEventArgs e)

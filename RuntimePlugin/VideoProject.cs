@@ -113,8 +113,6 @@ public class VideoProject
         videoLastSegments.OutputVideo = true;
         var videoLastCommand = videoLastSegments.GetConcatCommand();
         
-
-
         var audioLables = new List<MediaSegment>();
         var audioFilterComplex = MainAudioTrack.GetCommand(0, audioLables);
         var audioLastSegments = new MediaSegmentList(audioLables);
@@ -122,8 +120,6 @@ public class VideoProject
         audioLastSegments.OutputAudio = true;
         var audioLastCommand = audioLastSegments.GetConcatCommand();
         
-
-
         var filterComplex = $"{videoFilterComplex};\n{audioFilterComplex};\n{videoLastCommand};\n{audioLastCommand};";
 
         //MainVideoTrack.Segments

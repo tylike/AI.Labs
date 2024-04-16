@@ -232,8 +232,9 @@ namespace AI.Labs.Module.BusinessObjects
 
             WriteToFile(fileListFullName, files);
             var ap = isVideo ? " -c:v copy " : " -c:a copy ";
+            var an = isVideo ? "-an":"";
             //ffmpeg
-            var arguments = $"-report -f concat -safe 0 -i {fileListFullName} {ap} {outputFile} -y";
+            var arguments = $"-report -f concat -safe 0 -i {fileListFullName} {ap} {an} {outputFile} -y";
 
             try
             {
@@ -256,7 +257,7 @@ namespace AI.Labs.Module.BusinessObjects
             var videoOnly = Path.Combine(Path.GetDirectoryName(outputFile), "videoOnly.mp4");
             var audioOnly = Path.Combine(Path.GetDirectoryName(outputFile), "AudioOnly.mp3");
             Concat(videos, videoOnly, true, "videolist.txt");
-            Concat(audios, audioOnly, true, "audiolist.txt");
+            Concat(audios, audioOnly, false, "audiolist.txt");
 
             //ffmpeg
             var arguments = $" -i {videoOnly} -i {audioOnly} -c:v copy -c:a aac -strict experimental {outputFile} -y";

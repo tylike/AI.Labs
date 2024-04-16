@@ -61,8 +61,8 @@ public class VideoClip : ClipBase<VideoClip>
             var next = this.Next;
             while (next != null)
             {
-                next.Subtitle.FixedStartTime = next.Subtitle.StartTime.AddMilliseconds(后推时间ms);
-                next.Subtitle.FixedEndTime = next.Subtitle.EndTime.AddMilliseconds(后推时间ms);
+                next.Subtitle.FixedStartTime = next.Subtitle.FixedStartTime.AddMilliseconds(后推时间ms);
+                next.Subtitle.FixedEndTime = next.Subtitle.FixedEndTime.AddMilliseconds(后推时间ms);
 
                 next.Parent.AudioClip.StartTime = next.Parent.AudioClip.StartTime.AddMilliseconds(后推时间ms);
                 next.Parent.AudioClip.EndTime = next.Parent.AudioClip.EndTime.AddMilliseconds(后推时间ms);

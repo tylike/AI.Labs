@@ -1,6 +1,7 @@
 ﻿using AI.Labs.Module.BusinessObjects.AudioBooks;
 using AI.Labs.Module.BusinessObjects.VideoTranslate;
 using DevExpress.Charts.Native;
+using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.DC;
 using DevExpress.ExpressApp.Model;
 using DevExpress.Persistent.Base;
@@ -270,7 +271,7 @@ public class VideoScriptProject : BaseObject
     }
     #endregion
 
-    public void CreateProject()
+    public void CreateProject(IObjectSpace os)
     {
         var subtitles = VideoInfo.Subtitles.OrderBy(t => t.Index).ToArray();
 
@@ -279,15 +280,19 @@ public class VideoScriptProject : BaseObject
         {
             item.FixedStartTime = item.StartTime;
             item.FixedEndTime = item.EndTime;
+            item.Save();
+            //os.SetModified(item);
         }
+        
+        subtitles.First().StartTime = TimeSpan.Zero;
 
+        
         MediaClip last = null;
         var videoClips = Path.Combine(VideoInfo.ProjectPath, "VideoClip");
-
-        var dir = Path.GetDirectoryName(videoClips);
-        if(!Directory.Exists(dir))
+                
+        if(!Directory.Exists(videoClips))
         {
-            Directory.CreateDirectory(dir);
+            Directory.CreateDirectory(videoClips);
         }
         var splitFiles = FFmpegHelper.SplitVideo(VideoInfo.VideoFile, subtitles, videoClips);
 
