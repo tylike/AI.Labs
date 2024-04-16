@@ -191,6 +191,11 @@ public abstract class ClipBase : BaseObject, IClip
     }
 
     public abstract string GetClipType();
+    public virtual string GetFilePath(FileType fileType, double parameter)
+    {
+        return Project.GetFilePath(fileType, parameter, this.Index);
+    }
+    
 }
 public abstract class ClipBase<T> : ClipBase
 {

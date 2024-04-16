@@ -16,7 +16,7 @@ public class VideoScriptProject : BaseObject
     {
 
     }
-    [ModelDefault("DisplayFormat","yyyy-MM-dd HH:mm:ss.fff")]
+    [ModelDefault("DisplayFormat", "yyyy-MM-dd HH:mm:ss.fff")]
     public DateTime CreateDate
     {
         get { return GetPropertyValue<DateTime>(nameof(CreateDate)); }
@@ -121,7 +121,7 @@ public class VideoScriptProject : BaseObject
 {ReleaseProductScript}
 ";
         }
-    } 
+    }
     #endregion
 
     string GetInputVideosParameter()
@@ -139,8 +139,6 @@ public class VideoScriptProject : BaseObject
         get { return GetPropertyValue<string>(nameof(OutputVideoFile)); }
         set { SetPropertyValue(nameof(OutputVideoFile), value); }
     }
-
-
     public void Export()
     {
         var clips = MediaClips.OrderBy(t => t.Index).ToList();
@@ -153,14 +151,14 @@ public class VideoScriptProject : BaseObject
         clips.ForEach(t => t.VideoClip.计算延时());
         clips.ForEach(t => t.AudioClip.计算延时());
 
-        clips.ForEach(t => 
+        clips.ForEach(t =>
         {
             DrawText(10, 10, t.VideoClip.TextLogs, 16, t.VideoClip.StartTime, t.VideoClip.EndTime);
             DrawText(10, 80, t.AudioClip.TextLogs, 16, t.AudioClip.StartTime, t.AudioClip.EndTime);
         });
 
         TextTrack.Add(DrawCurrentTime());
-        
+
 
         var filterComplex = ComplexScript;
         var duration = MediaClips.Last().VideoClip.EndTime;
@@ -173,7 +171,25 @@ public class VideoScriptProject : BaseObject
         //var task = RunHttp();
         //var all = AudioSources.Select(t => t.SourceInfo.Subtitle).ToArray();
 
+        var videoClipFinal = Path.Combine(VideoInfo.ProjectPath, "VideoClip.Final");
+        var audioClipFinal = Path.Combine(VideoInfo.ProjectPath, "AudioClip.Final");
+        if (!Directory.Exists(videoClipFinal))
+        {
+            Directory.CreateDirectory(videoClipFinal);
+        }
+        if (!Directory.Exists(audioClipFinal))
+        {
+            Directory.CreateDirectory(audioClipFinal);
+        }
+
+        foreach (var item in clips)
+        {
+            File.Copy(item.VideoClip.OutputFile, Path.Combine(videoClipFinal, $"{item.Index}.mp4"), true);
+            File.Copy(item.AudioClip.OutputFile, Path.Combine(audioClipFinal, $"{item.Index}.mp3"), true);
+        }
+
         File.WriteAllText(Path.Combine(basePath, "log.csv"), OperateLogs.Join("\n"));
+        FFmpegHelper.Concat(clips.Select(t => t.VideoClip.OutputFile), clips.Select(t => t.AudioClip.OutputFile), OutputVideoFile);
 
         //FFmpegHelper.ExecuteCommand(
         //    $"{GetInputVideosParameter()} {GetInputAudiosParameter()}",
@@ -187,7 +203,30 @@ public class VideoScriptProject : BaseObject
     }
 
     public string ReleaseProductScript => $"[v][a]concat=n=1:a=1:v=1[MediaOut];";
-
+    public virtual string GetFilePath(FileType fileType, double parameter, int? index)
+    {
+        var ext = "";
+        switch (fileType)
+        {
+            case FileType.Audio_ChangeSpeed:
+            case FileType.Audio_Delay:
+                ext = "mp3";
+                break;
+            case FileType.Video_ChangeSpeed:
+            case FileType.Video_Delay:
+                ext = "mp4";
+                break;
+            default:
+                break;
+        }
+        var fileName = Path.Combine(VideoInfo.ProjectPath, fileType.ToString(), $"{(index.HasValue ? index.ToString() + "_" : "")}{parameter.ToFFmpegString()}.{ext}");
+        var dir = Path.GetDirectoryName(fileName);
+        if (!Directory.Exists(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
+        return fileName;
+    }
     #region 绘制文本
     public TextOption DefaultTextOption
     {
@@ -228,26 +267,31 @@ public class VideoScriptProject : BaseObject
         var duration = AudioSources.Max(t => t.SourceInfo.Subtitle.EndTime);
         currentTime.SetDisplayCurrentVideoTime(duration);
         return currentTime;
-    } 
+    }
     #endregion
 
     public void CreateProject()
     {
         var subtitles = VideoInfo.Subtitles.OrderBy(t => t.Index).ToArray();
 
-        var times = subtitles.Take(subtitles.Length - 1).Select(t => t.EndTime.TotalSeconds).ToList();
-        times.Add(subtitles.Last().StartTime.TotalSeconds);
-
         //所有的结束时间，但除了最后一条用开始时间
-        
-
+        foreach (var item in subtitles)
+        {
+            item.FixedStartTime = item.StartTime;
+            item.FixedEndTime = item.EndTime;
+        }
 
         MediaClip last = null;
-        var videoClips = Path.Combine(VideoInfo.ProjectPath,"VideoClip","%4d.mp4");
+        var videoClips = Path.Combine(VideoInfo.ProjectPath, "VideoClip");
 
-        FFmpegHelper.SplitVideo(VideoInfo.VideoFile, times ,videoClips);
+        var dir = Path.GetDirectoryName(videoClips);
+        if(!Directory.Exists(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
+        var splitFiles = FFmpegHelper.SplitVideo(VideoInfo.VideoFile, subtitles, videoClips);
 
-        foreach (var item in VideoInfo.Audios.OrderBy(t=>t.Index))
+        foreach (var item in VideoInfo.Audios.OrderBy(t => t.Index))
         {
             var clip = new MediaClip(Session)
             {
@@ -256,8 +300,8 @@ public class VideoScriptProject : BaseObject
                 Project = this
             };
             AudioTrack.Add(clip.CreateAudioClip());
-            VideoTrack.Add(clip.CreateVideoClip());
-            if(last!=null)
+            VideoTrack.Add(clip.CreateVideoClip(splitFiles[item.Index - 1]));
+            if (last != null)
             {
                 clip.VideoClip.Before = last.VideoClip;
                 clip.AudioClip.Before = last.AudioClip;
@@ -271,7 +315,6 @@ public class VideoScriptProject : BaseObject
         var vi = this.VideoInfo;
 
         this.OutputVideoFile = Path.Combine(vi.ProjectPath, "product.mp4");
-
 
         var mainVideo = ImportVideo(vi.VideoFile);
 
@@ -289,4 +332,11 @@ public class VideoScriptProject : BaseObject
             return GetCollection<MediaClip>(nameof(MediaClips));
         }
     }
+}
+public enum FileType
+{
+    Audio_ChangeSpeed,
+    Audio_Delay,
+    Video_ChangeSpeed,
+    Video_Delay
 }

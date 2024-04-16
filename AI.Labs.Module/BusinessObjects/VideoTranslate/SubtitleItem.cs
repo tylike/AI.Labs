@@ -15,7 +15,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         {
 
         }
-        
 
         //[Association]
         //public NSubtitleItem NSubtitle
@@ -31,12 +30,14 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             get { return GetPropertyValue<VideoInfo>(nameof(Video)); }
             set { SetPropertyValue(nameof(Video), value); }
         }
+
         [XafDisplayName("序号")]
         public int Index
         {
             get { return GetPropertyValue<int>(nameof(Index)); }
             set { SetPropertyValue(nameof(Index), value); }
         }
+        
         [XafDisplayName("开始时间")]
         [ModelDefault("DisplayFormat", "{0:HH:mm:ss.fff}")]
         public TimeSpan StartTime
@@ -44,6 +45,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             get { return GetPropertyValue<TimeSpan>(nameof(StartTime)); }
             set { SetPropertyValue(nameof(StartTime), value); }
         }
+
         [XafDisplayName("结束时间")]
         [ModelDefault("DisplayFormat", "{0:HH:mm:ss.fff}")]
         public TimeSpan EndTime
@@ -51,6 +53,24 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             get { return GetPropertyValue<TimeSpan>(nameof(EndTime)); }
             set { SetPropertyValue(nameof(EndTime), value); }
         }
+
+
+        public TimeSpan FixedStartTime
+        {
+            get { return GetPropertyValue<TimeSpan>(nameof(FixedStartTime)); }
+            set { SetPropertyValue(nameof(FixedStartTime), value); }
+        }
+
+        public TimeSpan FixedEndTime
+        {
+            get 
+            {
+                return GetPropertyValue<TimeSpan>(nameof(FixedEndTime)); 
+            }
+            set { SetPropertyValue(nameof(FixedEndTime), value); }
+        }
+
+
         [XafDisplayName("时长")]
         public int Duration
         {

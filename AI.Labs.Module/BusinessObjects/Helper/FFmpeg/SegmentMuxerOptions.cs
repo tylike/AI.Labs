@@ -11,7 +11,7 @@ namespace AI.Labs.Module.BusinessObjects
         /// </summary>
         public string OutputFile { get; set; }
         public int? SegmentTime { get; set; }
-        public List<TimeSpan> SegmentTimes { get; set; }
+        public IEnumerable<double> SegmentTimes { get; set; }
         public string SegmentFormat { get; set; }
         public string SegmentList { get; set; }
 
@@ -19,9 +19,9 @@ namespace AI.Labs.Module.BusinessObjects
 
         public string ToArgumentString()
         {
-            var times = string.Join(",", SegmentTimes.Select(t => t.TotalSeconds));
+            var times = SegmentTimes.Select(t => t.ToFFmpegFormat()).Join(",");
 
-            var args = $"-i {InputFile} -c:v libx264 -crf 23 -map 0 -force_key_frames {times} -x264-params keyint=25:scenecut=0 -f segment";
+            var args = $"-i {InputFile}  -copyts -avoid_negative_ts 1  -c:v libx264 -crf 23 -map 0 -force_key_frames {times} -x264-params keyint=25:scenecut=0 -f segment";
 
             if (SegmentTime.HasValue)
                 args += $" -segment_time {SegmentTime.Value}";

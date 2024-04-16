@@ -31,5 +31,12 @@ namespace AI.Labs.Module.BusinessObjects.STT
             get { return GetPropertyValue<string>(nameof(ModelFilePath)); }
             set { SetPropertyValue(nameof(ModelFilePath), value); }
         }
+
+        public string ServerApplication
+        {
+            get { return GetPropertyValue<string>(nameof(ServerApplication)); }
+            set { SetPropertyValue(nameof(ServerApplication), value); }
+        }
+
     }
 }

@@ -200,7 +200,7 @@ namespace AI.Labs.Module.BusinessObjects.Helper
         /// </summary>
         /// <param name="subtitleItems"></param>
         /// <param name="newFile"></param>
-        public static void SaveToSrtFile(IList<SubtitleItem> subtitleItems, string newFile, SrtLanguage language)
+        public static void SaveToSrtFile(IList<SubtitleItem> subtitleItems, string newFile, SrtLanguage language,bool saveFixed)
         {
             // 移除所有内容为空的字幕项
             //subtitleItems = subtitleItems.Where(s => s.Lines.Any(line => !string.IsNullOrWhiteSpace(line))).ToList();
@@ -219,11 +219,11 @@ namespace AI.Labs.Module.BusinessObjects.Helper
 
                         if (text.Length > 0)
                         {
-                            var endTime = item.EndTime;
+                            var endTime = saveFixed ? item.FixedEndTime: item.EndTime;
                             if (i + 1 < subtitleItems.Count)
                             {
                                 var next = subtitleItems[i + 1];
-                                endTime = next.StartTime;
+                                endTime = saveFixed ? item.FixedStartTime : next.StartTime;
                             }
                             writer.WriteLine(l++);
                             writer.WriteLine($"{item.StartTime.ToString(@"hh\:mm\:ss\,fff")} --> {endTime.ToString(@"hh\:mm\:ss\,fff")}");

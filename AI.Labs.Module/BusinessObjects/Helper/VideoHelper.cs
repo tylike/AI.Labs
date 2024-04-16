@@ -202,7 +202,7 @@ namespace AI.Labs.Module.BusinessObjects
             {
                 InputFile = videoPath,
                 OutputFile = Path.Combine(video.ProjectPath, "tempVideo", "srt_split_%4d.mp4"),
-                SegmentTimes = groups.Select(t => t.Last().Subtitle.EndTime).ToList()
+                //SegmentTimes = groups.Select(t => t.Last().Subtitle.EndTime).ToList()
             };
             Debug.WriteLine("===============");
             Debug.WriteLine("分割视频:");

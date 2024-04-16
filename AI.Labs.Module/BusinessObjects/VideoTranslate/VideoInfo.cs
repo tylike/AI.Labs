@@ -746,12 +746,12 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             this.VideoScript.Output += $"{Environment.NewLine} {DateTime.Now.TimeOfDay} {str}";
         }
 
-        public void SaveSRTToFile(SrtLanguage lang)
+        public void SaveSRTToFile(SrtLanguage lang,string addationName = "",bool saveFixed = false)
         {
             var t = this;
             //保存翻译结果
-            var fileName = Path.Combine(t.ProjectPath, $"{t.Oid}.{lang.ToString()}.srt");
-            SRTHelper.SaveToSrtFile(t.Subtitles, fileName, lang);
+            var fileName = Path.Combine(t.ProjectPath, $"{t.Oid}.{lang.ToString()}{addationName}.srt");
+            SRTHelper.SaveToSrtFile(t.Subtitles, fileName, lang,saveFixed);
             t.VideoChineseSRT = fileName;
         }
     }

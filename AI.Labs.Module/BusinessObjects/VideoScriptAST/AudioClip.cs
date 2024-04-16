@@ -25,14 +25,16 @@ public class AudioClip : ClipBase<AudioClip>
 
     public double 计算调速()
     {
-        return 计算调速(this, Parent.AudioInfo.Subtitle, this, t => Math.Min(t, 1.3d));
+        return 计算调速(Parent.AudioInfo.Subtitle, t => Math.Min(t, 1.3d));
     }
     /// <summary>
      /// 根据target时长,计算waitAdjust的调整
      /// </summary>
      /// <returns></returns>
-    public static double 计算调速(IClip waitAdjust, IClip target, ClipBase waitAdjustObject, Func<double, double> calc)
+    public double 计算调速( IClip target,  Func<double, double> calc)
     {
+        IClip waitAdjust = this;
+        ClipBase waitAdjustObject = this;
         //第一步:检查当前(中文音频)的时长 大于 字幕时长的,将快放中文音频,取最大1.3倍,与 “完全匹配倍速”
         if (waitAdjust.Duration > target.Duration)
         {
@@ -47,7 +49,7 @@ public class AudioClip : ClipBase<AudioClip>
             //字幕为标准:
             ChangeSpeedLog(waitAdjust, target, waitAdjustObject, 计划倍速, 原时长);
 
-            var newOutputFile = Path.Combine(waitAdjustObject.Parent.Project.VideoInfo.ProjectPath,"audio", $"change_speed_{实际倍速:0.0###}_{waitAdjustObject.Index}.mp3");
+            var newOutputFile = GetFilePath( FileType.Audio_ChangeSpeed,实际倍速);
             FFmpegHelper.ChangeAudioSpeed(waitAdjustObject.OutputFile, 实际倍速, newOutputFile);
             waitAdjustObject.OutputFile = newOutputFile;
             return 实际倍速;
@@ -66,7 +68,7 @@ public class AudioClip : ClipBase<AudioClip>
 
     public override void RunDelay(int delay)
     {
-        var newOutputFile = Path.Combine(Parent.Project.VideoInfo.ProjectPath, "audio", $"delay_{delay}_{Index}.mp3");
+        var newOutputFile = GetFilePath( FileType.Audio_Delay,delay);
         FFmpegHelper.DelayAudio(this.OutputFile,delay,newOutputFile);
         this.OutputFile = newOutputFile;
     }

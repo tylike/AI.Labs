@@ -34,7 +34,7 @@ public class MediaClip : BaseObject
         set { SetPropertyValue(nameof(Commands), value); }
     }
 
-    public VideoClip CreateVideoClip()
+    public VideoClip CreateVideoClip(string videoFile)
     {
 #pragma warning disable CS0618 // 类型或成员已过时
         this.VideoClip = new VideoClip(Session)
@@ -42,6 +42,7 @@ public class MediaClip : BaseObject
             StartTime = this.AudioInfo.Subtitle.StartTime,
             EndTime = this.AudioInfo.Subtitle.EndTime,
             Index = this.AudioInfo.Subtitle.Index,
+            OutputFile = videoFile,
             Parent = this
         };
 #pragma warning restore CS0618 // 类型或成员已过时

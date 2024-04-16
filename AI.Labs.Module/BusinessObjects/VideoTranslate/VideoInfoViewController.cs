@@ -407,8 +407,11 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             #region 1.生成字幕文件
             var pi = new ProcessStartInfo();
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel,"语音识别模型");
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel?.ServerApplication,"语音识别模型启动程序");
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel.ModelFilePath, "语音识别模型文件");
 
-            pi.FileName = $@"F:\ai.stt\whisper.cpp.cublax-11.8.0.x64\main.exe";
+            pi.FileName = ViewCurrentObject.STTModel.ServerApplication;// $@"F:\ai.stt\whisper.cpp.cublax-11.8.0.x64\main.exe";
             var outputFile = Path.Combine(ViewCurrentObject.ProjectPath, "en_subtitle");
             var parseSpreaker = ViewCurrentObject.ParseSpreaker ? "-di" : "";
             var prompt = "";// ViewCurrentObject.STTPrompt ? "每段尽量长" : "每句尽量长";
@@ -432,7 +435,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             pi.UseShellExecute = true;
             var inf = Process.Start(pi);
             inf.WaitForExit();
-
+            
             Debug.WriteLine($"{pi.FileName} {pi.Arguments}");
             ViewCurrentObject.VideoDefaultSRT = $"{outputFile}.srt";
             ViewCurrentObject.VideoJsonSRT = $"{outputFile}.json";
@@ -565,9 +568,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             var jsonFile = JsonConvert.DeserializeObject<JsonSubtitleFile>(File.ReadAllText(video.VideoJsonSRT));
             var tokens = jsonFile.transcription.SelectMany(t => t.tokens).ToList();
-
             RemoveDynamicTokens(tokens, new[] { " [", "music", "]" });
-
 
             var rst = new List<List<Token>>();
             var sentence = new List<Token>();
@@ -605,7 +606,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
             int index = 1;
 
-
+            SubtitleItem pre = null;
             foreach (var item in rst)
             {
                 if (item.Any())
@@ -622,8 +623,19 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                     sub.EndTime = TimeSpan.ParseExact(item.Last().timestamps.to, @"hh\:mm\:ss\,fff", CultureInfo.InvariantCulture);
                     index++;
                     video.Subtitles.Add(sub);
+
+                    //强制的让字幕中间没有空白时间
+                    if(pre != null)
+                    {
+                        if (pre.EndTime != sub.StartTime)
+                        {
+                            pre.EndTime = sub.StartTime;
+                        }
+                    }
+                    pre = sub;
                 }
             }
+            
             ObjectSpace.CommitChanges();
 
 
@@ -750,7 +762,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
             //保存翻译结果
             var fileName = Path.Combine(t.ProjectPath, $"{t.Oid}.cn.srt");
-            SRTHelper.SaveToSrtFile(t.Subtitles, fileName, SrtLanguage.中文);
+            SRTHelper.SaveToSrtFile(t.Subtitles, fileName, SrtLanguage.中文, false);
             t.VideoChineseSRT = fileName;
             ObjectSpace.CommitChanges();
         }
@@ -809,12 +821,18 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         //3.合并为一个音频文件
         private async void GenerateAudio_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            var audioSolution = ObjectSpace.CreateObject<AudioBook>();
+            var audioSolution = ViewCurrentObject.CnAudioSolution ?? ObjectSpace.CreateObject<AudioBook>();
+
             audioSolution.Content = ViewCurrentObject.ContentCn;
             audioSolution.Name = ViewCurrentObject.Title;
 
             audioSolution.OutputPath = Path.Combine(ViewCurrentObject.ProjectPath, $"Audio");
             audioSolution.CheckOutputPath();
+
+            if(audioSolution.AudioItems.Count > 0)
+            {
+                ObjectSpace.Delete(audioSolution.AudioItems);
+            }
 
             var def = await audioSolution.CreateOrFindAudioRole("default");
             def.TryReadingText = "这里可以输入一些试听内容!";

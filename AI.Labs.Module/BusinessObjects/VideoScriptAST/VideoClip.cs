@@ -50,50 +50,38 @@ public class VideoClip : ClipBase<VideoClip>
         var rst = 计算延时(this, Parent.AudioClip, this);
         //视频延长后,字幕需要后移
         //由于延长了视频，所以把字幕时间与视频时间同步
-        if (rst > 0)
+        后推时间(rst);
+        return rst;
+    }
+
+    private void 后推时间(double 后推时间ms)
+    {
+        if (后推时间ms > 0)
         {
             var next = this.Next;
             while (next != null)
             {
-                next.Subtitle.StartTime = next.Subtitle.StartTime.AddMilliseconds(rst);
-                next.Subtitle.EndTime = next.Subtitle.EndTime.AddMilliseconds(rst);
+                next.Subtitle.FixedStartTime = next.Subtitle.StartTime.AddMilliseconds(后推时间ms);
+                next.Subtitle.FixedEndTime = next.Subtitle.EndTime.AddMilliseconds(后推时间ms);
 
-                next.Parent.AudioClip.StartTime = next.Parent.AudioClip.StartTime.AddMilliseconds(rst);
-                next.Parent.AudioClip.EndTime = next.Parent.AudioClip.EndTime.AddMilliseconds(rst);
+                next.Parent.AudioClip.StartTime = next.Parent.AudioClip.StartTime.AddMilliseconds(后推时间ms);
+                next.Parent.AudioClip.EndTime = next.Parent.AudioClip.EndTime.AddMilliseconds(后推时间ms);
 
-                next.Parent.VideoClip.StartTime = next.Parent.VideoClip.StartTime.AddMilliseconds(rst);
-                next.Parent.VideoClip.EndTime = next.Parent.VideoClip.EndTime.AddMilliseconds(rst);
+                next.Parent.VideoClip.StartTime = next.Parent.VideoClip.StartTime.AddMilliseconds(后推时间ms);
+                next.Parent.VideoClip.EndTime = next.Parent.VideoClip.EndTime.AddMilliseconds(后推时间ms);
 
-                next.TextLogs += $"S+{rst};";
-                next.Parent.Commands +="音频后移"+rst+";";
+                next.TextLogs += $"S+{后推时间ms};";
+                next.Parent.Commands += "音频后移" + 后推时间ms + ";";
                 next = next.Next;
             }
         }
-        
+    }
 
-        return rst;
-        ////如果音频的时长 大于 当前视频的时长
-        //var diff = (int)(Parent.AudioClip.Duration - Duration).TotalMilliseconds;
-        //if (diff > 10)
-        //{
-        //    var oldDuration = (int)this.Duration.TotalMilliseconds;
-        //    var oldEnd = this.EndTime;
-        //    //延时：音频时长-视频时长
-        //    this.Delay = diff;
-
-        //    this.EndTime = this.EndTime.AddMilliseconds(Delay.Value);
-
-        //    var text = $"视频延时{Delay}";
-        //    //显示调试信息：
-        //    //开始时间:原视频结束时间
-        //    //结束时间:原视频结束时间+延时
-        //    Parent.Project.DrawText(500, 60, text, 24,
-        //        EndTime,
-        //        EndTime.Add(TimeSpan.FromMilliseconds(Delay.Value))
-        //        );
-        //    return this.Delay.Value;
-        //}
-        //return 0;
+    public override void RunDelay(int delay)
+    {
+        var output = GetFilePath(FileType.Video_Delay,delay);
+        FFmpegHelper.DelayVideoCopyLast(this.OutputFile, delay, output);
+        this.OutputFile = output;
     }
 
     public override string GetClipType()
@@ -122,6 +110,12 @@ public class VideoClip : ClipBase<VideoClip>
             EndTime = waitAdjust.StartTime.AddMilliseconds(waitAdjust.Duration / 实际倍速);
             ChangeSpeed = 实际倍速;
             ChangeSpeedLog(waitAdjust, target, this, 计划倍速, oldDuration);
+
+            var output = GetFilePath(FileType.Video_ChangeSpeed,实际倍速);
+            FFmpegHelper.ChangeVideoSpeed(this.OutputFile,实际倍速,output);
+            this.OutputFile = output;
+
+            后推时间(waitAdjust.Duration - oldDuration);
 
             return ChangeSpeed.Value;
         }
