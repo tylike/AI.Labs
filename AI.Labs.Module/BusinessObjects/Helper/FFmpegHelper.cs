@@ -17,15 +17,24 @@ namespace AI.Labs.Module.BusinessObjects
         public const string ffmpegFile = @"D:\ffmpeg.gui\last\ffmpeg.exe";
 
         #region execute command
-        public static void ExecuteCommand(string command, bool useShellExecute = false)
+        public static string ExecuteCommand(string command, bool useShellExecute = false,bool ffmpeg = true,bool readOutput = false,bool noWindow = false)
         {
             var pi = new ProcessStartInfo();
-            pi.FileName = ffmpegFile;
+            pi.FileName = ffmpeg ? ffmpegFile : ffprobe;
             pi.Arguments = command;
             pi.UseShellExecute = useShellExecute;
+            pi.RedirectStandardError = readOutput;
+            pi.RedirectStandardOutput = readOutput;
+            pi.CreateNoWindow = noWindow;
             var inf = Process.Start(pi);
+            var rst = "";
+            if(readOutput)
+            {
+                rst = inf.StandardOutput.ReadToEnd();
+            }
             inf.WaitForExit();
             Debug.WriteLine($"{pi.FileName} {pi.Arguments}");
+            return rst;
         }
         /// <summary>
         /// 执行的命令共有两部分,一是如
@@ -137,7 +146,7 @@ namespace AI.Labs.Module.BusinessObjects
         /// <param name="outputFile"></param>
         public static void ChangeAudioSpeed(string inputFileName, double speed, string outputFile)
         {
-            ExecuteCommand($"-i {inputFileName} -filter:a:0 \"atempo={speed.ToFFmpegString()}\" {outputFile} -y");
+            ExecuteCommand($"-i {inputFileName} -filter:a:0 \"atempo={speed:0.0########}\" {outputFile} -y");
         }
 
         /// <summary>
@@ -281,6 +290,18 @@ namespace AI.Labs.Module.BusinessObjects
                     writer.WriteLine($"file '{item}'");
                 }
             }
+        }
+
+        public static double? GetDuration(string inputAudioFile)
+        {
+            var rst = ExecuteCommand(
+                $"-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 {inputAudioFile}", ffmpeg: false,readOutput:true,noWindow:true);
+            //ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 input_audio_file
+            if(double.TryParse(rst,  out double duration))
+            {
+                return duration;
+            }
+            return null;
         }
     }
 }

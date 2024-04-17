@@ -36,7 +36,7 @@ public class AudioClip : ClipBase<AudioClip>
         IClip waitAdjust = this;
         ClipBase waitAdjustObject = this;
         //第一步:检查当前(中文音频)的时长 大于 字幕时长的,将快放中文音频,取最大1.3倍,与 “完全匹配倍速”
-        if (waitAdjust.Duration > target.Duration)
+        if (!ChangeSpeed.HasValue && waitAdjust.Duration > target.Duration)
         {
             //计算如果播放完整,应该用多快的速度
             var 计划倍速 = (double)waitAdjust.Duration / target.Duration;
@@ -44,19 +44,20 @@ public class AudioClip : ClipBase<AudioClip>
             //完全按最快播放也不行,这样听着不舒服            
             var 实际倍速 = calc(计划倍速);
             var 原时长 = waitAdjust.Duration;
-            waitAdjust.EndTime = waitAdjust.StartTime.AddMilliseconds(waitAdjust.Duration / 实际倍速);
+            
+            var newOutputFile = GetFilePath( FileType.Audio_ChangeSpeed,实际倍速);
+            FFmpegHelper.ChangeAudioSpeed(waitAdjustObject.OutputFile, 实际倍速, newOutputFile);
+            waitAdjustObject.UseFileDurationUpdateEnd(newOutputFile);
+
+            //waitAdjustObject.OutputFile = newOutputFile;
+            //waitAdjust.EndTime = waitAdjust.StartTime.AddMilliseconds(FFmpegHelper.GetDuration(newOutputFile).Value); //waitAdjust.StartTime.AddMilliseconds(waitAdjust.Duration / 实际倍速);
+
             waitAdjustObject.ChangeSpeed = 实际倍速;
             //字幕为标准:
             ChangeSpeedLog(waitAdjust, target, waitAdjustObject, 计划倍速, 原时长);
 
-            var newOutputFile = GetFilePath( FileType.Audio_ChangeSpeed,实际倍速);
-            FFmpegHelper.ChangeAudioSpeed(waitAdjustObject.OutputFile, 实际倍速, newOutputFile);
-            waitAdjustObject.OutputFile = newOutputFile;
+           
             return 实际倍速;
-        }
-        else
-        {
-            waitAdjustObject.ChangeSpeed = null;
         }
         return 1;
     }
@@ -70,7 +71,7 @@ public class AudioClip : ClipBase<AudioClip>
     {
         var newOutputFile = GetFilePath( FileType.Audio_Delay,delay);
         FFmpegHelper.DelayAudio(this.OutputFile,delay,newOutputFile);
-        this.OutputFile = newOutputFile;
+        UseFileDurationUpdateEnd(newOutputFile);        
     }
 
 

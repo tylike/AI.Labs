@@ -14,6 +14,9 @@ public interface IClip
 
     [ModelDefault("DisplayFormat", @"hh\:mm\:ss\.fff")]
     public TimeSpan EndTime { get; set; }
+
+   
+
     /// <summary>
     /// 毫秒
     /// </summary>
@@ -36,6 +39,20 @@ public abstract class ClipBase : BaseObject, IClip
         get { return GetPropertyValue<string>(nameof(OutputFile)); }
         set { SetPropertyValue(nameof(OutputFile), value); }
     }
+
+    public void UseFileDurationUpdateEnd(string outputFile)
+    {
+        this.OutputFile = outputFile;
+        FileDuration = FFmpegHelper.GetDuration(outputFile);
+        this.EndTime = this.StartTime.AddMilliseconds(FileDuration.Value);
+    }
+
+    public double? FileDuration
+    {
+        get { return GetPropertyValue<double>(nameof(FileDuration)); }
+        set { SetPropertyValue(nameof(FileDuration), value); }
+    }
+
 
     /// <summary>
     /// 代表了输入audio的序号
@@ -107,8 +124,6 @@ public abstract class ClipBase : BaseObject, IClip
     {
         Project.Log($"{操作},{目标类型},{目标内容},{this.Index},{成功}");
     }
-
-
 
     protected static void ChangeSpeedLog(IClip waitAdjust, IClip target, ClipBase waitAdjustObject, double 计划倍速, int 原时长)
     {

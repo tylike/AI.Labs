@@ -58,7 +58,23 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 Caption = "音频延时"
             };
             delayAudio.Execute += DelayAudio_Execute;
+
+            var readAudioFileInfo = new SimpleAction(this, "ReadAudioFileInfo", null)
+            {
+                Caption = "取音频信息"
+            };
+            readAudioFileInfo.Execute += ReadAudioFileInfo_Execute;
         }
+
+        private void ReadAudioFileInfo_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            foreach (var item in e.SelectedObjects.OfType<MediaClip>())
+            {
+                item.AudioClip.FileDuration = FFmpegHelper.GetDuration(item.AudioClip.OutputFile);
+                //item.AudioClip.取音频信息();
+            }
+        }
+
 
         private void DelayAudio_Execute(object sender, SimpleActionExecuteEventArgs e)
         {

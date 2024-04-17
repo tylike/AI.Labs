@@ -81,7 +81,7 @@ public class VideoClip : ClipBase<VideoClip>
     {
         var output = GetFilePath(FileType.Video_Delay,delay);
         FFmpegHelper.DelayVideoCopyLast(this.OutputFile, delay, output);
-        this.OutputFile = output;
+        UseFileDurationUpdateEnd(output);
     }
 
     public override string GetClipType()
@@ -107,15 +107,15 @@ public class VideoClip : ClipBase<VideoClip>
 
             var oldDuration = (int)Duration.TotalMilliseconds;
             var oldEnd = this.EndTime;
-            EndTime = waitAdjust.StartTime.AddMilliseconds(waitAdjust.Duration / 实际倍速);
-            ChangeSpeed = 实际倍速;
-            ChangeSpeedLog(waitAdjust, target, this, 计划倍速, oldDuration);
+            //EndTime = waitAdjust.StartTime.AddMilliseconds(waitAdjust.Duration / 实际倍速);
+            ChangeSpeed = 实际倍速;            
 
             var output = GetFilePath(FileType.Video_ChangeSpeed,实际倍速);
             FFmpegHelper.ChangeVideoSpeed(this.OutputFile,实际倍速,output);
-            this.OutputFile = output;
+            UseFileDurationUpdateEnd(output);
 
             后推时间(waitAdjust.Duration - oldDuration);
+            ChangeSpeedLog(waitAdjust, target, this, 计划倍速, oldDuration);
 
             return ChangeSpeed.Value;
         }
