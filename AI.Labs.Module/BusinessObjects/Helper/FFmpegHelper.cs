@@ -45,7 +45,7 @@ namespace AI.Labs.Module.BusinessObjects
                     command += " -y ";
                 }
             }
-
+            var sw = Stopwatch.StartNew();
             //如果targetDuration为空，则不需要去验证目标时长
             var pi = new ProcessStartInfo();
             pi.FileName = ffmpeg ? ffmpegFile : ffprobe;
@@ -61,15 +61,18 @@ namespace AI.Labs.Module.BusinessObjects
                 rst = inf.StandardOutput.ReadToEnd();
             }
             inf.WaitForExit();
+            sw.Stop();
+            if (taskMemo != null)
+                Console.WriteLine(taskMemo);
+
             Debug.WriteLine($"{pi.FileName} {pi.Arguments}");
             if (targetDuration.HasValue && !string.IsNullOrEmpty(outputFile))
             {
                 var dur = GetDuration(outputFile);
+                var diff = dur.Value - targetDuration.Value;
 
-                double roundedNum1 = Math.Round(dur.Value,1);
-                double roundedNum2 = Math.Round(targetDuration.Value, 1);
 
-                if (roundedNum1 != roundedNum2)
+                if (diff>0.5)
                 {
 
                     var logPath = Path.Combine(logFilePath ?? "d:\\temp", "logs", $"{taskMemo}-{(dur.Value == targetDuration.Value).ToString()}_log.txt");
@@ -78,8 +81,10 @@ namespace AI.Labs.Module.BusinessObjects
 目标时长:{targetDuration.Value}
 附加信息:
 {addationLogs + ""}
+精确差异:{dur.Value - targetDuration.Value}
 ";
                     File.WriteAllText(logPath, logs);
+                    Console.Write(logs);
                 }
                 //if(dur.HasValue && dur.Value != targetDuration.Value)
                 //{
@@ -113,14 +118,14 @@ namespace AI.Labs.Module.BusinessObjects
             {
                 throw new ArgumentException("滤镜脚本为空!退出！", nameof(filterComplex));
             }
+            
             if (duration == 0)
                 throw new ArgumentException("视频时长不能为0", nameof(duration));
+
             if (basePath == null)
             {
                 basePath = Environment.GetEnvironmentVariable("TEMP");
             }
-
-
 
             var filterComplexScript = Path.Combine(basePath, "FilterComplexScript.txt");
             if (File.Exists(filterComplexScript))
@@ -207,7 +212,7 @@ namespace AI.Labs.Module.BusinessObjects
         {
             var forceLength = planSpeed <= 1.3 ? $"-t {targetDuration}" : "";
 
-            ExecuteCommand($"音频调速 {taskMemo}", targetDuration, $"-i {inputFileName}  -filter:a:0 \"atempo={speed:0.0########}\" {forceLength}", outputFile);
+            ExecuteCommand($"音频调速 {taskMemo}", targetDuration, $" -loglevel error  -i {inputFileName}  -filter:a:0 \"atempo={speed:0.0########}\" {forceLength}", outputFile);
         }
 
         /// <summary>
@@ -238,7 +243,7 @@ namespace AI.Labs.Module.BusinessObjects
         public static void DelayAudio(string taskMemo, double targetDuration, string inputFileName, double delayMS, string newOutputFile)
         {
             //-i input.mp3 -af apad=pad_dur=3000 output.mp3
-            ExecuteCommand($"音频延时 {taskMemo} ", targetDuration, $"-i {inputFileName} -af apad=pad_dur={(delayMS / 1000).ToFFmpegString()} ", newOutputFile);
+            ExecuteCommand($"音频延时 {taskMemo} ", targetDuration, $" -loglevel error  -i {inputFileName} -af apad=pad_dur={(delayMS / 1000).ToFFmpegString()} ", newOutputFile);
         }
 
         /// <summary>
@@ -253,7 +258,7 @@ namespace AI.Labs.Module.BusinessObjects
             //开头加: -filter_complex "[0:v]tpad=start_mode=clone:start_duration=3[v];[0:a]apad=pad_dur=3:pad_plac=0[a]" -map "[v]" -map "[a]" output.mp4
             //末尾加: -filter_complex "[0:v]tpad=stop_mode=clone:stop_duration=3[v];[0:a]apad=pad_dur=3[a]" -map "[v]" -map "[a]" output.mp4
             var delayTime = (delayMS / 1000).ToFFmpegString();
-            ExecuteCommand($"视频延时 {taskMemo}", targetDuration, $"-i {inputFileName} -filter_complex \"[0:v]tpad=stop_mode=clone:stop_duration={delayTime}[v];\" -map \"[v]\" ", newOutputFile);
+            ExecuteCommand($"视频延时 {taskMemo}", targetDuration, $" -loglevel error  -i {inputFileName} -filter_complex \"[0:v]tpad=stop_mode=clone:stop_duration={delayTime}[v];\" -map \"[v]\" ", newOutputFile);
         }
 
         /// <summary>
@@ -265,7 +270,7 @@ namespace AI.Labs.Module.BusinessObjects
         public static void DelayVideoCopyRepeat(string taskMemo, double targetDuration, double originalDuration, string inputFileName, string newOutputFile)
         {
             int loopCount = (int)Math.Ceiling(targetDuration / originalDuration);
-            string arguments = "";
+            string arguments = " -loglevel error ";
 
             ExecuteCommand(
                 $"{taskMemo} 视频延时", targetDuration,
@@ -396,7 +401,7 @@ namespace AI.Labs.Module.BusinessObjects
             var ap = isVideo ? " -c:v copy " : " -c:a copy ";
             var an = isVideo ? "-an" : "";
             //ffmpeg
-            var arguments = $"-report -f concat -safe 0 -i {fileListFullName} {ap} {an} ";
+            var arguments = $" -loglevel error  -f concat -safe 0 -i {fileListFullName} {ap} {an} ";
 
             try
             {
@@ -425,7 +430,7 @@ namespace AI.Labs.Module.BusinessObjects
             Concat(audios.Last().EndTime.TotalSeconds, audios.Select(t => t.OutputFile), audioOnly, false, "audiolist.txt");
 
             //ffmpeg
-            var arguments = $" -i {videoOnly} -i {audioOnly} -c:v copy -c:a aac -strict experimental ";
+            var arguments = $" -loglevel error -i {videoOnly} -i {audioOnly} -c:v copy -c:a aac -strict experimental ";
 
             try
             {
