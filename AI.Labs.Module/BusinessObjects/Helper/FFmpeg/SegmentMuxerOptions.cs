@@ -19,7 +19,7 @@ namespace AI.Labs.Module.BusinessObjects
 
         public string ToArgumentString()
         {
-            var times = SegmentTimes.Select(t => t.ToFFmpegFormat()).Join(",");
+            var times = SegmentTimes.Select(t => t.ToFFmpegString()).Join(",");
 
             var args = $"-i {InputFile}  -copyts -avoid_negative_ts 1  -c:v libx264 -crf 23 -map 0 -force_key_frames {times} -x264-params keyint=25:scenecut=0 -f segment";
 

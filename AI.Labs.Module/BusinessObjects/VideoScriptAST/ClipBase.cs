@@ -44,7 +44,7 @@ public abstract class ClipBase : BaseObject, IClip
     {
         this.OutputFile = outputFile;
         FileDuration = FFmpegHelper.GetDuration(outputFile);
-        this.EndTime = this.StartTime.AddMilliseconds(FileDuration.Value);
+        this.EndTime = this.StartTime.AddMilliseconds(FileDuration.Value * 1000);
     }
 
     public double? FileDuration
@@ -195,12 +195,12 @@ public abstract class ClipBase : BaseObject, IClip
                 logText,
                 "必然成功"
                 );
-            RunDelay(waitAdjustObject.Delay.Value);
+            RunDelay(waitAdjustObject.Delay.Value,target.Duration/1000d);
             return waitAdjustObject.Delay.Value;
         }
         return 0;
     }
-    public virtual void RunDelay(int delay)
+    public virtual void RunDelay(int delay,double targetDuration)
     {
         
     }

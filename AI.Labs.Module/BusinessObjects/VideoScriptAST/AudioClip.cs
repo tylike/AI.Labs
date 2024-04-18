@@ -46,7 +46,7 @@ public class AudioClip : ClipBase<AudioClip>
             var 原时长 = waitAdjust.Duration;
             
             var newOutputFile = GetFilePath( FileType.Audio_ChangeSpeed,实际倍速);
-            FFmpegHelper.ChangeAudioSpeed(waitAdjustObject.OutputFile, 实际倍速, newOutputFile);
+            FFmpegHelper.ChangeAudioSpeed(waitAdjustObject.Index.ToString(),target.Duration/1000d,waitAdjustObject.OutputFile, 实际倍速, newOutputFile,计划倍速);
             waitAdjustObject.UseFileDurationUpdateEnd(newOutputFile);
 
             //waitAdjustObject.OutputFile = newOutputFile;
@@ -67,10 +67,10 @@ public class AudioClip : ClipBase<AudioClip>
         return 计算延时(this,Parent.VideoClip,this);        
     }
 
-    public override void RunDelay(int delay)
+    public override void RunDelay(int delay,double targetDuration)
     {
         var newOutputFile = GetFilePath( FileType.Audio_Delay,delay);
-        FFmpegHelper.DelayAudio(this.OutputFile,delay,newOutputFile);
+        FFmpegHelper.DelayAudio(this.Index.ToString(),targetDuration,this.OutputFile,delay,newOutputFile);
         UseFileDurationUpdateEnd(newOutputFile);        
     }
 

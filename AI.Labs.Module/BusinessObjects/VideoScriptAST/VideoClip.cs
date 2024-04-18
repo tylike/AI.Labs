@@ -77,10 +77,11 @@ public class VideoClip : ClipBase<VideoClip>
         }
     }
 
-    public override void RunDelay(int delay)
+    public override void RunDelay(int delay,double targetDuration)
     {
         var output = GetFilePath(FileType.Video_Delay,delay);
-        FFmpegHelper.DelayVideoCopyLast(this.OutputFile, delay, output);
+        //FFmpegHelper.DelayVideoCopyLast(this.Index.ToString(),targetDuration,this.OutputFile, delay, output);
+        FFmpegHelper.DelayVideoCopyRepeat(this.Index.ToString(),targetDuration,this.FileDuration.Value,this.OutputFile,output);
         UseFileDurationUpdateEnd(output);
     }
 
@@ -111,7 +112,7 @@ public class VideoClip : ClipBase<VideoClip>
             ChangeSpeed = 实际倍速;            
 
             var output = GetFilePath(FileType.Video_ChangeSpeed,实际倍速);
-            FFmpegHelper.ChangeVideoSpeed(this.OutputFile,实际倍速,output);
+            FFmpegHelper.ChangeVideoSpeed(this.Index.ToString(),target.Duration/1000d,this.OutputFile,实际倍速,output);
             UseFileDurationUpdateEnd(output);
 
             后推时间(waitAdjust.Duration - oldDuration);

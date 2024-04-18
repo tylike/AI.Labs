@@ -55,11 +55,12 @@ namespace AI.Labs.Module.BusinessObjects
         // 加速播放音频（保持原音调）
         private static void AdjustPlaybackSpeed(string inputFilePath, string outputFilePath, float newSpeed)
         {
+#warning 没有用了，需要删除
             // 构建 ffmpeg 命令
             string ffmpegCommand = $" -i \"{inputFilePath}\" -filter:a \"atempo={newSpeed}\" -vn \"{outputFilePath}\"";
 
             // 执行 ffmpeg 命令
-           FFmpegHelper.ExecuteCommand(ffmpegCommand);
+           //FFmpegHelper.ExecuteCommand(ffmpegCommand);
         }
 
 

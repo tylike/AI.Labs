@@ -1,5 +1,6 @@
 ﻿using AI.Labs.Module.BusinessObjects.AudioBooks;
 using AI.Labs.Module.BusinessObjects.VideoTranslate;
+using com.sun.tools.javac.jvm;
 using DevExpress.Charts.Native;
 using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.DC;
@@ -7,6 +8,7 @@ using DevExpress.ExpressApp.Model;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.BaseImpl;
 using DevExpress.Xpo;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace AI.Labs.Module.BusinessObjects;
@@ -142,14 +144,25 @@ public class VideoScriptProject : BaseObject
     }
     public void Export()
     {
+        
+
         var clips = MediaClips.OrderBy(t => t.Index).ToList();
         clips.First().AudioClip.LogTitle();
 
         //var r1 = clips.Select(t => t.AudioClip.计算调速());
 
-        clips.ForEach(t => t.AudioClip.计算调速());
+        //clips.ForEach(t => t.AudioClip.计算调速());
+        var sw = Stopwatch.StartNew();
+        Parallel.ForEach(clips.Select(t=>t.AudioClip).ToArray(), new ParallelOptions { MaxDegreeOfParallelism = 8 }, item =>
+        {
+            item.计算调速();
+        });
+        sw.Stop();
+        Debug.WriteLine($"音频调整用时:{sw.Elapsed}");
+        sw.Restart();
         clips.ForEach(t => t.VideoClip.计算调速());
         clips.ForEach(t => t.VideoClip.计算延时());
+
         clips.ForEach(t => t.AudioClip.计算延时());
 
         clips.ForEach(t =>
@@ -190,7 +203,7 @@ public class VideoScriptProject : BaseObject
         }
 
         File.WriteAllText(Path.Combine(basePath, "log.csv"), OperateLogs.Join("\n"));
-        FFmpegHelper.Concat(clips.Select(t => t.VideoClip.OutputFile), clips.Select(t => t.AudioClip.OutputFile), OutputVideoFile);
+        FFmpegHelper.Concat(clips, OutputVideoFile);
 
         //FFmpegHelper.ExecuteCommand(
         //    $"{GetInputVideosParameter()} {GetInputAudiosParameter()}",
@@ -273,28 +286,57 @@ public class VideoScriptProject : BaseObject
 
     public void CreateProject(IObjectSpace os)
     {
+        var temp = @"d:\temp\logs";
+        if (Directory.Exists(temp))
+        {
+            Directory.Delete(temp, true);
+        }
+        if (!Directory.Exists(temp))
+        {
+            Directory.CreateDirectory(temp);
+        }
+       
         var subtitles = VideoInfo.Subtitles.OrderBy(t => t.Index).ToArray();
 
+        SubtitleItem pre = null;
         //所有的结束时间，但除了最后一条用开始时间
         foreach (var item in subtitles)
         {
+            if (item.Index == 98)
+            {
+
+            }
+            item.StartTime = item.StartTime.AdjustTime(true);
+            item.EndTime = item.EndTime.AdjustTime(true);
+
+            if (pre != null)
+            {
+                pre.EndTime = item.StartTime;
+            }
+            
+            
+
             item.FixedStartTime = item.StartTime;
             item.FixedEndTime = item.EndTime;
+            
+            
+
             item.Save();
+            pre = item;
             //os.SetModified(item);
         }
-        
+
         subtitles.First().StartTime = TimeSpan.Zero;
 
-        
+
         MediaClip last = null;
         var videoClips = Path.Combine(VideoInfo.ProjectPath, "VideoClip");
-                
-        if(!Directory.Exists(videoClips))
+
+        if (!Directory.Exists(videoClips))
         {
             Directory.CreateDirectory(videoClips);
         }
-        var splitFiles = FFmpegHelper.SplitVideo(VideoInfo.VideoFile, subtitles, videoClips);
+        var splitFiles = FFmpegHelper.SplitVideo(VideoInfo.VideoFile, subtitles, videoClips).OrderBy(t => t).ToArray();
 
         foreach (var item in VideoInfo.Audios.OrderBy(t => t.Index))
         {

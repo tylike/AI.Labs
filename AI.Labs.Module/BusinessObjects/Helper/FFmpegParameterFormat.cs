@@ -35,11 +35,28 @@ namespace AI.Labs.Module.BusinessObjects
         }
         public static string ToFFmpegString(this double value)
         {
-            return value.ToString("0.0#####");
+            return value.ToString();// ("0.0#####");
         }
         public static string ToFFmpegString(this float value)
         {
-            return value.ToString("0.0#####");
+            return value.ToString();// ("0.0#####");
+        }
+
+        // 假设视频是50fps，每帧的持续时间是20毫秒
+        private const int FrameDuration = 100; // 毫秒
+
+        public static TimeSpan AdjustTime(this TimeSpan self,bool plus)
+        {
+            // 计算最近的帧边界毫秒数
+            int milliseconds = self.Milliseconds;
+            int adjustedMilliseconds = (milliseconds / FrameDuration) * FrameDuration;
+            var s = self.Seconds;
+            if (milliseconds > 0 && plus)
+            {
+                s++;
+            }
+            // 创建修正后的TimeSpan
+            return new TimeSpan(self.Days,self.Hours, self.Minutes, self.Seconds,adjustedMilliseconds);
         }
     }
 }
