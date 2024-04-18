@@ -160,7 +160,7 @@ public class VideoScriptProject : BaseObject
         sw.Stop();
         Debug.WriteLine($"音频调整用时:{sw.Elapsed}");
         sw.Restart();
-        clips.ForEach(t => t.VideoClip.计算调速());
+        //clips.ForEach(t => t.VideoClip.计算调速());
         clips.ForEach(t => t.VideoClip.计算延时());
 
         clips.ForEach(t => t.AudioClip.计算延时());
