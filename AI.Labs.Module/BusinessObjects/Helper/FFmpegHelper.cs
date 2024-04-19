@@ -414,7 +414,7 @@ namespace AI.Labs.Module.BusinessObjects
         }
 
 
-        public static void Concat(IEnumerable<MediaClip> clips, string outputFile, bool overWriteExist = true)
+        public static void Concat(IEnumerable<MediaClip> clips, string outputFile, bool overWriteExist = true,IEnumerable<DrawTextClip> texts = null)
         {
             var videos = clips.Select(t => t.VideoClip);
             var audios = clips.Select(t => t.AudioClip);

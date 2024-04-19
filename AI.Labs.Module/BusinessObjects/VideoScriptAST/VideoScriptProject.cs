@@ -127,15 +127,6 @@ public class VideoScriptProject : BaseObject
     }
     #endregion
 
-    string GetInputVideosParameter()
-    {
-        return string.Join(" ", VideoSources.Select(t => $" -i {t.Path}"));
-    }
-    string GetInputAudiosParameter()
-    {
-        return string.Join(" ", AudioSources.Select(t => $" -i {t.Path}"));
-    }
-
     [Size(-1)]
     public string OutputVideoFile
     {
@@ -144,8 +135,6 @@ public class VideoScriptProject : BaseObject
     }
     public void Export()
     {
-        
-
         var clips = MediaClips.OrderBy(t => t.Index).ToList();
         clips.First().AudioClip.LogTitle();
 
@@ -153,7 +142,7 @@ public class VideoScriptProject : BaseObject
 
         //clips.ForEach(t => t.AudioClip.计算调速());
         var sw = Stopwatch.StartNew();
-        Parallel.ForEach(clips.Select(t=>t.AudioClip).ToArray(), new ParallelOptions { MaxDegreeOfParallelism = 8 }, item =>
+        Parallel.ForEach(clips.Select(t => t.AudioClip).ToArray(), new ParallelOptions { MaxDegreeOfParallelism = 8 }, item =>
         {
             item.计算调速();
         });
@@ -185,6 +174,24 @@ public class VideoScriptProject : BaseObject
         //var task = RunHttp();
         //var all = AudioSources.Select(t => t.SourceInfo.Subtitle).ToArray();
 
+        CreateFinalClipForDebug(clips);
+
+        File.WriteAllText(Path.Combine(basePath, "log.csv"), OperateLogs.Join("\n"));
+        FFmpegHelper.Concat(clips, OutputVideoFile);
+
+        //FFmpegHelper.ExecuteCommand(
+        //    $"{GetInputVideosParameter()} {GetInputAudiosParameter()}",
+        //    OutputVideoFile,
+        //    args,
+        //    filterComplex,
+        //    true,
+        //    duration.TotalSeconds + 1,
+        //    basePath: basePath
+        //    );
+    }
+
+    private void CreateFinalClipForDebug(List<MediaClip> clips)
+    {
         var videoClipFinal = Path.Combine(VideoInfo.ProjectPath, "VideoClip.Final");
         var audioClipFinal = Path.Combine(VideoInfo.ProjectPath, "AudioClip.Final");
         if (!Directory.Exists(videoClipFinal))
@@ -201,19 +208,6 @@ public class VideoScriptProject : BaseObject
             File.Copy(item.VideoClip.OutputFile, Path.Combine(videoClipFinal, $"{item.Index}.mp4"), true);
             File.Copy(item.AudioClip.OutputFile, Path.Combine(audioClipFinal, $"{item.Index}.mp3"), true);
         }
-
-        File.WriteAllText(Path.Combine(basePath, "log.csv"), OperateLogs.Join("\n"));
-        FFmpegHelper.Concat(clips, OutputVideoFile);
-
-        //FFmpegHelper.ExecuteCommand(
-        //    $"{GetInputVideosParameter()} {GetInputAudiosParameter()}",
-        //    OutputVideoFile,
-        //    args,
-        //    filterComplex,
-        //    true,
-        //    duration.TotalSeconds + 1,
-        //    basePath: basePath
-        //    );
     }
 
     public string ReleaseProductScript => $"[v][a]concat=n=1:a=1:v=1[MediaOut];";
@@ -241,6 +235,7 @@ public class VideoScriptProject : BaseObject
         }
         return fileName;
     }
+
     #region 绘制文本
     public TextOption DefaultTextOption
     {
