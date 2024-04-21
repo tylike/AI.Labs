@@ -223,10 +223,11 @@ namespace AI.Labs.Module.BusinessObjects.Helper
                             if (i + 1 < subtitleItems.Count)
                             {
                                 var next = subtitleItems[i + 1];
-                                endTime = saveFixed ? item.FixedStartTime : next.StartTime;
+                                endTime = saveFixed ? next.FixedStartTime : next.StartTime;
                             }
+                            var startTime = saveFixed ? item.FixedStartTime : item.StartTime;
                             writer.WriteLine(l++);
-                            writer.WriteLine($"{item.StartTime.ToString(@"hh\:mm\:ss\,fff")} --> {endTime.ToString(@"hh\:mm\:ss\,fff")}");
+                            writer.WriteLine($"{startTime.ToString(@"hh\:mm\:ss\,fff")} --> {endTime.ToString(@"hh\:mm\:ss\,fff")}");
 
                             //如果字幕是多行的,当前未处理
                             //foreach (var line in item.Lines)

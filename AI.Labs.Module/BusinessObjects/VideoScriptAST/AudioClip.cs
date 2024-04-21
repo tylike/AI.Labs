@@ -1,5 +1,6 @@
 ﻿using AI.Labs.Module.BusinessObjects.VideoTranslate;
 using DevExpress.DashboardCommon;
+using DevExpress.ExpressApp.ConditionalAppearance;
 using DevExpress.Xpo;
 using edu.stanford.nlp.trees.tregex.gui;
 using sun.tools.tree;
@@ -11,8 +12,10 @@ using static com.sun.net.httpserver.Authenticator;
 
 namespace AI.Labs.Module.BusinessObjects;
 
+//
 public class AudioClip : ClipBase<AudioClip>
 {
+
     public AudioClip(Session s) : base(s)
     {
 
@@ -23,15 +26,16 @@ public class AudioClip : ClipBase<AudioClip>
         return "音频";
     }
 
+    #region 调速
     public double 计算调速()
     {
-        return 计算调速(Parent.AudioInfo.Subtitle, t => Math.Min(t, 1.3d));
+        return 计算调速(Parent.AudioInfo.Subtitle);
     }
     /// <summary>
-     /// 根据target时长,计算waitAdjust的调整
-     /// </summary>
-     /// <returns></returns>
-    public double 计算调速( IClip target,  Func<double, double> calc)
+    /// 根据target时长,计算waitAdjust的调整
+    /// </summary>
+    /// <returns></returns>
+    public double 计算调速(IClip target)
     {
         IClip waitAdjust = this;
         ClipBase waitAdjustObject = this;
@@ -40,39 +44,105 @@ public class AudioClip : ClipBase<AudioClip>
         {
             //计算如果播放完整,应该用多快的速度
             var 计划倍速 = (double)waitAdjust.Duration / target.Duration;
+            var 实际倍速 = 计划倍速;
+            var 调整成功 = false;
+            if (计划倍速 > 1.3)
+            {
+
+                实际倍速 = 1.3;
+            }
+            else
+            {
+                实际倍速 = 计划倍速;
+                调整成功 = true;
+            }
+
             //*****************************************************************
             //完全按最快播放也不行,这样听着不舒服            
-            var 实际倍速 = calc(计划倍速);
-            var 原时长 = waitAdjust.Duration;
-            
-            var newOutputFile = GetFilePath( FileType.Audio_ChangeSpeed,实际倍速);
-            FFmpegHelper.ChangeAudioSpeed(waitAdjustObject.Index.ToString(),target.Duration/1000d,waitAdjustObject.OutputFile, 实际倍速, newOutputFile,计划倍速);
-            waitAdjustObject.UseFileDurationUpdateEnd(newOutputFile);
 
-            //waitAdjustObject.OutputFile = newOutputFile;
-            //waitAdjust.EndTime = waitAdjust.StartTime.AddMilliseconds(FFmpegHelper.GetDuration(newOutputFile).Value); //waitAdjust.StartTime.AddMilliseconds(waitAdjust.Duration / 实际倍速);
+            var 原时长 = waitAdjust.Duration;
+
+            var newOutputFile = GetFilePath(FileType.Audio_ChangeSpeed, 实际倍速);
+            FFmpegHelper.ChangeAudioSpeed(waitAdjustObject.Index.ToString(), target.Duration / 1000d, waitAdjustObject.OutputFile, 实际倍速, newOutputFile, 计划倍速);
+            waitAdjustObject.使用文件时长更新结束时间(newOutputFile);
 
             waitAdjustObject.ChangeSpeed = 实际倍速;
-            //字幕为标准:
-            ChangeSpeedLog(waitAdjust, target, waitAdjustObject, 计划倍速, 原时长);
 
-           
+            ChangeSpeedLog(waitAdjust, target, waitAdjustObject, 计划倍速, 原时长);
+            //字幕为标准:
+            //调整后，音频还是太长，那么就停止调整了，将去调整视频:
+            //1.1 音频时长 >  字幕时长:调整字幕、视频
+            if (!调整成功)
+            {
+                Subtitle.FixedStartTime = this.StartTime;
+
+                Subtitle.SetFixedEndTime(this.EndTime, Parent);
+
+                Parent.VideoClip.StartTime = StartTime;
+                Parent.VideoClip.EndTime = EndTime;
+                后推时间(waitAdjust.Duration - target.Duration);
+            }
+            else
+            {
+                this.StartTime = Subtitle.FixedStartTime;
+                this.EndTime = Subtitle.FixedEndTime;
+            }
+            
+            //1.2 音频时长 <= 字幕时长:调整音频、视频 为 字幕 时长
+            //1.2.1 音频时长 <  字幕时长:调整音频、视频 为 字幕 时长
+            //1.2.2 音频时长 =  字幕时长:调整音频、视频 为 字幕 时长
+
             return 实际倍速;
         }
         return 1;
     }
 
-    public double 计算延时()
+    /// <summary>
+    /// 将当前片断后面的所有片断后推
+    /// </summary>
+    /// <param name="后推时间ms"></param>
+    public void 后推时间(double 后推时间ms)
     {
-        return 计算延时(this,Parent.VideoClip,this);        
+        if (后推时间ms > 0)
+        {
+            var next = this.Parent.VideoClip.Next;
+            while (next != null)
+            {
+                next.Subtitle.FixedStartTime = next.Subtitle.FixedStartTime.AddMilliseconds(后推时间ms);
+                next.Subtitle.SetFixedEndTime(next.Subtitle.FixedEndTime.AddMilliseconds(后推时间ms),this.Parent);
+
+
+                next.Parent.AudioClip.StartTime = next.Parent.AudioClip.StartTime.AddMilliseconds(后推时间ms);
+                next.Parent.AudioClip.EndTime = next.Parent.AudioClip.EndTime.AddMilliseconds(后推时间ms);
+
+                next.StartTime = next.StartTime.AddMilliseconds(后推时间ms);
+                next.EndTime = next.EndTime.AddMilliseconds(后推时间ms);
+
+                next.TextLogs += $"S+{后推时间ms};";
+                next.Parent.Commands += "音频后移" + 后推时间ms + ";";
+                next = next.Next;
+            }
+        }
     }
 
-    public override void RunDelay(int delay,double targetDuration)
+    #endregion
+
+    #region 延时
+    public double 计算延时()
     {
-        var newOutputFile = GetFilePath( FileType.Audio_Delay,delay);
-        FFmpegHelper.DelayAudio(this.Index.ToString(),targetDuration,this.OutputFile,delay,newOutputFile);
-        UseFileDurationUpdateEnd(newOutputFile);        
+        return 计算延时(this, Parent.VideoClip, this);
     }
+
+    public override void RunDelay(int delay, double targetDuration)
+    {
+        var newOutputFile = GetFilePath(FileType.Audio_Delay, delay);
+        FFmpegHelper.DelayAudio(this.Index.ToString(), targetDuration, this.OutputFile, delay, newOutputFile);
+        使用文件时长更新结束时间(newOutputFile);
+        //使用音频时长 更新字幕时长
+        //因为音频时长可能是根据ffmpeg的结果而来，可能不是准确的期望
+        Subtitle.SetFixedEndTime(EndTime, Parent);
+    } 
+    #endregion
 
 
     public string ChangeLogs

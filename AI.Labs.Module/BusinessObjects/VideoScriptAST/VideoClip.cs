@@ -50,39 +50,26 @@ public class VideoClip : ClipBase<VideoClip>
         var rst = 计算延时(this, Parent.AudioClip, this);
         //视频延长后,字幕需要后移
         //由于延长了视频，所以把字幕时间与视频时间同步
-        后推时间(rst);
+        if (rst > 0)
+        {
+            Subtitle.FixedStartTime = this.StartTime;
+            Subtitle.SetFixedEndTime ( this.EndTime, Parent);
+
+            Parent.AudioClip.StartTime = StartTime;
+            Parent.AudioClip.EndTime = EndTime;
+            Parent.后推时间(rst);
+        }
         return rst;
     }
 
-    private void 后推时间(double 后推时间ms)
-    {
-        if (后推时间ms > 0)
-        {
-            var next = this.Next;
-            while (next != null)
-            {
-                next.Subtitle.FixedStartTime = next.Subtitle.FixedStartTime.AddMilliseconds(后推时间ms);
-                next.Subtitle.FixedEndTime = next.Subtitle.FixedEndTime.AddMilliseconds(后推时间ms);
 
-                next.Parent.AudioClip.StartTime = next.Parent.AudioClip.StartTime.AddMilliseconds(后推时间ms);
-                next.Parent.AudioClip.EndTime = next.Parent.AudioClip.EndTime.AddMilliseconds(后推时间ms);
-
-                next.Parent.VideoClip.StartTime = next.Parent.VideoClip.StartTime.AddMilliseconds(后推时间ms);
-                next.Parent.VideoClip.EndTime = next.Parent.VideoClip.EndTime.AddMilliseconds(后推时间ms);
-
-                next.TextLogs += $"S+{后推时间ms};";
-                next.Parent.Commands += "音频后移" + 后推时间ms + ";";
-                next = next.Next;
-            }
-        }
-    }
 
     public override void RunDelay(int delay,double targetDuration)
     {
         var output = GetFilePath(FileType.Video_Delay,delay);
         //FFmpegHelper.DelayVideoCopyLast(this.Index.ToString(),targetDuration,this.OutputFile, delay, output);
         FFmpegHelper.DelayVideoCopyRepeat(this.Index.ToString(),targetDuration,this.FileDuration.Value,this.OutputFile,output);
-        UseFileDurationUpdateEnd(output);
+        使用文件时长更新结束时间(output);
     }
 
     public override string GetClipType()
@@ -106,16 +93,22 @@ public class VideoClip : ClipBase<VideoClip>
             var 计划倍速 = waitAdjust.Duration / (double)target.Duration;
             var 实际倍速 = Math.Max(计划倍速, 0.7d);
 
-            var oldDuration = (int)Duration.TotalMilliseconds;
+            var oldDuration = waitAdjust.Duration;
             var oldEnd = this.EndTime;
             //EndTime = waitAdjust.StartTime.AddMilliseconds(waitAdjust.Duration / 实际倍速);
             ChangeSpeed = 实际倍速;            
 
             var output = GetFilePath(FileType.Video_ChangeSpeed,实际倍速);
             FFmpegHelper.ChangeVideoSpeed(this.Index.ToString(),target.Duration/1000d,this.OutputFile,实际倍速,output);
-            UseFileDurationUpdateEnd(output);
+            使用文件时长更新结束时间(output);
+            
+            Subtitle.FixedStartTime = this.StartTime;
+            Subtitle.SetFixedEndTime(this.EndTime,Parent);
 
-            后推时间(waitAdjust.Duration - oldDuration);
+            Parent.AudioClip.StartTime = StartTime;
+            Parent.AudioClip.EndTime = EndTime;
+
+            Parent.后推时间(waitAdjust.Duration - oldDuration);
             ChangeSpeedLog(waitAdjust, target, this, 计划倍速, oldDuration);
 
             return ChangeSpeed.Value;

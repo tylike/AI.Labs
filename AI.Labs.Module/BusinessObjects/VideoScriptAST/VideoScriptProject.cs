@@ -60,7 +60,7 @@ public class VideoScriptProject : BaseObject
             Path = path,
             //VideoScript = this,
             Index = VideoSources.Count + AudioSources.Count,
-            SourceInfo = sourceInfo
+            SourceInfo = sourceInfo,
         };
         AudioSources.Add(mediaSource);
     }
@@ -142,37 +142,67 @@ public class VideoScriptProject : BaseObject
         get { return GetPropertyValue<string>(nameof(OutputVideoFile)); }
         set { SetPropertyValue(nameof(OutputVideoFile), value); }
     }
+
+
     public void Export()
     {
-        
-
         var clips = MediaClips.OrderBy(t => t.Index).ToList();
         clips.First().AudioClip.LogTitle();
-
-        //var r1 = clips.Select(t => t.AudioClip.计算调速());
-
-        //clips.ForEach(t => t.AudioClip.计算调速());
-        var sw = Stopwatch.StartNew();
-        Parallel.ForEach(clips.Select(t=>t.AudioClip).ToArray(), new ParallelOptions { MaxDegreeOfParallelism = 8 }, item =>
+        MediaClip pre = null;
+        foreach (var item in clips)
         {
-            item.计算调速();
-        });
-        sw.Stop();
+            item.Start = pre?.End ?? TimeSpan.Zero;
+            item.End = item.Subtitle.EndTime;
+
+            if(item.AudioClip.FileDuration> item.AudioClip.GetDuration())
+            {
+                item.AudioClip.计算调速();
+            }
+
+            if(item.AudioClip.GetDuration()> item.VideoClip.GetDuration())
+            {
+                item.VideoClip.计算延时();
+            }
+            pre = item;
+        }
+
+
+        
+        //clips.ForEach(t => t.AudioClip.计算调速());
+
+        #region 根据字幕加速音频,最快1.3倍.
+        //字幕不变,音频减少,但不需要记录变化,因为没有到最终不变的时间
+        var sw = Stopwatch.StartNew();
+        //Parallel.ForEach(clips.Select(t => t.AudioClip).ToArray(), new ParallelOptions { MaxDegreeOfParallelism = 8 }, item =>
+        //{
+        //    item.计算调速();
+        //});
+        //sw.Stop();
         Debug.WriteLine($"音频调整用时:{sw.Elapsed}");
+        #endregion
+
+        #region 根据音频延长视频
+        //视频变长,音频不变,需要记录变化
+        //需要后推
         sw.Restart();
         //clips.ForEach(t => t.VideoClip.计算调速());
-        clips.ForEach(t => t.VideoClip.计算延时());
+        //clips.ForEach(t => t.VideoClip.计算延时());
+        sw.Stop();
+        #endregion
 
-        clips.ForEach(t => t.AudioClip.计算延时());
+        #region 音频不够长的,延长音频
+        //clips.ForEach(t => t.AudioClip.计算延时());
+        #endregion
 
+        #region 绘制文本
         clips.ForEach(t =>
-        {
-            DrawText(10, 10, t.VideoClip.TextLogs, 16, t.VideoClip.StartTime, t.VideoClip.EndTime);
-            DrawText(10, 80, t.AudioClip.TextLogs, 16, t.AudioClip.StartTime, t.AudioClip.EndTime);
-        });
+{
+    DrawText(10, 10, t.VideoClip.TextLogs, 16, t.VideoClip.StartTime, t.VideoClip.EndTime);
+    DrawText(10, 80, t.AudioClip.TextLogs, 16, t.AudioClip.StartTime, t.AudioClip.EndTime);
+});
 
-        TextTrack.Add(DrawCurrentTime());
-
+        TextTrack.Add(DrawCurrentTime()); 
+        #endregion
 
         var filterComplex = ComplexScript;
         var duration = MediaClips.Last().VideoClip.EndTime;
@@ -286,6 +316,18 @@ public class VideoScriptProject : BaseObject
 
     public void CreateProject(IObjectSpace os)
     {
+        #region 导入音频、视频
+        var vi = this.VideoInfo;
+
+        var mainVideo = ImportVideo(vi.VideoFile);
+
+        foreach (var item in vi.Audios)
+        {
+            ImportAudio(item.OutputFileName, item);
+        }
+        #endregion
+
+        #region 设置日志目录
         var temp = @"d:\temp\logs";
         if (Directory.Exists(temp))
         {
@@ -295,17 +337,16 @@ public class VideoScriptProject : BaseObject
         {
             Directory.CreateDirectory(temp);
         }
-       
+        #endregion
+
+        #region 设置字幕
         var subtitles = VideoInfo.Subtitles.OrderBy(t => t.Index).ToArray();
 
         SubtitleItem pre = null;
         //所有的结束时间，但除了最后一条用开始时间
         foreach (var item in subtitles)
         {
-            if (item.Index == 98)
-            {
 
-            }
             item.StartTime = item.StartTime.AdjustTime(true);
             item.EndTime = item.EndTime.AdjustTime(true);
 
@@ -313,31 +354,28 @@ public class VideoScriptProject : BaseObject
             {
                 pre.EndTime = item.StartTime;
             }
-            
-            
-
             item.FixedStartTime = item.StartTime;
             item.FixedEndTime = item.EndTime;
-            
-            
-
             item.Save();
             pre = item;
-            //os.SetModified(item);
         }
 
-        subtitles.First().StartTime = TimeSpan.Zero;
+        subtitles.First().StartTime = TimeSpan.Zero; 
+        #endregion
 
-
-        MediaClip last = null;
+        #region 视频片断位置
         var videoClips = Path.Combine(VideoInfo.ProjectPath, "VideoClip");
 
         if (!Directory.Exists(videoClips))
         {
             Directory.CreateDirectory(videoClips);
-        }
+        } 
         var splitFiles = FFmpegHelper.SplitVideo(VideoInfo.VideoFile, subtitles, videoClips).OrderBy(t => t).ToArray();
 
+        #endregion
+
+        #region 绑定音频与视频片断
+        MediaClip last = null;
         foreach (var item in VideoInfo.Audios.OrderBy(t => t.Index))
         {
             var clip = new MediaClip(Session)
@@ -346,8 +384,15 @@ public class VideoScriptProject : BaseObject
                 Index = item.Index,
                 Project = this
             };
+
             AudioTrack.Add(clip.CreateAudioClip());
             VideoTrack.Add(clip.CreateVideoClip(splitFiles[item.Index - 1]));
+
+            if(clip.Subtitle.Duration > ((IClip)clip.AudioClip).Duration)
+            {
+                clip.AudioClip.计算延时();
+            }
+            
             if (last != null)
             {
                 clip.VideoClip.Before = last.VideoClip;
@@ -358,17 +403,10 @@ public class VideoScriptProject : BaseObject
             }
             last = clip;
         }
+        #endregion
 
-        var vi = this.VideoInfo;
-
+        //var audios = MediaClips.Select(t=>t.AudioClip)
         this.OutputVideoFile = Path.Combine(vi.ProjectPath, "product.mp4");
-
-        var mainVideo = ImportVideo(vi.VideoFile);
-
-        foreach (var item in vi.Audios)
-        {
-            ImportAudio(item.OutputFileName, item);
-        }
     }
 
     [Association, DevExpress.Xpo.Aggregated]

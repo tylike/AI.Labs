@@ -71,13 +71,33 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
         }
 
+        public void SetFixedEndTime(TimeSpan value,MediaClip clip)
+        {
+            FixedEndTime = value;
+            if (clip != null && clip.VideoClip.Next!=null)
+            {
+                clip.VideoClip.Next.Subtitle.FixedStartTime = value;
+            }
+        }
+
         public TimeSpan FixedEndTime
         {
             get 
             {
                 return GetPropertyValue<TimeSpan>(nameof(FixedEndTime)); 
             }
-            set { SetPropertyValue(nameof(FixedEndTime), value); }
+            set 
+            {
+                if (!IsLoading)
+                {
+                    if(value.Seconds == 3)
+                    {
+
+                    }
+
+                }
+                SetPropertyValue(nameof(FixedEndTime), value); 
+            }
         }
 
 

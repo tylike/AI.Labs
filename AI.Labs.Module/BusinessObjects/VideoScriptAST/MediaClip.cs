@@ -1,12 +1,28 @@
 ﻿using AI.Labs.Module.BusinessObjects.AudioBooks;
 using AI.Labs.Module.BusinessObjects.VideoTranslate;
+using DevExpress.ExpressApp.ConditionalAppearance;
+using DevExpress.Persistent.Base;
 using DevExpress.Persistent.BaseImpl;
 using DevExpress.Xpo;
 
 namespace AI.Labs.Module.BusinessObjects;
 
+[VisibleInDashboards]
 public class MediaClip : BaseObject
 {
+    [Appearance("结束时间.字幕=音频", TargetItems = "AudioClip.EndTime", BackColor = "Red")]
+    public bool EndTimeError()
+    {
+        return Subtitle.FixedEndTime != this.AudioClip.EndTime;
+    }
+
+    [Appearance("开始时间.字幕=音频", TargetItems = "AudioClip.StartTime", BackColor = "Red")]
+    public bool StartTimeError()
+    {
+        return Subtitle.FixedStartTime != this.AudioClip.StartTime;
+    }
+
+
     [Association]
     public VideoScriptProject Project
     {
@@ -81,8 +97,10 @@ public class MediaClip : BaseObject
             Index = this.AudioInfo.Index + Project.VideoSources.Count,
             StartTime = this.AudioInfo.Subtitle.StartTime,
             EndTime = TimeSpan.FromMilliseconds(this.AudioInfo.Subtitle.StartTime.TotalMilliseconds + this.AudioInfo.Duration),
-            OutputFile = this.AudioInfo.OutputFileName
-        };        
+            OutputFile = this.AudioInfo.OutputFileName,
+            FileDuration = FFmpegHelper.GetDuration(this.AudioInfo.OutputFileName)
+        };
+
         return AudioClip;
     }
 
@@ -102,5 +120,32 @@ public class MediaClip : BaseObject
         set { SetPropertyValue(nameof(AudioInfo), value); }
     }
     public SubtitleItem Subtitle => AudioInfo.Subtitle;
+
+    /// <summary>
+    /// 将当前片断后面的所有片断后推
+    /// </summary>
+    /// <param name="后推时间ms"></param>
+    public void 后推时间(double 后推时间ms)
+    {
+        if (后推时间ms > 0)
+        {
+            var next = this.VideoClip.Next;
+            while (next != null)
+            {
+                next.Subtitle.FixedStartTime = next.Subtitle.FixedStartTime.AddMilliseconds(后推时间ms);
+                next.Subtitle.SetFixedEndTime(next.Subtitle.FixedEndTime.AddMilliseconds(后推时间ms), this);
+
+                next.Parent.AudioClip.StartTime = next.Parent.AudioClip.StartTime.AddMilliseconds(后推时间ms);
+                next.Parent.AudioClip.EndTime = next.Parent.AudioClip.EndTime.AddMilliseconds(后推时间ms);
+
+                next.StartTime = next.StartTime.AddMilliseconds(后推时间ms);
+                next.EndTime = next.EndTime.AddMilliseconds(后推时间ms);
+
+                next.TextLogs += $"S+{后推时间ms};";
+                next.Parent.Commands += "音频后移" + 后推时间ms + ";";
+                next = next.Next;
+            }
+        }
+    }
 }
 

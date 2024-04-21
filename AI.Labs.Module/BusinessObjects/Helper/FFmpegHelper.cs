@@ -72,7 +72,7 @@ namespace AI.Labs.Module.BusinessObjects
                 var diff = dur.Value - targetDuration.Value;
 
 
-                if (diff>0.5)
+                if (diff > 0.5)
                 {
 
                     var logPath = Path.Combine(logFilePath ?? "d:\\temp", "logs", $"{taskMemo}-{(dur.Value == targetDuration.Value).ToString()}_log.txt");
@@ -118,7 +118,7 @@ namespace AI.Labs.Module.BusinessObjects
             {
                 throw new ArgumentException("滤镜脚本为空!退出！", nameof(filterComplex));
             }
-            
+
             if (duration == 0)
                 throw new ArgumentException("视频时长不能为0", nameof(duration));
 
@@ -201,6 +201,7 @@ namespace AI.Labs.Module.BusinessObjects
         /// <param name="inputFileName"></param>
         /// <param name="speed">2.0为2倍，0.5为慢放2倍</param>
         /// <param name="outputFile"></param>
+
         public static void ChangeAudioSpeed(
             string taskMemo,
             double targetDuration,
@@ -210,9 +211,13 @@ namespace AI.Labs.Module.BusinessObjects
             double planSpeed
             )
         {
-            var forceLength = planSpeed <= 1.3 ? $"-t {targetDuration}" : "";
+            if (!File.Exists(outputFile))
+            {
 
-            ExecuteCommand($"音频调速 {taskMemo}", targetDuration, $" -loglevel error  -i {inputFileName}  -filter:a:0 \"atempo={speed:0.0########}\" {forceLength}", outputFile);
+
+                var forceLength = planSpeed <= 1.3 ? $"-t {targetDuration}" : "";
+                ExecuteCommand($"音频调速 {taskMemo}", targetDuration, $" -loglevel error  -i {inputFileName}  -filter:a:0 \"atempo={speed:0.0########}\" {forceLength}", outputFile);
+            }
         }
 
         /// <summary>
@@ -242,8 +247,11 @@ namespace AI.Labs.Module.BusinessObjects
 
         public static void DelayAudio(string taskMemo, double targetDuration, string inputFileName, double delayMS, string newOutputFile)
         {
-            //-i input.mp3 -af apad=pad_dur=3000 output.mp3
-            ExecuteCommand($"音频延时 {taskMemo} ", targetDuration, $" -loglevel error  -i {inputFileName} -af apad=pad_dur={(delayMS / 1000).ToFFmpegString()} ", newOutputFile);
+            if (!File.Exists(newOutputFile))
+            {
+                //-i input.mp3 -af apad=pad_dur=3000 output.mp3
+                ExecuteCommand($"音频延时 {taskMemo} ", targetDuration, $" -loglevel error  -i {inputFileName} -af apad=pad_dur={(delayMS / 1000).ToFFmpegString()} ", newOutputFile);
+            }
         }
 
         /// <summary>
@@ -271,15 +279,17 @@ namespace AI.Labs.Module.BusinessObjects
         {
             int loopCount = (int)Math.Ceiling(targetDuration / originalDuration);
             string arguments = " -loglevel error ";
-
-            ExecuteCommand(
-                $"{taskMemo} 视频延时", targetDuration,
-                arguments,
-                newOutputFile,
-                inputFiles: inputFileName,
-                inputOptions: $" -stream_loop {loopCount} ",
-                outputOptions: $" -t {targetDuration} "
-                );
+            if (!File.Exists(newOutputFile))
+            {
+                ExecuteCommand(
+                    $"{taskMemo} 视频延时", targetDuration,
+                    arguments,
+                    newOutputFile,
+                    inputFiles: inputFileName,
+                    inputOptions: $" -stream_loop {loopCount} ",
+                    outputOptions: $" -t {targetDuration} "
+                    );
+            }
 
             //ExecuteCommand($"{taskMemo} 视频延时", targetDuration, $"-i {inputFileName} -filter_complex \"[0:v]tpad=stop_mode=clone:stop_duration={delayTime}[v];\" -map \"[v]\" ", newOutputFile);
         }
@@ -311,7 +321,7 @@ namespace AI.Labs.Module.BusinessObjects
             //    inputFiles:source
             //    );
             var sw = Stopwatch.StartNew();
-            
+
             var dur = GetDuration(inputFileName);
 
             //ffmpeg -i input.mp4 -f segment -segment_times 10.500,22.712,35.145,48.376 -c copy output_%03d.mp4
@@ -330,10 +340,14 @@ namespace AI.Labs.Module.BusinessObjects
 
             ConcurrentBag<string> rst = new ConcurrentBag<string>();
 
-            Parallel.ForEach(items,new ParallelOptions { MaxDegreeOfParallelism = 8 }, item =>
+            Parallel.ForEach(items, new ParallelOptions { MaxDegreeOfParallelism = 8 }, item =>
             {
                 var outputFile = Path.Combine(outputPath, $"{item.Index.ToString("00000")}.mp4");
-                GetVideoClip(inputFileName, outputFile, item.Start, item.End, item.Duration, $"subtitle_{item.Index} 分割视频");
+#warning 不会重新生成文件
+                if (!File.Exists(outputFile))
+                {
+                    GetVideoClip(inputFileName, outputFile, item.Start, item.End, item.Duration, $"subtitle_{item.Index} 分割视频");
+                }
                 rst.Add(outputFile);
             });
             sw.Stop();
@@ -352,7 +366,7 @@ namespace AI.Labs.Module.BusinessObjects
             {
                 var outputFile = Path.Combine("d:\\temp", $"{item.Index}.mp4");
 
-                GetVideoClip(inputFileName, outputFile, item.Start.TotalSeconds, item.End.TotalSeconds,$"{item.Index}ClipTest", clipLength, "d:\\temp");
+                GetVideoClip(inputFileName, outputFile, item.Start.TotalSeconds, item.End.TotalSeconds, $"{item.Index}ClipTest", clipLength, "d:\\temp");
             }
         }
 
@@ -379,7 +393,7 @@ namespace AI.Labs.Module.BusinessObjects
             GetVideoClip(inputFileName, outputFile, start.TotalSeconds, end.TotalSeconds, taskMemo, targetDuration);
         }
 
-        private static void GetVideoClip(string inputFileName, string outputFile, double start, double end, string taskMemo, double targetDuration,string logPath = null)
+        private static void GetVideoClip(string inputFileName, string outputFile, double start, double end, string taskMemo, double targetDuration, string logPath = null)
         {
             var keyFrames = $"{start},{end}";
             ExecuteCommand(
@@ -388,7 +402,7 @@ namespace AI.Labs.Module.BusinessObjects
                                 //$"-hwaccel cuda -loglevel error -ss {start.ToFFmpegString()} -to {end.ToFFmpegString()} -i {inputFileName} -c:v h264_nvenc -preset hq -rc vbr -cq 23 -g 25 ",
                                 outputFile, overWriteExist: true,
                                 addationLogs: $"start:{start},end:{end}",
-                                logFilePath:logPath
+                                logFilePath: logPath
                                 );
         }
 
@@ -412,7 +426,6 @@ namespace AI.Labs.Module.BusinessObjects
                 //File.Delete(tempFile);
             }
         }
-
 
         public static void Concat(IEnumerable<MediaClip> clips, string outputFile, bool overWriteExist = true)
         {

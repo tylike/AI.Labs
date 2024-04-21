@@ -40,7 +40,7 @@ public abstract class ClipBase : BaseObject, IClip
         set { SetPropertyValue(nameof(OutputFile), value); }
     }
 
-    public void UseFileDurationUpdateEnd(string outputFile)
+    public void 使用文件时长更新结束时间(string outputFile)
     {
         this.OutputFile = outputFile;
         FileDuration = FFmpegHelper.GetDuration(outputFile);
@@ -53,7 +53,10 @@ public abstract class ClipBase : BaseObject, IClip
         set { SetPropertyValue(nameof(FileDuration), value); }
     }
 
-
+    public int GetDuration()
+    {
+        return (this as IClip).Duration;
+    }
     /// <summary>
     /// 代表了输入audio的序号
     /// 也将代表输出标签时使用
@@ -86,9 +89,10 @@ public abstract class ClipBase : BaseObject, IClip
         get { return GetPropertyValue<TimeSpan>(nameof(EndTime)); }
         set { SetPropertyValue(nameof(EndTime), value); }
     }
+        
+    //public int Duration => (this as IClip).Duration;
 
-    [ModelDefault("DisplayFormat", @"hh\:mm\:ss\.fff")]
-    public TimeSpan Duration => EndTime - StartTime;
+
     public abstract string GetOutputLabel();
     public int? Delay
     {
@@ -229,6 +233,9 @@ public abstract class ClipBase<T> : ClipBase
         get { return GetPropertyValue<T>(nameof(Next)); }
         set { SetPropertyValue(nameof(Next), value); }
     }
+
+
+
     //protected override void OnChanged(string propertyName, object oldValue, object newValue)
     //{
     //    base.OnChanged(propertyName, oldValue, newValue);
