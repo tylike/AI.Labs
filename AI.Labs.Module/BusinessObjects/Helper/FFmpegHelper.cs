@@ -1,6 +1,7 @@
 ﻿using AI.Labs.Module.BusinessObjects.VideoTranslate;
 using DevExpress.Charts.Native;
 using DevExpress.Spreadsheet;
+using DevExpress.XtraSpreadsheet.Import.Xls;
 using FFMpegCore.Enums;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Concurrent;
@@ -13,11 +14,24 @@ namespace AI.Labs.Module.BusinessObjects
 {
     public static class FFmpegHelper
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="decimalPlaces">取小数点位数</param>
+        /// <returns></returns>
+        public static double RoundUp(this double value, int decimalPlaces)
+        {
+            double factor = Math.Pow(10, decimalPlaces);
+            return Math.Ceiling(value * factor) / factor;
+        }
+
 
         const string ffprobe = @"D:\ffmpeg.gui\last\ffprobe.exe";
         public const string ffmpegFile = @"D:\ffmpeg.gui\last\ffmpeg.exe";
 
         #region execute command
+        public static string LastCommand = "";
         public static string ExecuteCommand(string taskMemo, double? targetDuration, string command,
             string outputFile,
             bool useShellExecute = false,
@@ -56,6 +70,7 @@ namespace AI.Labs.Module.BusinessObjects
             pi.CreateNoWindow = noWindow;
             var inf = Process.Start(pi);
             var rst = "";
+            LastCommand = command;
             if (readOutput)
             {
                 rst = inf.StandardOutput.ReadToEnd();
@@ -175,7 +190,6 @@ namespace AI.Labs.Module.BusinessObjects
                     output.AppendLine(e.Data);
                 }
             }
-
             try
             {
                 p.Start();
@@ -202,7 +216,7 @@ namespace AI.Labs.Module.BusinessObjects
         /// <param name="speed">2.0为2倍，0.5为慢放2倍</param>
         /// <param name="outputFile"></param>
 
-        public static void ChangeAudioSpeed(
+        public static string ChangeAudioSpeed(
             string taskMemo,
             double targetDuration,
             string inputFileName,
@@ -213,10 +227,13 @@ namespace AI.Labs.Module.BusinessObjects
         {
             if (!File.Exists(outputFile))
             {
-
-
                 var forceLength = planSpeed <= 1.3 ? $"-t {targetDuration}" : "";
-                ExecuteCommand($"音频调速 {taskMemo}", targetDuration, $" -loglevel error  -i {inputFileName}  -filter:a:0 \"atempo={speed:0.0########}\" {forceLength}", outputFile);
+                ExecuteCommand($"音频调速 {taskMemo}", targetDuration, $" -loglevel error  -i {inputFileName}  -filter:a:0 \"atempo={speed:0.0########}\" {forceLength}  -async 1 -fflags +genpts", outputFile);
+                return LastCommand;
+            }
+            else
+            {
+                return $"文件已存在:{outputFile}";
             }
         }
 
@@ -406,7 +423,7 @@ namespace AI.Labs.Module.BusinessObjects
                                 );
         }
 
-        public static void Concat(double targetDuration, IEnumerable<string> files, string outputFile, bool isVideo, string tempFileName, bool overWriteExist = true)
+        public static double? Concat(double targetDuration, IEnumerable<string> files, string outputFile, bool isVideo, string tempFileName, bool overWriteExist = true)
         {
             var fileListFullName = Path.Combine(Path.GetDirectoryName(outputFile), tempFileName);
             WriteToFile(fileListFullName, files);
@@ -420,6 +437,7 @@ namespace AI.Labs.Module.BusinessObjects
             try
             {
                 ExecuteCommand($"{(isVideo ? "V" : "A")}_连接文件", targetDuration, arguments, outputFile, overWriteExist: overWriteExist);
+                return GetDuration(outputFile);
             }
             finally
             {
@@ -427,7 +445,7 @@ namespace AI.Labs.Module.BusinessObjects
             }
         }
 
-        public static void Concat(IEnumerable<MediaClip> clips, string outputFile, bool overWriteExist = true)
+        public static void Concat(IEnumerable<MediaClip> clips, string outputFile, bool overWriteExist = true,StreamWriter logWriter = null)
         {
             var videos = clips.Select(t => t.VideoClip);
             var audios = clips.Select(t => t.AudioClip);
@@ -437,11 +455,12 @@ namespace AI.Labs.Module.BusinessObjects
             if (n != an)
                 throw new ArgumentException($"videos:{n},audios:{an}", "视频和音频数量不一致！");
 
-            var videoOnly = Path.Combine(Path.GetDirectoryName(outputFile), "videoOnly.mp4");
+            var videoOnly = Path.Combine(Path.GetDirectoryName(outputFile), "VideoOnly.mp4");
             var audioOnly = Path.Combine(Path.GetDirectoryName(outputFile), "AudioOnly.mp3");
-            Concat(videos.Last().EndTime.TotalSeconds, videos.Select(t => t.OutputFile), videoOnly, true, "videolist.txt");
-            Concat(audios.Last().EndTime.TotalSeconds, audios.Select(t => t.OutputFile), audioOnly, false, "audiolist.txt");
+            var v = Concat(videos.Last().EndTime.TotalSeconds, videos.Select(t => t.OutputFile), videoOnly, true, "videolist.txt");
+            var a= Concat(audios.Last().EndTime.TotalSeconds, audios.Select(t => t.OutputFile), audioOnly, false, "audiolist.txt");
 
+            logWriter?.WriteLine($"VideoOnly 时长:{v},AudioOnly 时长:{a},差异:{v - a}");
             //ffmpeg
             var arguments = $" -loglevel error -i {videoOnly} -i {audioOnly} -c:v copy -c:a aac -strict experimental ";
 
@@ -468,19 +487,32 @@ namespace AI.Labs.Module.BusinessObjects
 
         public static double? GetDuration(string inputAudioFile)
         {
-            var rst = ExecuteCommand(null, null,
-                $"-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 {inputAudioFile}",
-                outputFile: null,
-                ffmpeg: false,
-                readOutput: true,
-                noWindow: true
-                );
+            var rst = FFProbe($"-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 {inputAudioFile}");
             //ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 input_audio_file
             if (double.TryParse(rst, out double duration))
             {
                 return duration;
             }
             return null;
+        }
+        static string FFProbe(string command,bool useShellExecute = false)
+        {
+            var sw = Stopwatch.StartNew();
+            //如果targetDuration为空，则不需要去验证目标时长
+            var pi = new ProcessStartInfo();
+            pi.FileName = ffprobe;
+            pi.Arguments = command;
+            pi.UseShellExecute = useShellExecute;
+            pi.RedirectStandardError = true;
+            pi.RedirectStandardOutput = true;
+            pi.CreateNoWindow = true;
+            var inf = Process.Start(pi);
+            var rst = "";
+
+            rst = inf.StandardOutput.ReadToEnd();
+            inf.WaitForExit();
+            sw.Stop();
+            return rst;
         }
     }
 }

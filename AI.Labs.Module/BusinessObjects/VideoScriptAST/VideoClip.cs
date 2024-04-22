@@ -45,31 +45,22 @@ public class VideoClip : ClipBase<VideoClip>
     /// 因为音频时长可能更长
     /// </summary>
     /// <returns></returns>
-    public double 计算延时()
+    public string 计算延时()
     {
-        var rst = 计算延时(this, Parent.AudioClip, this);
-        //视频延长后,字幕需要后移
-        //由于延长了视频，所以把字幕时间与视频时间同步
-        if (rst > 0)
-        {
-            Subtitle.FixedStartTime = this.StartTime;
-            Subtitle.SetFixedEndTime ( this.EndTime, Parent);
-
-            Parent.AudioClip.StartTime = StartTime;
-            Parent.AudioClip.EndTime = EndTime;
-            Parent.后推时间(rst);
-        }
-        return rst;
+        return 计算延时(this, Parent.AudioClip, this);
     }
 
 
 
-    public override void RunDelay(int delay,double targetDuration)
+    public override string RunDelay(int delay,double targetDuration)
     {
+        var oldDuration = this.Parent.Duration;
         var output = GetFilePath(FileType.Video_Delay,delay);
         //FFmpegHelper.DelayVideoCopyLast(this.Index.ToString(),targetDuration,this.OutputFile, delay, output);
         FFmpegHelper.DelayVideoCopyRepeat(this.Index.ToString(),targetDuration,this.FileDuration.Value,this.OutputFile,output);
         使用文件时长更新结束时间(output);
+        log.WriteLine($"视频延时{delay}:{oldDuration}=>{FileDuration.Value} = 差异 {FileDuration.Value - oldDuration}");
+        return $"视频延时{delay}ms";
     }
 
     public override string GetClipType()

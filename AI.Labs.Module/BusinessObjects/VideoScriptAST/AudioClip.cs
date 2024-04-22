@@ -7,6 +7,7 @@ using sun.tools.tree;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Security.AccessControl;
+using System.Text;
 using VisioForge.Core.Types.MediaPlayer;
 using static com.sun.net.httpserver.Authenticator;
 
@@ -27,23 +28,20 @@ public class AudioClip : ClipBase<AudioClip>
     }
 
     #region 调速
-    public double 计算调速()
+    public string 计算调速()
     {
-        return 计算调速(Parent.AudioInfo.Subtitle);
-    }
-    /// <summary>
-    /// 根据target时长,计算waitAdjust的调整
-    /// </summary>
-    /// <returns></returns>
-    public double 计算调速(IClip target)
-    {
+
+        var target = Parent.AudioInfo.Subtitle;
         IClip waitAdjust = this;
         ClipBase waitAdjustObject = this;
         //第一步:检查当前(中文音频)的时长 大于 字幕时长的,将快放中文音频,取最大1.3倍,与 “完全匹配倍速”
         if (!ChangeSpeed.HasValue && waitAdjust.Duration > target.Duration)
         {
+            log.WriteLine($"原音频时长:{waitAdjust.Duration} > 原字幕时长:{target.Duration} = 差异:{waitAdjust.Duration - target.Duration}ms");
             //计算如果播放完整,应该用多快的速度
-            var 计划倍速 = (double)waitAdjust.Duration / target.Duration;
+            var planSource = ((double)waitAdjust.Duration / target.Duration);
+            var 计划倍速 = planSource.RoundUp(3);
+            log.WriteLine($"计划倍速:{planSource } {计划倍速} ");
             var 实际倍速 = 计划倍速;
             var 调整成功 = false;
             if (计划倍速 > 1.3)
@@ -56,6 +54,8 @@ public class AudioClip : ClipBase<AudioClip>
                 实际倍速 = 计划倍速;
                 调整成功 = true;
             }
+            log.WriteLine($"实际倍速:{实际倍速}");
+            log.WriteLine($"调整成功:{调整成功}-没有使用最大倍数,所以认为快速播放后一定与字幕是匹配的");
 
             //*****************************************************************
             //完全按最快播放也不行,这样听着不舒服            
@@ -63,38 +63,42 @@ public class AudioClip : ClipBase<AudioClip>
             var 原时长 = waitAdjust.Duration;
 
             var newOutputFile = GetFilePath(FileType.Audio_ChangeSpeed, 实际倍速);
-            FFmpegHelper.ChangeAudioSpeed(waitAdjustObject.Index.ToString(), target.Duration / 1000d, waitAdjustObject.OutputFile, 实际倍速, newOutputFile, 计划倍速);
+            var useCommand = FFmpegHelper.ChangeAudioSpeed(waitAdjustObject.Index.ToString(), target.Duration / 1000d, waitAdjustObject.OutputFile, 实际倍速, newOutputFile, 计划倍速);
+                            
+
+            log.WriteLine($"命令:{useCommand}");
+
             waitAdjustObject.使用文件时长更新结束时间(newOutputFile);
 
-            waitAdjustObject.ChangeSpeed = 实际倍速;
+            Parent.Duration = (int)waitAdjustObject.FileDuration.Value * 1000;
 
+            waitAdjustObject.ChangeSpeed = 实际倍速;
+            log.WriteLine($"调整后音频时长:{waitAdjust.Duration} - 字幕时长:{target.Duration} = 差异:{waitAdjust.Duration - target.Duration}ms");
             ChangeSpeedLog(waitAdjust, target, waitAdjustObject, 计划倍速, 原时长);
             //字幕为标准:
             //调整后，音频还是太长，那么就停止调整了，将去调整视频:
             //1.1 音频时长 >  字幕时长:调整字幕、视频
             if (!调整成功)
             {
-                Subtitle.FixedStartTime = this.StartTime;
-
-                Subtitle.SetFixedEndTime(this.EndTime, Parent);
-
-                Parent.VideoClip.StartTime = StartTime;
-                Parent.VideoClip.EndTime = EndTime;
-                后推时间(waitAdjust.Duration - target.Duration);
+                //Subtitle.FixedStartTime = this.StartTime;
+                //Subtitle.SetFixedEndTime(this.EndTime, Parent);
+                //Parent.VideoClip.StartTime = StartTime;
+                //Parent.VideoClip.EndTime = EndTime;
+                //后推时间(waitAdjust.Duration - target.Duration);
+                log.WriteLine($"clip.End {Parent.End} => {this.EndTime} 差异:{this.EndTime - Parent.End}");
+                log.WriteLine("使用音频时长做为字幕的时长.");
+                Parent.Duration = (int)waitAdjustObject.FileDuration.Value * 1000;
+                //Parent.End = this.EndTime;
             }
             else
             {
-                this.StartTime = Subtitle.FixedStartTime;
-                this.EndTime = Subtitle.FixedEndTime;
+                log.WriteLine($"clip.End {Parent.Duration} => {Subtitle.Duration} 差异:{Subtitle.Duration - Parent.Duration}");                
+                log.WriteLine("使用字幕时长做为音频的时长.");
+                Parent.Duration = Subtitle.Duration;
             }
-            
-            //1.2 音频时长 <= 字幕时长:调整音频、视频 为 字幕 时长
-            //1.2.1 音频时长 <  字幕时长:调整音频、视频 为 字幕 时长
-            //1.2.2 音频时长 =  字幕时长:调整音频、视频 为 字幕 时长
-
-            return 实际倍速;
+            return log.ToString();
         }
-        return 1;
+        return null;
     }
 
     /// <summary>
@@ -109,7 +113,7 @@ public class AudioClip : ClipBase<AudioClip>
             while (next != null)
             {
                 next.Subtitle.FixedStartTime = next.Subtitle.FixedStartTime.AddMilliseconds(后推时间ms);
-                next.Subtitle.SetFixedEndTime(next.Subtitle.FixedEndTime.AddMilliseconds(后推时间ms),this.Parent);
+                next.Subtitle.SetFixedEndTime(next.Subtitle.FixedEndTime.AddMilliseconds(后推时间ms), this.Parent);
 
 
                 next.Parent.AudioClip.StartTime = next.Parent.AudioClip.StartTime.AddMilliseconds(后推时间ms);
@@ -126,22 +130,28 @@ public class AudioClip : ClipBase<AudioClip>
     }
 
     #endregion
-
     #region 延时
-    public double 计算延时()
+    public string 计算延时()
     {
         return 计算延时(this, Parent.VideoClip, this);
     }
 
-    public override void RunDelay(int delay, double targetDuration)
+    public override string RunDelay(int delay, double targetDuration)
     {
+        var oldDuration = Parent.Duration;
         var newOutputFile = GetFilePath(FileType.Audio_Delay, delay);
         FFmpegHelper.DelayAudio(this.Index.ToString(), targetDuration, this.OutputFile, delay, newOutputFile);
         使用文件时长更新结束时间(newOutputFile);
+        
+        Parent.Duration = (int)FileDuration.Value;
+
+        log.WriteLine($"音频延时{delay}:{oldDuration}=>{Parent.Duration} = 差异 {Parent.Duration - oldDuration}");
+
         //使用音频时长 更新字幕时长
         //因为音频时长可能是根据ffmpeg的结果而来，可能不是准确的期望
         Subtitle.SetFixedEndTime(EndTime, Parent);
-    } 
+        return $"音频延时{delay}ms";
+    }
     #endregion
 
 
@@ -157,13 +167,13 @@ public class AudioClip : ClipBase<AudioClip>
         //var start = Start.ToFFmpegSeconds();
         //var end = End.ToFFmpegSeconds();
         var speed = 1d;
-        if(ChangeSpeed.HasValue && ChangeSpeed.Value>0)
+        if (ChangeSpeed.HasValue && ChangeSpeed.Value > 0)
         {
             speed = ChangeSpeed.Value;
         }
 
         var delay = "";
-        if(Delay>0)
+        if (Delay > 0)
         {
             delay = $",apad=pad_dur={Delay.Value / 1000d:0.0#####}";
         }

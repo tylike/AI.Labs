@@ -1,4 +1,5 @@
 ﻿using AI.Labs.Module.BusinessObjects.AudioBooks;
+using AI.Labs.Module.BusinessObjects.Helper;
 using AI.Labs.Module.BusinessObjects.VideoTranslate;
 using com.sun.tools.javac.jvm;
 using DevExpress.Charts.Native;
@@ -8,8 +9,10 @@ using DevExpress.ExpressApp.Model;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.BaseImpl;
 using DevExpress.Xpo;
+using Microsoft.CognitiveServices.Speech.Diagnostics.Logging;
 using System.Diagnostics;
 using System.Drawing;
+using System.Text;
 
 namespace AI.Labs.Module.BusinessObjects;
 [NavigationItem("视频")]
@@ -140,25 +143,88 @@ public class VideoScriptProject : BaseObject
         var clips = MediaClips.OrderBy(t => t.Index).ToList();
         clips.First().AudioClip.LogTitle();
         MediaClip pre = null;
+
+        #region 字幕、日志
+        var cnSrtFile = new SRTFile() { FileName = Path.Combine(VideoInfo.ProjectPath, "cnsrt.fix.srt"), UseIndex = true };
+        var enSrtFile = new SRTFile() { FileName = Path.Combine(VideoInfo.ProjectPath, "ensrt.fix.srt"), UseIndex = true };
+
+        using var logFileStream = new FileStream(Path.Combine(VideoInfo.ProjectPath, "logs.txt"), FileMode.Create);
+        using var logWriter = new StreamWriter(logFileStream, Encoding.UTF8);
+        #endregion
+
+
         foreach (var item in clips)
         {
+            item.AudioClip.log = logWriter;
+            item.VideoClip.log = logWriter;
+
             item.Start = pre?.End ?? TimeSpan.Zero;
             item.End = item.Subtitle.EndTime;
-
-            if(item.AudioClip.FileDuration> item.AudioClip.GetDuration())
+            item.Duration = (int)(item.End - item.Start).TotalMilliseconds;
+            logWriter.WriteLine("=============================================================================================================");
+            logWriter.WriteLine($"A:片断:{item.Index} 音频文件时长:{item.AudioClip.FileDuration * 1000} 字幕时长:{item.Subtitle.Duration}");
+            if (item.AudioClip.FileDuration * 1000 > item.Subtitle.Duration)
             {
-                item.AudioClip.计算调速();
+                item.AudioClip.计算调速();                
             }
 
-            if(item.AudioClip.GetDuration()> item.VideoClip.GetDuration())
+            logWriter.WriteLine($"V:片断:{item.Index} Clip.时长:{item.Duration  } 视频文件时长:{item.VideoClip.FileDuration * 1000} ");
+            if (item.Duration > item.VideoClip.GetDuration() )
             {
-                item.VideoClip.计算延时();
+                var logs = item.VideoClip.计算延时();
+                logWriter.WriteLine(logs);
             }
+
+            #region 写字幕文件
+            var cnText = item.Subtitle.CnText;
+            var cnSrtItem = new SRT();
+
+            if (!string.IsNullOrEmpty(cnText))
+            {
+                cnText = cnText.Replace("\n", "");
+                var start = pre?.End ?? TimeSpan.Zero;
+                var end = start.AddMilliseconds(item.Duration);
+                cnSrtItem.Index = item.Index;
+                cnSrtItem.StartTime = start;
+                cnSrtItem.EndTime = end;
+                cnSrtItem.Text = cnText;
+                cnSrtFile.Texts.Add(cnSrtItem);
+
+                //cnSrtFile.Texts.Add(new SRT
+                //{
+                //    Index = item.Index,
+                //    StartTime = start,
+                //    EndTime = end,
+                //    Text = cnText
+                //});
+            }
+
+            enSrtFile.Texts.Add(new SRT
+            {
+                Index = item.Index,
+                StartTime = pre?.End ?? TimeSpan.Zero,
+                EndTime = item.End,
+                Text = item.Subtitle.PlainText
+            });
+            #endregion
+
+            logWriter.WriteLine();
+            logWriter.WriteLine($"片断.时长:{item.Duration}");
+            logWriter.WriteLine($"音频.时长:{item.AudioClip.FileDuration}");
+            logWriter.WriteLine($"视频.时长:{item.VideoClip.FileDuration}");
+            logWriter.WriteLine($"字幕.时长:{(cnSrtItem.EndTime - cnSrtItem.StartTime).TotalMilliseconds}");
+
             pre = item;
         }
 
 
-        
+
+        cnSrtFile.Save();
+        enSrtFile.Save();
+
+
+
+
         //clips.ForEach(t => t.AudioClip.计算调速());
 
         #region 根据字幕加速音频,最快1.3倍.
@@ -192,7 +258,7 @@ public class VideoScriptProject : BaseObject
     DrawText(10, 80, t.AudioClip.TextLogs, 16, t.AudioClip.StartTime, t.AudioClip.EndTime);
 });
 
-        TextTrack.Add(DrawCurrentTime()); 
+        TextTrack.Add(DrawCurrentTime());
         #endregion
 
         var filterComplex = ComplexScript;
@@ -208,8 +274,13 @@ public class VideoScriptProject : BaseObject
 
         CreateFinalClipForDebug(clips);
 
+
+
         File.WriteAllText(Path.Combine(basePath, "log.csv"), OperateLogs.Join("\n"));
-        FFmpegHelper.Concat(clips, OutputVideoFile);
+        FFmpegHelper.Concat(clips, OutputVideoFile, logWriter: logWriter);
+
+        logWriter.Flush();
+        logFileStream.Flush();
 
         //FFmpegHelper.ExecuteCommand(
         //    $"{GetInputVideosParameter()} {GetInputAudiosParameter()}",
@@ -357,7 +428,7 @@ public class VideoScriptProject : BaseObject
             pre = item;
         }
 
-        subtitles.First().StartTime = TimeSpan.Zero; 
+        subtitles.First().StartTime = TimeSpan.Zero;
         #endregion
 
         #region 视频片断位置
@@ -366,7 +437,7 @@ public class VideoScriptProject : BaseObject
         if (!Directory.Exists(videoClips))
         {
             Directory.CreateDirectory(videoClips);
-        } 
+        }
         var splitFiles = FFmpegHelper.SplitVideo(VideoInfo.VideoFile, subtitles, videoClips).OrderBy(t => t).ToArray();
 
         #endregion
@@ -385,11 +456,11 @@ public class VideoScriptProject : BaseObject
             AudioTrack.Add(clip.CreateAudioClip());
             VideoTrack.Add(clip.CreateVideoClip(splitFiles[item.Index - 1]));
 
-            if(clip.Subtitle.Duration > ((IClip)clip.AudioClip).Duration)
+            if (clip.Subtitle.Duration > ((IClip)clip.AudioClip).Duration)
             {
                 clip.AudioClip.计算延时();
             }
-            
+
             if (last != null)
             {
                 clip.VideoClip.Before = last.VideoClip;

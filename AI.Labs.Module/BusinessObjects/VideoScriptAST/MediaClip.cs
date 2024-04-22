@@ -35,6 +35,7 @@ public class MediaClip : BaseObject
 
     }
 
+    public int Duration { get; set; }
 
     public int Index
     {
@@ -61,6 +62,7 @@ public class MediaClip : BaseObject
             OutputFile = videoFile,
             Parent = this
         };
+        this.VideoClip.FileDuration = FFmpegHelper.GetDuration(videoFile);
 #pragma warning restore CS0618 // 类型或成员已过时
         
         return this.VideoClip;

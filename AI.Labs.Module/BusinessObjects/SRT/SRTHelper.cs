@@ -1,4 +1,5 @@
 ﻿using AI.Labs.Module.BusinessObjects.VideoTranslate;
+using DevExpress.ExpressApp;
 using DevExpress.Xpo;
 using System.Text;
 //using SubtitlesParser.Classes; // 引入SubtitlesParser的命名空间
@@ -6,7 +7,7 @@ using System.Text;
 namespace AI.Labs.Module.BusinessObjects.Helper
 {
 
-    public class SRTHelper
+    public static class SRTHelper
     {
 
         #region old
@@ -155,20 +156,20 @@ namespace AI.Labs.Module.BusinessObjects.Helper
         //    return mergedSubtitles;
         //}
 
-        private IEnumerable<string> SplitSentences(string text)
-        {
-            // 使用适当的方法将文本分割成句子
-            // ...
-            return new List<string>(); // 替换为实际的实现
-        }
+        //private IEnumerable<string> SplitSentences(string text)
+        //{
+        //    // 使用适当的方法将文本分割成句子
+        //    // ...
+        //    return new List<string>(); // 替换为实际的实现
+        //}
 
-        private IEnumerable<string> AlignSentences(string subtitleText, IEnumerable<string> sentences)
-        {
-            // 根据字幕内容和句子列表，进行时间上的对齐
-            // ...
+        //private IEnumerable<string> AlignSentences(string subtitleText, IEnumerable<string> sentences)
+        //{
+        //    // 根据字幕内容和句子列表，进行时间上的对齐
+        //    // ...
 
-            return new List<string>(); // 替换为实际的实现
-        }
+        //    return new List<string>(); // 替换为实际的实现
+        //}
         #endregion
 
         /// <summary>
@@ -193,6 +194,35 @@ namespace AI.Labs.Module.BusinessObjects.Helper
             var parser = new SRTParser();
             var subtitleItems = parser.ParseStringToXPOObject(content, Encoding.UTF8, session, autoIndex);
             return subtitleItems;
+        }
+
+        public static string ToSrtTimeString(this TimeSpan time)
+        {
+            return time.ToString(@"hh\:mm\:ss\,fff");
+        } 
+        public static void WriteTime(this StreamWriter writer, TimeSpan startTime,TimeSpan endTime)
+        {
+            writer.WriteLine($"{startTime.ToSrtTimeString()} --> {endTime.ToSrtTimeString()}");
+        }
+
+        public static void WriteSubtitleItem(this StreamWriter writer,string text,TimeSpan startTime,TimeSpan endTime,int? index = null)
+        {
+            if (index.HasValue)
+            {
+                writer.WriteLine(index.Value);
+            }
+            writer.WriteTime(startTime, endTime);
+            writer.WriteLine(text);
+            writer.WriteLine();
+        }
+
+        public static void CreateSubtitleStream(string newFile, Action<StreamWriter> core)
+        {
+            using var fileStream = new FileStream(newFile, FileMode.Create);
+            using var writer = new StreamWriter(fileStream, Encoding.UTF8);
+            core(writer);
+            writer.Flush();
+            fileStream.Flush();
         }
 
         /// <summary>
@@ -226,16 +256,9 @@ namespace AI.Labs.Module.BusinessObjects.Helper
                                 endTime = saveFixed ? next.FixedStartTime : next.StartTime;
                             }
                             var startTime = saveFixed ? item.FixedStartTime : item.StartTime;
-                            writer.WriteLine(l++);
-                            writer.WriteLine($"{startTime.ToString(@"hh\:mm\:ss\,fff")} --> {endTime.ToString(@"hh\:mm\:ss\,fff")}");
+                            
+                            writer.WriteSubtitleItem(text, startTime, endTime, l++);
 
-                            //如果字幕是多行的,当前未处理
-                            //foreach (var line in item.Lines)
-                            //{
-                            //    writer.WriteLine(line);
-                            //}
-
-                            writer.WriteLine(text);
                             writer.WriteLine();
                         }
                     }

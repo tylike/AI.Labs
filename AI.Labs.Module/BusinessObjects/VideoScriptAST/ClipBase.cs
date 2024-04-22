@@ -4,6 +4,7 @@ using DevExpress.Persistent.BaseImpl;
 using DevExpress.Xpo;
 using DiffPlex.DiffBuilder.Model;
 using Humanizer;
+using System.Text;
 
 namespace AI.Labs.Module.BusinessObjects;
 
@@ -167,17 +168,21 @@ public abstract class ClipBase : BaseObject, IClip
             success
            );
     }
+ 
+    public StreamWriter log;
 
-    public double 计算延时(IClip waitAdjust, IClip target, ClipBase waitAdjustObject)
+    public string 计算延时(IClip waitAdjust, IClip targetx, ClipBase waitAdjustObject)
     {
+        var logs = new StringBuilder();
         var waitAdjustType = waitAdjust.GetClipType();
-        var targetType = target.GetClipType();
-        if (waitAdjust.Duration < target.Duration)
+        var targetType = "Clip";
+        if ( Parent.Duration > waitAdjust.Duration )
         {
+            logs.AppendLine($"原{waitAdjustType}时长:{waitAdjust.Duration} > 原{targetType}时长:{Parent.Duration} = 差异:{waitAdjust.Duration - Parent.Duration}ms");
             var oldDuration = waitAdjust.Duration;
             var oldEnd = waitAdjust.EndTime;
-            waitAdjust.EndTime = target.EndTime;
-            waitAdjustObject.Delay = target.Duration - oldDuration;
+            //waitAdjust.EndTime = target.EndTime;
+            waitAdjustObject.Delay = Parent.Duration - oldDuration;
             //(int)(Parent.VideoClip.Duration - this.Duration).TotalMilliseconds;
             //var text = $"延时{Delay}";
             //Parent.Project.DrawText(10, 60, text, 24,
@@ -185,28 +190,30 @@ public abstract class ClipBase : BaseObject, IClip
             //    Subtitle.EndTime
             //    );
 
-            var logText = $"{waitAdjustType}延时:{waitAdjustType}时间:{waitAdjust.StartTime.GetTimeString()}-{waitAdjust.EndTime.GetTimeString()}，" +
-                 $"时长:{oldDuration}，计划将{waitAdjustType}从{oldDuration}ms=>{target.Duration}ms(+{waitAdjustObject.Delay}ms)，" +
-                 $"实际:{waitAdjust.Duration}，" +
-                 $"|差异:0 必然成功";
+            //var logText = $"{waitAdjustType}延时:{waitAdjustType}时间:{waitAdjust.StartTime.GetTimeString()}-{waitAdjust.EndTime.GetTimeString()}，" +
+            //     $"时长:{oldDuration}，计划将{waitAdjustType}从{oldDuration}ms=>{target.Duration}ms(+{waitAdjustObject.Delay}ms)，" +
+            //     $"实际:{waitAdjust.Duration}，" +
+            //     $"|差异:0 必然成功";
 
-            //视频为标准(调整不够长的音频):
-            waitAdjustObject.TextLogs += logText;
+            ////视频为标准(调整不够长的音频):
+            //waitAdjustObject.TextLogs += logText;
 
-            waitAdjustObject.ChangeLog(
-                $"根据{targetType}延时{waitAdjustType}",
-                $"{waitAdjustType}",
-                logText,
-                "必然成功"
-                );
-            RunDelay(waitAdjustObject.Delay.Value,target.Duration/1000d);
-            return waitAdjustObject.Delay.Value;
+            //waitAdjustObject.ChangeLog(
+            //    $"根据{targetType}延时{waitAdjustType}",
+            //    $"{waitAdjustType}",
+            //    logText,
+            //    "必然成功"
+            //    );
+            RunDelay(waitAdjustObject.Delay.Value, Parent.Duration / 1000d);
+            
+            //return waitAdjustObject.Delay.Value;
         }
-        return 0;
+        return logs.ToString();
+        //return 0;
     }
-    public virtual void RunDelay(int delay,double targetDuration)
+    public virtual string RunDelay(int delay,double targetDuration)
     {
-        
+        return "";
     }
 
     public abstract string GetClipType();
