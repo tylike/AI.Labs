@@ -63,14 +63,14 @@ public class AudioClip : ClipBase<AudioClip>
             var 原时长 = waitAdjust.Duration;
 
             var newOutputFile = GetFilePath(FileType.Audio_ChangeSpeed, 实际倍速);
-            var useCommand = FFmpegHelper.ChangeAudioSpeed(waitAdjustObject.Index.ToString(), target.Duration / 1000d, waitAdjustObject.OutputFile, 实际倍速, newOutputFile, 计划倍速);
+            FFmpegHelper.ChangeAudioSpeed(waitAdjustObject.Index.ToString(), target.Duration, waitAdjustObject.OutputFile, 实际倍速, newOutputFile, 计划倍速);
                             
 
-            log.WriteLine($"命令:{useCommand}");
+            //log.WriteLine($"命令:{useCommand}");
 
             waitAdjustObject.使用文件时长更新结束时间(newOutputFile);
 
-            Parent.Duration = (int)waitAdjustObject.FileDuration.Value * 1000;
+            Parent.Duration = (int)waitAdjustObject.FileDuration.Value;
 
             waitAdjustObject.ChangeSpeed = 实际倍速;
             log.WriteLine($"调整后音频时长:{waitAdjust.Duration} - 字幕时长:{target.Duration} = 差异:{waitAdjust.Duration - target.Duration}ms");
@@ -85,16 +85,16 @@ public class AudioClip : ClipBase<AudioClip>
                 //Parent.VideoClip.StartTime = StartTime;
                 //Parent.VideoClip.EndTime = EndTime;
                 //后推时间(waitAdjust.Duration - target.Duration);
-                log.WriteLine($"clip.End {Parent.End} => {this.EndTime} 差异:{this.EndTime - Parent.End}");
+                log.WriteLine($"clip.End {Parent.Duration} => {this.FileDuration} 差异:{this.FileDuration - Parent.Duration}");
                 log.WriteLine("使用音频时长做为字幕的时长.");
-                Parent.Duration = (int)waitAdjustObject.FileDuration.Value * 1000;
+                //Parent.Duration = (int)waitAdjustObject.FileDuration.Value;
                 //Parent.End = this.EndTime;
             }
             else
             {
                 log.WriteLine($"clip.End {Parent.Duration} => {Subtitle.Duration} 差异:{Subtitle.Duration - Parent.Duration}");                
                 log.WriteLine("使用字幕时长做为音频的时长.");
-                Parent.Duration = Subtitle.Duration;
+                //Parent.Duration = Subtitle.Duration;
             }
             return log.ToString();
         }
@@ -131,9 +131,20 @@ public class AudioClip : ClipBase<AudioClip>
 
     #endregion
     #region 延时
-    public string 计算延时()
+    public void 计算延时()
     {
-        return 计算延时(this, Parent.VideoClip, this);
+        //return 计算延时(this, Parent.VideoClip, this);
+        //var waitAdjustType = waitAdjust.GetClipType();
+        //var targetType = "Clip";
+        if (Subtitle.Duration > this.FileDuration)
+        {
+            log.WriteLine($"原字幕时长:{Subtitle.Duration} > 原音频时长:{FileDuration} = 差异:{Subtitle.Duration - FileDuration}ms");
+            //var oldDuration = waitAdjust.Duration;
+            //var oldEnd = waitAdjust.EndTime;
+            //waitAdjustObject.Delay = Parent.Duration - oldDuration;
+            this.Delay = (int)(Subtitle.Duration - FileDuration.Value);
+            RunDelay(Delay.Value, Subtitle.Duration);
+        }
     }
 
     public override string RunDelay(int delay, double targetDuration)
@@ -145,11 +156,11 @@ public class AudioClip : ClipBase<AudioClip>
         
         Parent.Duration = (int)FileDuration.Value;
 
-        log.WriteLine($"音频延时{delay}:{oldDuration}=>{Parent.Duration} = 差异 {Parent.Duration - oldDuration}");
+        //log.WriteLine($"音频延时{delay}:{oldDuration}=>{Parent.Duration} = 差异 {Parent.Duration - oldDuration}");
 
         //使用音频时长 更新字幕时长
         //因为音频时长可能是根据ffmpeg的结果而来，可能不是准确的期望
-        Subtitle.SetFixedEndTime(EndTime, Parent);
+        //Subtitle.SetFixedEndTime(EndTime, Parent);
         return $"音频延时{delay}ms";
     }
     #endregion

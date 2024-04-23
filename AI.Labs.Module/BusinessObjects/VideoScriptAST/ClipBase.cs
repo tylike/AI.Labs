@@ -45,7 +45,7 @@ public abstract class ClipBase : BaseObject, IClip
     {
         this.OutputFile = outputFile;
         FileDuration = FFmpegHelper.GetDuration(outputFile);
-        this.EndTime = this.StartTime.AddMilliseconds(FileDuration.Value * 1000);
+        this.EndTime = this.StartTime.AddMilliseconds(FileDuration.Value);
     }
 
     public double? FileDuration
@@ -168,48 +168,22 @@ public abstract class ClipBase : BaseObject, IClip
             success
            );
     }
- 
-    public StreamWriter log;
 
-    public string 计算延时(IClip waitAdjust, IClip targetx, ClipBase waitAdjustObject)
+    public StreamWriter log => Parent.LogWriter;
+
+    public void 计算延时(IClip waitAdjust, IClip targetx, ClipBase waitAdjustObject)
     {
-        var logs = new StringBuilder();
         var waitAdjustType = waitAdjust.GetClipType();
         var targetType = "Clip";
-        if ( Parent.Duration > waitAdjust.Duration )
+        if ( Parent.Duration > this.FileDuration )
         {
-            logs.AppendLine($"原{waitAdjustType}时长:{waitAdjust.Duration} > 原{targetType}时长:{Parent.Duration} = 差异:{waitAdjust.Duration - Parent.Duration}ms");
+            log.WriteLine($"原{waitAdjustType}时长:{waitAdjust.Duration} > 原{targetType}时长:{Parent.Duration} = 差异:{waitAdjust.Duration - Parent.Duration}ms");
             var oldDuration = waitAdjust.Duration;
             var oldEnd = waitAdjust.EndTime;
-            //waitAdjust.EndTime = target.EndTime;
+
             waitAdjustObject.Delay = Parent.Duration - oldDuration;
-            //(int)(Parent.VideoClip.Duration - this.Duration).TotalMilliseconds;
-            //var text = $"延时{Delay}";
-            //Parent.Project.DrawText(10, 60, text, 24,
-            //    TimeSpan.FromMilliseconds(Subtitle.StartTime.TotalMilliseconds + Subtitle.Duration),
-            //    Subtitle.EndTime
-            //    );
-
-            //var logText = $"{waitAdjustType}延时:{waitAdjustType}时间:{waitAdjust.StartTime.GetTimeString()}-{waitAdjust.EndTime.GetTimeString()}，" +
-            //     $"时长:{oldDuration}，计划将{waitAdjustType}从{oldDuration}ms=>{target.Duration}ms(+{waitAdjustObject.Delay}ms)，" +
-            //     $"实际:{waitAdjust.Duration}，" +
-            //     $"|差异:0 必然成功";
-
-            ////视频为标准(调整不够长的音频):
-            //waitAdjustObject.TextLogs += logText;
-
-            //waitAdjustObject.ChangeLog(
-            //    $"根据{targetType}延时{waitAdjustType}",
-            //    $"{waitAdjustType}",
-            //    logText,
-            //    "必然成功"
-            //    );
-            RunDelay(waitAdjustObject.Delay.Value, Parent.Duration / 1000d);
-            
-            //return waitAdjustObject.Delay.Value;
+            RunDelay(waitAdjustObject.Delay.Value, Parent.Duration);
         }
-        return logs.ToString();
-        //return 0;
     }
     public virtual string RunDelay(int delay,double targetDuration)
     {

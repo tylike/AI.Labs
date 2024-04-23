@@ -1,15 +1,12 @@
 ﻿using AI.Labs.Module.BusinessObjects.AudioBooks;
 using AI.Labs.Module.BusinessObjects.Helper;
 using AI.Labs.Module.BusinessObjects.VideoTranslate;
-using com.sun.tools.javac.jvm;
-using DevExpress.Charts.Native;
 using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.DC;
 using DevExpress.ExpressApp.Model;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.BaseImpl;
 using DevExpress.Xpo;
-using Microsoft.CognitiveServices.Speech.Diagnostics.Logging;
 using System.Diagnostics;
 using System.Drawing;
 using System.Text;
@@ -137,42 +134,60 @@ public class VideoScriptProject : BaseObject
         set { SetPropertyValue(nameof(OutputVideoFile), value); }
     }
 
+    FileStream logFileStream;
+    StreamWriter logWriter;
 
     public void Export()
     {
+
         var clips = MediaClips.OrderBy(t => t.Index).ToList();
         clips.First().AudioClip.LogTitle();
-        MediaClip pre = null;
+        SRT pre = null;
 
         #region 字幕、日志
         var cnSrtFile = new SRTFile() { FileName = Path.Combine(VideoInfo.ProjectPath, "cnsrt.fix.srt"), UseIndex = true };
         var enSrtFile = new SRTFile() { FileName = Path.Combine(VideoInfo.ProjectPath, "ensrt.fix.srt"), UseIndex = true };
 
-        using var logFileStream = new FileStream(Path.Combine(VideoInfo.ProjectPath, "logs.txt"), FileMode.Create);
-        using var logWriter = new StreamWriter(logFileStream, Encoding.UTF8);
+
         #endregion
 
+        var clipHtml = new StringBuilder();
+        var audioHtml = new StringBuilder();
+        var videoHtml = new StringBuilder();
+        var subtitleHtml = new StringBuilder();
 
         foreach (var item in clips)
         {
-            item.AudioClip.log = logWriter;
-            item.VideoClip.log = logWriter;
 
-            item.Start = pre?.End ?? TimeSpan.Zero;
-            item.End = item.Subtitle.EndTime;
+            //item.Start = pre?.End ?? TimeSpan.Zero;
+            //item.End = item.Subtitle.EndTime;
             item.Duration = (int)(item.End - item.Start).TotalMilliseconds;
-            logWriter.WriteLine("=============================================================================================================");
-            logWriter.WriteLine($"A:片断:{item.Index} 音频文件时长:{item.AudioClip.FileDuration * 1000} 字幕时长:{item.Subtitle.Duration}");
-            if (item.AudioClip.FileDuration * 1000 > item.Subtitle.Duration)
-            {
-                item.AudioClip.计算调速();                
-            }
 
-            logWriter.WriteLine($"V:片断:{item.Index} Clip.时长:{item.Duration  } 视频文件时长:{item.VideoClip.FileDuration * 1000} ");
-            if (item.Duration > item.VideoClip.GetDuration() )
+            logWriter.WriteLine("=============================================================================================================");
+            logWriter.WriteLine($"Clip.Index = {item.Index}");
+            logWriter.WriteLine($"片断.时长:{item.Duration}");
+            logWriter.WriteLine($"音频.时长:{item.AudioClip.FileDuration}");
+            logWriter.WriteLine($"视频.时长:{item.VideoClip.FileDuration}");
+            logWriter.WriteLine($"字幕.时长:{item.Subtitle.Duration}");
+
+            logWriter.WriteLine($"A:音频文件快放");
+            if (item.AudioClip.FileDuration > item.Subtitle.Duration)
             {
-                var logs = item.VideoClip.计算延时();
-                logWriter.WriteLine(logs);
+                item.AudioClip.计算调速();
+                item.Duration = (int)item.AudioClip.FileDuration.Value;
+            }
+            logWriter.WriteLine("--------------------------------------------------------------------------------------------------------------");
+
+            logWriter.WriteLine($"片断.时长:{item.Duration}");
+            logWriter.WriteLine($"音频.时长:{item.AudioClip.FileDuration}");
+            logWriter.WriteLine($"视频.时长:{item.VideoClip.FileDuration}");
+            logWriter.WriteLine($"字幕.时长:{item.Subtitle.Duration}");
+
+
+            logWriter.WriteLine($"V:视频文件延长,当前时长:{item.VideoClip.FileDuration} ");
+            if (item.Duration > item.VideoClip.GetDuration())
+            {
+                item.VideoClip.计算延时();
             }
 
             #region 写字幕文件
@@ -182,8 +197,8 @@ public class VideoScriptProject : BaseObject
             if (!string.IsNullOrEmpty(cnText))
             {
                 cnText = cnText.Replace("\n", "");
-                var start = pre?.End ?? TimeSpan.Zero;
-                var end = start.AddMilliseconds(item.Duration);
+                var start = pre?.EndTime ?? TimeSpan.Zero;
+                var end = start.AddMilliseconds(item.AudioClip.FileDuration.Value);
                 cnSrtItem.Index = item.Index;
                 cnSrtItem.StartTime = start;
                 cnSrtItem.EndTime = end;
@@ -198,26 +213,55 @@ public class VideoScriptProject : BaseObject
                 //    Text = cnText
                 //});
             }
+            pre = cnSrtItem;
 
             enSrtFile.Texts.Add(new SRT
             {
                 Index = item.Index,
-                StartTime = pre?.End ?? TimeSpan.Zero,
-                EndTime = item.End,
+                StartTime = cnSrtItem.StartTime,
+                EndTime = cnSrtItem.EndTime,
                 Text = item.Subtitle.PlainText
             });
             #endregion
 
-            logWriter.WriteLine();
+            logWriter.WriteLine("结果:");
             logWriter.WriteLine($"片断.时长:{item.Duration}");
             logWriter.WriteLine($"音频.时长:{item.AudioClip.FileDuration}");
             logWriter.WriteLine($"视频.时长:{item.VideoClip.FileDuration}");
             logWriter.WriteLine($"字幕.时长:{(cnSrtItem.EndTime - cnSrtItem.StartTime).TotalMilliseconds}");
 
-            pre = item;
+            clipHtml.AppendLine($"<div title='时长:{item.Duration},视频:{item.VideoClip.FileDuration},音频:{item.AudioClip.FileDuration}' class='clip' style='width:{item.Duration / 100}px'>{item.Index}</div>");
+            audioHtml.AppendLine($"<div class='clip' style='width:{item.AudioClip.FileDuration / 100 }px'>{item.Index}</div>");
+            videoHtml.AppendLine($"<div class='clip' style='width:{item.VideoClip.FileDuration / 100}px'>{item.Index}</div>");
+            subtitleHtml.AppendLine($"<div class='clip' style='width:{item.Duration / 100}px'>{item.Index}</div>");
         }
+        logWriter.Flush();
+        logFileStream.Flush();
 
+        var html = $@"
+<html>
+<head>
+<style>
+        .clip {{position: relative;
+            display: inline-block;
+            border: 1px solid #ccc;
+            text-overflow:clip;
+            overflow:hidden
+        }}
+        .rootClips{{width:11000px;
+        }}
+</style>
+</head>
+<body>
+<div id='clip' class='rootClips'>{clipHtml.ToString()}</div>
+<div id='audio' class='rootClips'>{audioHtml.ToString()}</div>
+<div id='video' class='rootClips'>{videoHtml.ToString()}</div>
+<div id='subtitle' class='rootClips'>{subtitleHtml.ToString()}</div>
+</body>
+</html>
+";
 
+        File.WriteAllText(Path.Combine(VideoInfo.ProjectPath, "result.htm"), html);
 
         cnSrtFile.Save();
         enSrtFile.Save();
@@ -273,14 +317,18 @@ public class VideoScriptProject : BaseObject
         //var all = AudioSources.Select(t => t.SourceInfo.Subtitle).ToArray();
 
         CreateFinalClipForDebug(clips);
+        var clipsEndTimeDuration = clips.Last().End.TotalMilliseconds;
+        var audioFilesDuration = clips.Sum(t => t.AudioClip.FileDuration);
+        var videoFileDuration = clips.Sum(t => t.VideoClip.FileDuration);
 
+        logWriter.WriteLine($"计算时长:{clipsEndTimeDuration},Audio:{audioFilesDuration},Video:{videoFileDuration}");
 
-
-        File.WriteAllText(Path.Combine(basePath, "log.csv"), OperateLogs.Join("\n"));
         FFmpegHelper.Concat(clips, OutputVideoFile, logWriter: logWriter);
 
         logWriter.Flush();
         logFileStream.Flush();
+
+
 
         //FFmpegHelper.ExecuteCommand(
         //    $"{GetInputVideosParameter()} {GetInputAudiosParameter()}",
@@ -384,6 +432,10 @@ public class VideoScriptProject : BaseObject
 
     public void CreateProject(IObjectSpace os)
     {
+        logFileStream = new FileStream(Path.Combine(VideoInfo.ProjectPath, "logs.txt"), FileMode.Create);
+        logWriter = new StreamWriter(logFileStream, Encoding.UTF8);
+        FFmpegHelper.Log = logWriter;
+        Console.WriteLine("创建项目" + DateTime.Now.ToString());
         #region 导入音频、视频
         var vi = this.VideoInfo;
 
@@ -430,7 +482,7 @@ public class VideoScriptProject : BaseObject
 
         subtitles.First().StartTime = TimeSpan.Zero;
         #endregion
-
+        Console.WriteLine("预处理视频" + DateTime.Now.ToString());
         #region 视频片断位置
         var videoClips = Path.Combine(VideoInfo.ProjectPath, "VideoClip");
 
@@ -441,22 +493,25 @@ public class VideoScriptProject : BaseObject
         var splitFiles = FFmpegHelper.SplitVideo(VideoInfo.VideoFile, subtitles, videoClips).OrderBy(t => t).ToArray();
 
         #endregion
-
+        Console.WriteLine("预处理音频" + DateTime.Now.ToString());
         #region 绑定音频与视频片断
         MediaClip last = null;
         foreach (var item in VideoInfo.Audios.OrderBy(t => t.Index))
         {
+            Console.WriteLine("预处理音频" + item.Index);
+
             var clip = new MediaClip(Session)
             {
                 AudioInfo = item,
                 Index = item.Index,
-                Project = this
+                Project = this,
+                LogWriter = this.logWriter
             };
 
             AudioTrack.Add(clip.CreateAudioClip());
             VideoTrack.Add(clip.CreateVideoClip(splitFiles[item.Index - 1]));
 
-            if (clip.Subtitle.Duration > ((IClip)clip.AudioClip).Duration)
+            if (clip.Subtitle.Duration > clip.AudioClip.FileDuration)
             {
                 clip.AudioClip.计算延时();
             }

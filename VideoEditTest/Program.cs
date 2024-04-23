@@ -15,7 +15,7 @@ XafTypesInfo.Instance.RegisterEntity(typeof(VideoScriptProject));
 //笔记本
 var dbPath = Path.Combine("D:\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows8.0", "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
 //家里台式机
-dbPath = Path.Combine("D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows8.0", "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
+//dbPath = Path.Combine("D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows8.0", "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
 
 
 
@@ -32,6 +32,16 @@ IObjectSpace objectSpace = osProvider.CreateObjectSpace();
 var vi = objectSpace.GetObjectsQuery<VideoInfo>().First(t => t.Oid == 3);
 
 var script = objectSpace.GetObjectsQuery<VideoScriptProject>().FirstOrDefault(t => t.Name == "test10");
+if (Directory.Exists("D:\\VideoInfo\\3\\Audio_ChangeSpeed"))
+    Directory.Delete("D:\\VideoInfo\\3\\Audio_ChangeSpeed", true);
+if (Directory.Exists("D:\\VideoInfo\\3\\Video_Delay"))
+    Directory.Delete("D:\\VideoInfo\\3\\Video_Delay", true);
+if (Directory.Exists("D:\\VideoInfo\\3\\Audio_ChangeSpeed"))
+    Directory.Delete("D:\\VideoInfo\\3\\Audio_ChangeSpeed", true);
+if (Directory.Exists("D:\\VideoInfo\\3\\Audio_Delay"))
+    Directory.Delete("D:\\VideoInfo\\3\\Audio_Delay", true);
+
+
 
 if (script == null)
 {
@@ -39,7 +49,7 @@ if (script == null)
     script.Name = "test1x";
     script.VideoInfo = vi;
     script.CreateProject(objectSpace);
-    
+
     script.Export();
     //script.VideoInfo.SaveSRTToFile(AI.Labs.Module.BusinessObjects.Helper.SrtLanguage.中文, "fixed", true);
     //script.VideoInfo.SaveSRTToFile(AI.Labs.Module.BusinessObjects.Helper.SrtLanguage.英文, "fixed", true);

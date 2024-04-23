@@ -35,6 +35,13 @@ public class MediaClip : BaseObject
 
     }
 
+    [NonPersistent]
+    public StreamWriter LogWriter
+    {
+        get;set;
+    }
+
+
     public int Duration { get; set; }
 
     public int Index

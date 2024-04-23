@@ -45,12 +45,25 @@ public class VideoClip : ClipBase<VideoClip>
     /// 因为音频时长可能更长
     /// </summary>
     /// <returns></returns>
-    public string 计算延时()
+    public void 计算延时()
     {
-        return 计算延时(this, Parent.AudioClip, this);
+        计算延时Core(this, Parent.AudioClip, this);
     }
 
+    public void 计算延时Core(IClip waitAdjust, IClip targetx, ClipBase waitAdjustObject)
+    {
+        var waitAdjustType = waitAdjust.GetClipType();
+        var targetType = "Clip";
+        if (Parent.Duration > this.FileDuration)
+        {
+            log.WriteLine($"原{waitAdjustType}时长:{waitAdjust.Duration} > 原{targetType}时长:{Parent.Duration} = 差异:{waitAdjust.Duration - Parent.Duration}ms");
+            var oldDuration = waitAdjust.Duration;
+            var oldEnd = waitAdjust.EndTime;
 
+            waitAdjustObject.Delay = Parent.Duration - oldDuration;
+            RunDelay(waitAdjustObject.Delay.Value, Parent.Duration);
+        }
+    }
 
     public override string RunDelay(int delay,double targetDuration)
     {
@@ -59,7 +72,7 @@ public class VideoClip : ClipBase<VideoClip>
         //FFmpegHelper.DelayVideoCopyLast(this.Index.ToString(),targetDuration,this.OutputFile, delay, output);
         FFmpegHelper.DelayVideoCopyRepeat(this.Index.ToString(),targetDuration,this.FileDuration.Value,this.OutputFile,output);
         使用文件时长更新结束时间(output);
-        log.WriteLine($"视频延时{delay}:{oldDuration}=>{FileDuration.Value} = 差异 {FileDuration.Value - oldDuration}");
+        //log.WriteLine($"视频延时{delay}:{oldDuration}=>{FileDuration.Value} = 差异 {FileDuration.Value - oldDuration}");
         return $"视频延时{delay}ms";
     }
 
@@ -90,7 +103,7 @@ public class VideoClip : ClipBase<VideoClip>
             ChangeSpeed = 实际倍速;            
 
             var output = GetFilePath(FileType.Video_ChangeSpeed,实际倍速);
-            FFmpegHelper.ChangeVideoSpeed(this.Index.ToString(),target.Duration/1000d,this.OutputFile,实际倍速,output);
+            FFmpegHelper.ChangeVideoSpeed(this.Index.ToString(),target.Duration,this.OutputFile,实际倍速,output);
             使用文件时长更新结束时间(output);
             
             Subtitle.FixedStartTime = this.StartTime;

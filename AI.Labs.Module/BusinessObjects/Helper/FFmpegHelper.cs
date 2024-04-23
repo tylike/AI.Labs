@@ -29,7 +29,7 @@ namespace AI.Labs.Module.BusinessObjects
 
         const string ffprobe = @"D:\ffmpeg.gui\last\ffprobe.exe";
         public const string ffmpegFile = @"D:\ffmpeg.gui\last\ffmpeg.exe";
-
+        public static StreamWriter Log { get; set; }
         #region execute command
         public static string LastCommand = "";
         public static string ExecuteCommand(string taskMemo, double? targetDuration, string command,
@@ -81,24 +81,20 @@ namespace AI.Labs.Module.BusinessObjects
                 Console.WriteLine(taskMemo);
 
             Debug.WriteLine($"{pi.FileName} {pi.Arguments}");
-            if (targetDuration.HasValue && !string.IsNullOrEmpty(outputFile))
+            if (Log != null && targetDuration.HasValue && !string.IsNullOrEmpty(outputFile))
             {
                 var dur = GetDuration(outputFile);
                 var diff = dur.Value - targetDuration.Value;
-
-
-                if (diff > 0.5)
+                if (diff > 0)
                 {
-
-                    var logPath = Path.Combine(logFilePath ?? "d:\\temp", "logs", $"{taskMemo}-{(dur.Value == targetDuration.Value).ToString()}_log.txt");
-                    var logs = @$"{pi.FileName} {command}
-输出文件时长:{dur.Value}
-目标时长:{targetDuration.Value}
+                    var logs = @$"..........
+{pi.FileName} {command}
+输出文件时长:{dur.Value} 目标时长:{targetDuration.Value} 精确差异:{diff} {(diff > 100 ? "***ERROR***" : "")}
 附加信息:
 {addationLogs + ""}
-精确差异:{dur.Value - targetDuration.Value}
+..........
 ";
-                    File.WriteAllText(logPath, logs);
+                    Log.WriteLine(logs);
                     Console.Write(logs);
                 }
                 //if(dur.HasValue && dur.Value != targetDuration.Value)
@@ -216,7 +212,7 @@ namespace AI.Labs.Module.BusinessObjects
         /// <param name="speed">2.0为2倍，0.5为慢放2倍</param>
         /// <param name="outputFile"></param>
 
-        public static string ChangeAudioSpeed(
+        public static void ChangeAudioSpeed(
             string taskMemo,
             double targetDuration,
             string inputFileName,
@@ -229,11 +225,6 @@ namespace AI.Labs.Module.BusinessObjects
             {
                 var forceLength = planSpeed <= 1.3 ? $"-t {targetDuration}" : "";
                 ExecuteCommand($"音频调速 {taskMemo}", targetDuration, $" -loglevel error  -i {inputFileName}  -filter:a:0 \"atempo={speed:0.0########}\" {forceLength}  -async 1 -fflags +genpts", outputFile);
-                return LastCommand;
-            }
-            else
-            {
-                return $"文件已存在:{outputFile}";
             }
         }
 
@@ -251,17 +242,6 @@ namespace AI.Labs.Module.BusinessObjects
             //ffmpeg -i input.mp4 -filter_complex "[0:v]setpts=PTS/2[v];[0:a]atempo=2[a]" -map "[v]" -map "[a]" output_fast.mp4
             ExecuteCommand($"视频调速 {taskMemo}", targetDuration, $"-i {inputFileName} -filter_complex \"[0:v]setpts=PTS/{targetSpeed.ToFFmpegString()}[v];\" -map \"[v]\" ", outputFile);
         }
-
-        //public static void ChangeAudioSpeed(this StringBuilder sb, double targetSpeed, string inputLables = null, string outputLables = null)
-        //{
-        //    //[0:v]trim=0.11:7,setpts=PTS-STARTPTS[v{idx}]
-        //    sb.AppendNotEmptyOrNull(inputLables);
-        //    sb.Append($"asetpts=PTS*{targetSpeed.ToFFmpegString()}");
-        //    sb.AppendNotEmptyOrNull(outputLables);
-        //}
-
-
-
         public static void DelayAudio(string taskMemo, double targetDuration, string inputFileName, double delayMS, string newOutputFile)
         {
             if (!File.Exists(newOutputFile))
@@ -304,7 +284,7 @@ namespace AI.Labs.Module.BusinessObjects
                     newOutputFile,
                     inputFiles: inputFileName,
                     inputOptions: $" -stream_loop {loopCount} ",
-                    outputOptions: $" -t {targetDuration} "
+                    outputOptions: $" -t {targetDuration / 1000} "
                     );
             }
 
@@ -445,7 +425,7 @@ namespace AI.Labs.Module.BusinessObjects
             }
         }
 
-        public static void Concat(IEnumerable<MediaClip> clips, string outputFile, bool overWriteExist = true,StreamWriter logWriter = null)
+        public static void Concat(IEnumerable<MediaClip> clips, string outputFile, bool overWriteExist = true, StreamWriter logWriter = null)
         {
             var videos = clips.Select(t => t.VideoClip);
             var audios = clips.Select(t => t.AudioClip);
@@ -457,8 +437,8 @@ namespace AI.Labs.Module.BusinessObjects
 
             var videoOnly = Path.Combine(Path.GetDirectoryName(outputFile), "VideoOnly.mp4");
             var audioOnly = Path.Combine(Path.GetDirectoryName(outputFile), "AudioOnly.mp3");
-            var v = Concat(videos.Last().EndTime.TotalSeconds, videos.Select(t => t.OutputFile), videoOnly, true, "videolist.txt");
-            var a= Concat(audios.Last().EndTime.TotalSeconds, audios.Select(t => t.OutputFile), audioOnly, false, "audiolist.txt");
+            var v = Concat(clips.Last().End.TotalMilliseconds, videos.Select(t => t.OutputFile), videoOnly, true, "videolist.txt");
+            var a = Concat(clips.Last().End.TotalMilliseconds, audios.Select(t => t.OutputFile), audioOnly, false, "audiolist.txt");
 
             logWriter?.WriteLine($"VideoOnly 时长:{v},AudioOnly 时长:{a},差异:{v - a}");
             //ffmpeg
@@ -491,11 +471,11 @@ namespace AI.Labs.Module.BusinessObjects
             //ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 input_audio_file
             if (double.TryParse(rst, out double duration))
             {
-                return duration;
+                return duration * 1000;
             }
             return null;
         }
-        static string FFProbe(string command,bool useShellExecute = false)
+        static string FFProbe(string command, bool useShellExecute = false)
         {
             var sw = Stopwatch.StartNew();
             //如果targetDuration为空，则不需要去验证目标时长
