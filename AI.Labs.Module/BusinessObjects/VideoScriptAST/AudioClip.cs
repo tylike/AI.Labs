@@ -70,7 +70,7 @@ public class AudioClip : ClipBase<AudioClip>
 
             waitAdjustObject.使用文件时长更新结束时间(newOutputFile);
 
-            Parent.Duration = (int)waitAdjustObject.FileDuration.Value;
+            //Parent.Duration = (int)waitAdjustObject.FileDuration.Value;
 
             waitAdjustObject.ChangeSpeed = 实际倍速;
             log.WriteLine($"调整后音频时长:{waitAdjust.Duration} - 字幕时长:{target.Duration} = 差异:{waitAdjust.Duration - target.Duration}ms");
