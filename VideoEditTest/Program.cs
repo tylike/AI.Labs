@@ -5,9 +5,59 @@ using AI.Labs.Module.BusinessObjects.VideoTranslate;
 using RuntimePlugin;
 using IPlugins;
 using AI.Labs.Module.BusinessObjects;
+using System.Drawing;
 
 Console.WriteLine("Hello, World!");
 
+//FFmpegHelper.ConvertFPS(@"-i d:\videotest\source.mp4", 50, @"d:\videotest\resetFps.mp4");
+//Console.WriteLine(FFmpegHelper.ShowKeyFrames(@"d:\videotest\resetFps.mp4"));
+//FFmpegHelper.Mp32Wav(@"-i d:\videoinfo\3\audio\2.mp3", @"d:\videotest\wav.wav");
+//FFmpegHelper.NAudioGetClip(@"d:\videotest\wav.wav", 10, 1031, @"d:\videotest\clip1.wav");
+//Console.WriteLine(FFmpegHelper.GetDuration(@"d:\videotest\clip1.wav"));
+
+var file = "d:\\videotest\\output.mp4";
+FFmpegHelper.CreateEmptyVideo(file, 10000, color: Color.Black);
+
+var testScript = new SimpleFFmpegScript();
+
+for (int i = 1; i < 5; i++)
+{
+    testScript.InputVideo($"D:\\VideoInfo\\3\\VideoClip\\{i:00000}.mp4");
+    testScript.InputAudio($"D:\\VideoInfo\\3\\Audio\\{i}.mp3");
+}
+
+var t1 = testScript.InputVideoCommands[0];//.Select(0, 1000);
+var t2 = testScript.InputVideoCommands[1];//.Select(0, 1200);
+var t3 = testScript.InputVideoCommands[2];//.Select(0, 2000);
+
+var background = testScript.CreateEmptyVideo(Color.Black, 10000);
+//var backgroundAudio = testScript.CreateEmptyAudio(10000);
+
+var output = background
+    .PutVideo(t1, 1000, 2000)
+    .PutVideo(t2, 1900, 3100, 200, 200)
+    .PutVideo(t3, 3000, 5000, 400, 400);
+
+//var outputAudio = backgroundAudio
+var audioList = new List<SimpleFFmpegCommand>(){
+    testScript.InputAudioCommands[0].PutAudio(1000, 0, 2000),
+    testScript.InputAudioCommands[1].PutAudio(1900, 0, 1200),
+    testScript.InputAudioCommands[2].PutAudio(3000, 0, 2000)
+    };
+
+var outputAudio = audioList.AMix();
+
+
+
+FFmpegHelper.ExecuteFFmpegCommand(
+    inputFiles: testScript.Inputs.Select(t => $"-i {t.FileName}").Join(" "),
+    filterComplex: testScript.GetComplexScript(),
+    outputFiles: file,
+    outputOptions: $"-c:v libx264 -crf 18 -y -map \"{output.OutputLable}\" -map \"{outputAudio.OutputLable}\" -c:a aac "
+    );
+Console.WriteLine($"时长:{FFmpegHelper.GetDuration(file)}");
+
+return;
 XpoTypesInfoHelper.GetXpoTypeInfoSource();
 XafTypesInfo.Instance.RegisterEntity(typeof(VideoInfo));
 XafTypesInfo.Instance.RegisterEntity(typeof(VideoScriptProject));
