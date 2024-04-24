@@ -37,7 +37,7 @@ public class DrawTextClip : ClipBase<DrawTextClip>
     {
         Text = "%{pts\\:hms} / " + FixText(videoTimeSpan.ToString(@"hh\:mm\:ss"));
     }
-    string FixText(string txt)
+    public static string FixText(string txt)
     {
         if (txt == null)
             return "";

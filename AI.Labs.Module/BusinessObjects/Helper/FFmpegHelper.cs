@@ -15,6 +15,8 @@ using static com.sun.imageio.plugins.common.PaletteBuilder;
 using static DevExpress.XtraPrinting.Native.ExportOptionsPropertiesNames;
 using NAudio.Wave.SampleProviders;
 using NAudio.Wave;
+using NAudio.Wave;
+using System.Collections.Generic;
 
 namespace AI.Labs.Module.BusinessObjects
 {
@@ -24,6 +26,12 @@ namespace AI.Labs.Module.BusinessObjects
         Audio
     }
 
+    public class AudioParameter
+    {
+        public string FileName { get; set; }
+        public int StartTimeMS { get; set; }
+        public int EndTimeMS { get; set; }
+    }
     public class SimpleFFmpegCommand
     {
         public SimpleFFmpegCommand(SimpleFFmpegScript script)
@@ -62,94 +70,88 @@ namespace AI.Labs.Module.BusinessObjects
         public int Duration { get; set; }
         public SimpleMediaType Type { get; set; }
     }
-    public class SimpleFFmpegScript
-    {
-        public List<SimpleFFmpegCommand> Commands { get; set; } = new List<SimpleFFmpegCommand>();
-
-        public SimpleFFmpegCommand CreateEmptyVideo(Color color, int durationMS, int w = 1280, int h = 720)
-        {
-            var cmd = new SimpleFFmpegCommand(this) { Index = Commands.Count };
-            var filterComplex = $"color=c={color.Name.ToString().ToLower()}:s={w}x{h}:d={durationMS / 1000d:0.0000},format=yuv420p{cmd.OutputLable}";
-            cmd.Command = filterComplex;
-            Commands.Add(cmd);
-            return cmd;
-        }
-
-        public SimpleFFmpegCommand CreateEmptyAudio(int durationMS)
-        {
-            var cmd = new SimpleFFmpegCommand(this) { Index = Commands.Count, SimpleMediaType = SimpleMediaType.Audio };
-            var filterComplex = $"anullsrc=r=44100:cl=stereo,atrim=duration={durationMS / 1000d}{cmd.OutputLable}";
-            cmd.Command = filterComplex;
-            Commands.Add(cmd);
-            return cmd;
-            //ffmpeg -i input_video.mp4 -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -filter_complex "[1:a]atrim=duration=10[audiosilence];[0:a][audiosilence]amerge[audio]" -map 0:v -map "[audio]" -c:v copy -c:a aac output.mp4
-        }
-
-
-
-        #region inputs
-        public List<SimpleFFmpegInput> Inputs = new();
-        public List<SimpleFFmpegInput> InputVideos = new List<SimpleFFmpegInput>();
-
-        public List<SimpleFFmpegInput> InputAudios = new List<SimpleFFmpegInput>();
-        public List<SimpleFFmpegCommand> InputVideoCommands = new List<SimpleFFmpegCommand>();
-        public List<SimpleFFmpegCommand> InputAudioCommands = new List<SimpleFFmpegCommand>();
-        public SimpleFFmpegCommand InputVideo(string filename)
-        {
-            return InputFile(filename, SimpleMediaType.Video);
-        }
-        public SimpleFFmpegCommand InputAudio(string filename)
-        {
-            return InputFile(filename, SimpleMediaType.Audio);
-        }
-
-        public SimpleFFmpegCommand InputFile(string filename, SimpleMediaType type, int? duration = null)
-        {
-            var commands = Commands;
-
-            var inputFile = new SimpleFFmpegInput { FileName = filename };
-            if (!duration.HasValue)
-            {
-                duration = (int)FFmpegHelper.GetDuration(filename);
-            }
-            inputFile.Duration = duration.Value;
-
-
-            Inputs.Add(inputFile);
-            var cmd = new SimpleFFmpegCommand(this) { Index = commands.Count, SimpleMediaType = type };
-            switch (type)
-            {
-                case SimpleMediaType.Video:
-                    cmd.OutputLable = $"[{commands.Count}:v]";
-                    InputVideos.Add(inputFile);
-                    InputVideoCommands.Add(cmd);
-                    break;
-                case SimpleMediaType.Audio:
-                    cmd.OutputLable = $"[{commands.Count}:a]";
-                    InputAudios.Add(inputFile);
-                    InputAudioCommands.Add(cmd);
-                    break;
-                default:
-                    break;
-            }
-            commands.Add(cmd);
-            return cmd;
-        }
-
-        #endregion
-
-        public string GetComplexScript()
-        {
-            return Commands.Where(t => !string.IsNullOrEmpty(t.Command)).Select(t => t.Command).Join(";");
-        }
-    }
     public static class FFmpegHelper
     {
+        public static void PutAudios(List<AudioParameter> ps, string outputFileName)
+        {
+            // 用于确保音频片段按顺序插入的当前时间标记
+            int currentPositionMS = 0;
+
+            // 假设所有音频文件采样率和通道数相同，取第一个文件的格式作为输出格式
+            using var firstReader = new AudioFileReader(ps[0].FileName);
+            using var waveFileWriter = new WaveFileWriter(outputFileName, firstReader.WaveFormat);
+            foreach (var audioParam in ps)
+            {
+                // 如果当前位置小于片段开始时间，则插入静音
+                if (currentPositionMS < audioParam.StartTimeMS)
+                {
+                    InsertSilence(waveFileWriter, audioParam.StartTimeMS - currentPositionMS, firstReader.WaveFormat);
+                }
+
+                // 更新当前位置
+                currentPositionMS = audioParam.StartTimeMS;
+                if (!string.IsNullOrEmpty(audioParam.FileName))
+                {
+                    using (var reader = new AudioFileReader(audioParam.FileName))
+                    {
+
+                        // 计算需要截取的音频长度（字节为单位）
+                        var bytesPerMillisecond = reader.WaveFormat.AverageBytesPerSecond / 1000;
+                        var startBytes = 0;// (int)(bytesPerMillisecond * audioParam.StartTimeMS);
+                        var endBytes = (int)(bytesPerMillisecond * (audioParam.EndTimeMS - audioParam.StartTimeMS));
+                        var neededBytes = endBytes - startBytes;
+
+                        // 定位到开始位置
+                        reader.Position = startBytes;
+
+                        // 读取并写入需要的音频片段
+                        var buffer = new byte[reader.WaveFormat.BlockAlign * 1024];
+                        int bytesRead;
+                        // ...
+                        // 读取并写入需要的音频片段
+                        int bytesToRead = Math.Min(buffer.Length, neededBytes);
+                        while (neededBytes > 0 && reader.Position < reader.Length)
+                        {
+                            bytesRead = reader.Read(buffer, 0, bytesToRead);
+                            if (bytesRead <= 0)
+                            {
+                                // 读取完毕或遇到错误
+                                break;
+                            }
+                            waveFileWriter.Write(buffer, 0, bytesRead);
+                            neededBytes -= bytesRead;
+                            bytesToRead = Math.Min(buffer.Length, neededBytes);
+                        }
+
+
+                    }
+                    // 更新当前位置
+                    currentPositionMS = audioParam.EndTimeMS;
+                }
+
+            }
+
+            // ...
+            // 检查是否需要在最后一个片段后面插入静音
+            var lastAudioParamEndTimeMS = ps[ps.Count - 1].EndTimeMS;
+            if (currentPositionMS < lastAudioParamEndTimeMS)
+            {
+                InsertSilence(waveFileWriter, lastAudioParamEndTimeMS - currentPositionMS, firstReader.WaveFormat);
+            }
+        }
+
+        private static void InsertSilence(WaveFileWriter writer, int milliseconds, WaveFormat format)
+        {
+            int byteCount = (int)(format.AverageBytesPerSecond / 1000.0 * milliseconds);
+            byte[] silence = new byte[byteCount];
+            writer.Write(silence, 0, silence.Length);
+        }
+
         public static SimpleFFmpegCommand Select(this SimpleFFmpegCommand input, int startMS, int endMS)
         {
             var cmd = new SimpleFFmpegCommand(input.Script)
             {
-                Index = input.Script.Commands.Count,
+                Index = input.Script.GetNewIndex(),
             };
             var commandName = input.SimpleMediaType == SimpleMediaType.Video ? "trim" : "atrim";
             cmd.Command = $"{input.OutputLable}{commandName}=start={startMS / 1000d}:end={endMS / 1000d},setpts=PTS-STARTPTS{cmd.OutputLable}";
@@ -173,7 +175,7 @@ namespace AI.Labs.Module.BusinessObjects
                  [va][vc]overlay=enable='between(t,7,8)':x=0:y=0[out]" \
                 -map "[out]" -map 0:a -c:v libx264 -c:a copy -y output.mp4
              */
-            var cmd = new SimpleFFmpegCommand(backgroundVideo.Script) { Index = backgroundVideo.Script.Commands.Count, SimpleMediaType = backgroundVideo.SimpleMediaType };
+            var cmd = new SimpleFFmpegCommand(backgroundVideo.Script) { Index = backgroundVideo.Script.GetNewIndex(), SimpleMediaType = backgroundVideo.SimpleMediaType };
             var commandName = "overlay";
             var loc = $":x={x}:y={y}";
             cmd.Command = $"{backgroundVideo.OutputLable}{overlayVideo.OutputLable}{commandName}=enable='between(t,{startMS / 1000d},{endMS / 1000d}){loc}'{cmd.OutputLable}";
@@ -184,15 +186,15 @@ namespace AI.Labs.Module.BusinessObjects
         {
             //[a1][a2]amix=inputs=2:duration=longest
             var audio = audios.First();
-            var cmd = new SimpleFFmpegCommand(audio.Script) { Index = audio.Script.Commands.Count, SimpleMediaType = audio.SimpleMediaType };
+            var cmd = new SimpleFFmpegCommand(audio.Script) { Index = audio.Script.GetNewIndex(), SimpleMediaType = audio.SimpleMediaType };
 
             var commandName = $"amix=inputs={audios.Count}:duration=longest";
-            cmd.Command = $"{audios.Select(t=>t.OutputLable).Join()}{commandName}{cmd.OutputLable}";
+            cmd.Command = $"{audios.Select(t => t.OutputLable).Join()}{commandName}{cmd.OutputLable}";
             audio.Script.Commands.Add(cmd);
             return cmd;
         }
 
-        public static SimpleFFmpegCommand PutAudio(this SimpleFFmpegCommand audio, int startMS, int? clipStart =0,int? clipEnd =0)
+        public static SimpleFFmpegCommand PutAudio(this SimpleFFmpegCommand audio, int startMS, int? clipStart = 0, int? clipEnd = 0)
         {
             /*
              ffmpeg -i videoA.mp4 -i videoB.mp4 -filter_complex \
@@ -208,17 +210,18 @@ namespace AI.Labs.Module.BusinessObjects
                  [va][vc]overlay=enable='between(t,7,8)':x=0:y=0[out]" \
                 -map "[out]" -map 0:a -c:v libx264 -c:a copy -y output.mp4
              */
-            var cmd = new SimpleFFmpegCommand(audio.Script) { Index = audio.Script.Commands.Count, SimpleMediaType = audio.SimpleMediaType };
+            var cmd = new SimpleFFmpegCommand(audio.Script) { Index = audio.Script.GetNewIndex(), SimpleMediaType = audio.SimpleMediaType };
             var atrim = "";
-            if(clipEnd.HasValue && clipEnd.HasValue)
+            if (clipEnd.HasValue && clipEnd.HasValue)
             {
                 atrim = $"atrim=start={clipStart.Value}:end={clipEnd.Value},asetpts=PTS-STARTPTS,";
             }
 
             var commandName = $"{atrim}adelay={startMS}|{startMS}";
 
-            cmd.Command = $"{audio.OutputLable}{commandName}{cmd.OutputLable}";            
+            cmd.Command = $"{audio.OutputLable}{commandName}{cmd.OutputLable}";
             audio.Script.Commands.Add(cmd);
+            audio.Script.Audios.Add(cmd);
             return cmd;
         }
 
@@ -262,7 +265,12 @@ namespace AI.Labs.Module.BusinessObjects
             //p.StartInfo.CreateNoWindow = true;
             p.StartInfo.UseShellExecute = false;
             Debug.WriteLine($"{ffmpegFile} {command}");
+
+            Debug.WriteLine($"{ffmpegFile} {command.Replace(";", ";\n")}");
+
+
             //p.StartInfo.RedirectStandardOutput = true;
+
             //p.StartInfo.RedirectStandardError = true;
             p.Start();
             //p.BeginOutputReadLine();
@@ -751,14 +759,14 @@ namespace AI.Labs.Module.BusinessObjects
             sw.Stop();
             return rst;
         }
-        public static void ConvertFPS(string inputFile,int fps,string outputFile)
+        public static void ConvertFPS(string inputFile, int fps, string outputFile)
         {
             //ffmpeg -i input.mp4 -filter:v "minterpolate='fps=100'" output.mp4
-            ExecuteFFmpegCommand(inputFiles:inputFile,outputOptions: $"-filter:v \"minterpolate=fps={fps}\" -preset ultrafast -t 10 -y", outputFiles:outputFile);
+            ExecuteFFmpegCommand(inputFiles: inputFile, outputOptions: $"-filter:v \"minterpolate=fps={fps}\" -preset ultrafast -t 10 -y", outputFiles: outputFile);
         }
-        public static void GetClip(string inputFile,int start,int end,string outputFile)
+        public static void GetClip(string inputFile, int start, int end, string outputFile)
         {
-            ExecuteFFmpegCommand(inputFiles: inputFile, outputOptions: $"-ss {start/1000d} -to {end/1000d} -y", outputFiles: outputFile);
+            ExecuteFFmpegCommand(inputFiles: inputFile, outputOptions: $"-ss {start / 1000d} -to {end / 1000d} -y", outputFiles: outputFile);
         }
 
         public static void NAudioGetClip(string inputFile, int start, int end, string outputFile)
@@ -767,7 +775,7 @@ namespace AI.Labs.Module.BusinessObjects
             {
                 var offsetSampleProvider = new OffsetSampleProvider(reader);
                 offsetSampleProvider.SkipOver = TimeSpan.FromMilliseconds(start);  // 开始时间
-                offsetSampleProvider.Take = TimeSpan.FromMilliseconds(end-start);   // 结束时间
+                offsetSampleProvider.Take = TimeSpan.FromMilliseconds(end - start);   // 结束时间
                 using var ofs = File.OpenWrite(outputFile);
                 WaveFileWriter.WriteWavFileToStream(ofs, offsetSampleProvider.ToWaveProvider());
             }
@@ -798,22 +806,22 @@ namespace AI.Labs.Module.BusinessObjects
             WaveFileWriter.CreateWaveFile16("output.wav", concatenatingSampleProvider);
         }
 
-        public static void Mp32Wav(string inputFile, string outputFile,int ar = 44100)
+        public static void Mp32Wav(string inputFile, string outputFile, int ar = 44100)
         {
-            ExecuteFFmpegCommand(inputFiles: inputFile, outputOptions: $"-acodec pcm_s16le -ar {ar} -y", outputFiles: outputFile);
+            ExecuteFFmpegCommand(inputFiles: $"-i {inputFile}", outputOptions: $"-acodec pcm_s16le -ar {ar} -y", outputFiles: outputFile);
         }
-        public static void Mp32Flac(string inputFile, string outputFile,int ar = 44100)
+        public static void Mp32Flac(string inputFile, string outputFile, int ar = 44100)
         {
-            ExecuteFFmpegCommand(inputFiles: inputFile, outputOptions: $"-ar {ar} -y", outputFiles: outputFile);
+            ExecuteFFmpegCommand(inputFiles: $"-i {inputFile}", outputOptions: $"-ar {ar} -y", outputFiles: outputFile);
         }
-        public static void ConvertFPS2XXX(string inputFile,int fps,string outputFile)
+        public static void ConvertFPS2XXX(string inputFile, int fps, string outputFile)
         {
             //ffmpeg -i input.mp4 -filter:v "minterpolate='fps=100'" output.mp4
-            ExecuteFFmpegCommand(inputFiles:inputFile,outputOptions: $" -c:v libx264 -keyint_min {fps} -g {fps} -preset ultrafast -t 10 -y", outputFiles:outputFile);
+            ExecuteFFmpegCommand(inputFiles: inputFile, outputOptions: $" -c:v libx264 -keyint_min {fps} -g {fps} -preset ultrafast -t 10 -y", outputFiles: outputFile);
         }
-        public static void SetKeyFrames(string inputFile,int[] keyFrames,string outputFile)
+        public static void SetKeyFrames(string inputFile, int[] keyFrames, string outputFile)
         {
-            ExecuteFFmpegCommand(inputFiles:inputFile,outputOptions: $"-force_key_frames \"{keyFrames.Select(t=>TimeSpan.FromMilliseconds(t).ToString()).Join(",")}\" -codec:v libx264 -preset veryfast -crf 23 -t 10", outputFiles:outputFile);
+            ExecuteFFmpegCommand(inputFiles: $"-i {inputFile}", outputOptions: $"-force_key_frames \"{keyFrames.Select(t => TimeSpan.FromMilliseconds(t).ToString()).Join(",")}\" -codec:v libx264 -preset veryfast -crf 23 -t 10", outputFiles: outputFile);
 
         }
         public static string ShowKeyFrames(string inputFile)
