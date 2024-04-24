@@ -117,9 +117,9 @@ namespace AI.Labs.Module.BusinessObjects
             ArgumentNullException.ThrowIfNull(OutputFileName, nameof(OutputFileName));
             //var audio = Audios.AMix();
             var txts = TextTrack.Select(t => t.GetScript()).ToList();
-            txts.Add(this.AddSubtitle("D:\\videoInfo\\3\\cnsrt.fix.srt"));
+            txts.Add(this.AddSubtitle("D:\\videotest\\cnsrt.fix.srt"));
 
-            var strTexts = txts.Join(";");
+            var strTexts = txts.Join(",");
             var drawTexts = new SimpleFFmpegCommand(this) { OutputLable = "[VOut]" };
             drawTexts.Command = $"{video.OutputLable}{strTexts}[VOut]";
 
