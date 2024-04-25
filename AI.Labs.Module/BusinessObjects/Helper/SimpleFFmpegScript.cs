@@ -115,7 +115,7 @@ namespace AI.Labs.Module.BusinessObjects
 
         public string GetComplexScript()
         {
-            return Commands.Where(t => !string.IsNullOrEmpty(t.Command)).Select(t => t.Command).Join(";");
+            return Commands.Where(t => !string.IsNullOrEmpty(t.Command)).Select(t => t.Command).Join(";\n");
         }
 
         public List<SimpleFFmpegCommand> Audios { get; set; } = new List<SimpleFFmpegCommand>();
@@ -147,7 +147,7 @@ namespace AI.Labs.Module.BusinessObjects
             //字幕
             txts.AddRange(Subtitles.Select(t=>t.GetScript()));
 
-            var strTexts = txts.Join(",");
+            var strTexts = txts.Join(",\n");
             
             var drawTexts = new SimpleFFmpegCommand(this) { OutputLable = "[VOut]" };
 

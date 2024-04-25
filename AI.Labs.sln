@@ -59,7 +59,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpServer", "HttpServer\Ht
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoEditTest", "VideoEditTest\VideoEditTest.csproj", "{B4CB674B-30DB-4C2C-9FF6-B86EB69C75B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaEdit", "MediaEdit\MediaEdit.csproj", "{07B739F0-5420-4404-9851-FD029C875152}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaEdit", "MediaEdit\MediaEdit.csproj", "{07B739F0-5420-4404-9851-FD029C875152}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

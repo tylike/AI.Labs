@@ -172,16 +172,18 @@ namespace AI.Labs.Module.BusinessObjects
 
 
 
-        public static SimpleFFmpegCommand Select(this SimpleFFmpegCommand input, int startMS, int endMS,int loop = 1)
+        public static SimpleFFmpegCommand Select(this SimpleFFmpegCommand input, int startMS, int endMS, int loop = 1)
         {
             var cmd = new SimpleFFmpegCommand(input.Script)
             {
                 Index = input.Script.GetNewIndex(),
             };
             var commandName = input.SimpleMediaType == SimpleMediaType.Video ? "trim" : "atrim";
-            var loopSize = (endMS - startMS) / 1000d;
-            var loopStr = loop == 1 ? ",setpts=PTS-STARTPTS" : $",loop={loop}:size={loopSize * 30},setpts=PTS-STARTPTS";
-            cmd.Command = $"{input.OutputLable}{commandName}=start={startMS / 1000d}:end={endMS / 1000d}{loopStr}{cmd.OutputLable}";
+            //var loopSize = (endMS - startMS) / 1000d;
+            //var loopStr = loop == 1 ? ",setpts=PTS-STARTPTS" : $",setpts=PTS-STARTPTS,loop={loop}:size={loopSize * 30}";
+            var loopStr = ",setpts=PTS-STARTPTS";
+
+            cmd.Command = $"{input.OutputLable}{commandName}=start={startMS / 1000d:0.000}:end={endMS / 1000d:0.000}{loopStr}{cmd.OutputLable}";
             input.Script.Commands.Add(cmd);
             return cmd;
         }
@@ -204,7 +206,7 @@ namespace AI.Labs.Module.BusinessObjects
             var cmd = new SimpleFFmpegCommand(backgroundVideo.Script) { Index = backgroundVideo.Script.GetNewIndex(), SimpleMediaType = backgroundVideo.SimpleMediaType };
             var commandName = "overlay";
             var loc = $":x={x}:y={y}";
-            cmd.Command = $"{backgroundVideo.OutputLable}{overlayVideo.OutputLable}{commandName}=enable='between(t,{startMS / 1000d},{endMS / 1000d}){loc}'{cmd.OutputLable}";
+            cmd.Command = $"{backgroundVideo.OutputLable}{overlayVideo.OutputLable}{commandName}=enable='between(t,{startMS / 1000d:0.000},{endMS / 1000d:0.000}){loc}'{cmd.OutputLable}";
             backgroundVideo.Script.Commands.Add(cmd);
             return cmd;
         }
@@ -267,19 +269,24 @@ namespace AI.Labs.Module.BusinessObjects
                 );
         }
 
-        public static void ExecuteFFmpegCommand(string inputOptions = "", string inputFiles = "", string filterComplex = "", string outputOptions = "", string outputFiles = "",bool showWindow = false)
+        public static void ExecuteFFmpegCommand(string inputOptions = "", string inputFiles = "", string filterComplex = "", string outputOptions = "", string outputFiles = "", bool showWindow = false)
         {
             if (!string.IsNullOrEmpty(filterComplex))
             {
-                filterComplex = $"-filter_complex \"{filterComplex}\"";
+                var path = Path.GetDirectoryName(outputFiles);
+
+                var filterComplexFile = $"{path}\\filter_complex.txt";
+                File.WriteAllText(filterComplexFile, filterComplex);
+
+                filterComplex = $"-/filter_complex {filterComplexFile}";
             }
-            ExecuteFFmpegCommand($"{inputOptions} {inputFiles} {filterComplex} {outputOptions} {outputFiles}",showWindow);
+            ExecuteFFmpegCommand($"{inputOptions} {inputFiles} {filterComplex} {outputOptions} {outputFiles}", showWindow);
         }
         /// <summary>
         /// 执行ffmpeg        
         /// </summary>
         /// <param name="command">参数部分</param>        
-        public static void ExecuteFFmpegCommand(string command,bool showWindow)
+        public static void ExecuteFFmpegCommand(string command, bool showWindow)
         {
             var p = new Process();
             var info = new ProcessStartInfo();
@@ -834,7 +841,6 @@ namespace AI.Labs.Module.BusinessObjects
             // 写入到输出文件
             WaveFileWriter.CreateWaveFile16("output.wav", concatenatingSampleProvider);
         }
-
         public static void Mp32Wav(string inputFile, string outputFile, int ar = 44100, double speed = 1.0)
         {
             var filter = "";
@@ -844,7 +850,6 @@ namespace AI.Labs.Module.BusinessObjects
             }
             ExecuteFFmpegCommand(inputFiles: $"-i {inputFile}", outputOptions: $"{filter} -acodec pcm_s16le -ar {ar} -y", outputFiles: outputFile);
         }
-
         public static void NAudioMp32Wav(byte[] mp3data, string outputWavFileName)
         {
             var ms = new MemoryStream(mp3data);
@@ -876,11 +881,10 @@ namespace AI.Labs.Module.BusinessObjects
         public static void SetKeyFrames(string inputFile, int[] keyFrames, string outputFile)
         {
             ExecuteFFmpegCommand(inputFiles: $"-i {inputFile}", outputOptions: $"-force_key_frames \"{keyFrames.Select(t => TimeSpan.FromMilliseconds(t).ToString()).Join(",")}\" -codec:v libx264 -preset veryfast -crf 23 -t 10", outputFiles: outputFile);
-
         }
         public static string ShowKeyFrames(string inputFile)
         {
-            //       ffprobe -select_streams v:0 -show_frames -show_entries frame=pict_type,best_effort_timestamp_time -of csv input.mp4 | grep -n I
+            //ffprobe -select_streams v:0 -show_frames -show_entries frame=pict_type,best_effort_timestamp_time -of csv input.mp4 | grep -n I
             return FFProbe($"-select_streams v:0 -show_frames -show_entries frame=pict_type,best_effort_timestamp_time -of csv {inputFile} ");
         }
 

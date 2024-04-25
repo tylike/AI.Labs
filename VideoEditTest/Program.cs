@@ -7,6 +7,7 @@ using IPlugins;
 using AI.Labs.Module.BusinessObjects;
 using System.Drawing;
 using System.Diagnostics;
+using sun.tools.tree;
 
 Console.WriteLine("Hello, World!");
 
@@ -23,7 +24,7 @@ Console.WriteLine("Hello, World!");
 //笔记本
 var dbPath = Path.Combine("D:\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows8.0", "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
 //家里台式机
-//dbPath = Path.Combine("D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows8.0", "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
+dbPath = Path.Combine("D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows8.0", "ai.labs.s3db");//"D:\\dev\\AI.Labs\\AI.Labs.Win\\bin\\Debug\\net7.0-windows\\ai.labs.s3db"
 //FFmpegHelper.TestClips("D:\\VideoInfo\\3\\KlM1UMTEFAE.mp4", 0.2);
 //return;
 
@@ -47,8 +48,10 @@ testScript.OutputFileName = file;
 
 var rootVideo = testScript.InputVideo($"D:\\VideoInfo\\3\\KlM1UMTEFAE.mp4");
 var sw = Stopwatch.StartNew();
-var topClips = 10;
-var audios = vi.Audios.OrderBy(t => t.Index).Take(topClips).ToArray();
+var topClips = 1000;
+var audios = vi.Audios.OrderBy(t => t.Index)
+    .Take(topClips)
+    .ToArray();
 
 #region 准备音频
 //这里的音频成为了视频的最后标准。
@@ -61,7 +64,7 @@ Parallel.ForEach(audios, item =>
 sw.Stop();
 var pmsg = ($"并行，预处理音频耗时:{sw.ElapsedMilliseconds}ms");
 Console.WriteLine($"{pmsg}");
-testScript.AddSubtitle(@"D:\VideoInfo\3\cnsrt.fix.srt");
+//testScript.AddSubtitle(@"D:\VideoInfo\3\cnsrt.fix.srt");
 //testScript.ImportAudioClip(new AudioParameter { FileName = $"D:\\VideoInfo\\3\\Audio\\1.mp3", StartTimeMS = 1000, EndTimeMS = 2000,Speed = 1.1 });
 //testScript.ImportAudioClip(new AudioParameter { FileName = $"D:\\VideoInfo\\3\\Audio\\2.mp3", StartTimeMS = 3000, EndTimeMS = 5000 });
 //testScript.ImportAudioClip(new AudioParameter { FileName = $"D:\\VideoInfo\\3\\Audio\\3.mp3", StartTimeMS = 5000, EndTimeMS = 7000 });
@@ -70,21 +73,33 @@ FFmpegHelper.PutAudiosToTimeLine(testScript.AudioParameters, file + ".wav");
 testScript.InputAudio(file + ".wav");
 #endregion
 
-var background = testScript.CreateEmptyVideo(Color.Black, (int)audios.Last().Subtitle.FixedEndTime.TotalMilliseconds);
-var output = background;
-//
+//var background = testScript.CreateEmptyVideo(Color.Black, (int)audios.Last().Subtitle.FixedEndTime.TotalMilliseconds);
+//var output = background;
+
+var videoClips = new List<SimpleFFmpegCommand>();
+
 foreach (var item in audios)
 {
-    var loop = 1;
+    var videoClip = rootVideo.Select((int)item.Subtitle.StartTime.TotalMilliseconds, 
+        
+        (int)item.Subtitle.StartTime.AddMilliseconds((item.Subtitle.FixedEndTime - item.Subtitle.FixedStartTime).TotalMilliseconds).TotalMilliseconds
+        
+        );// (int)item.Subtitle.FixedEndTime.TotalMilliseconds);
+    //output = output.PutVideo(videoClip, (int)item.Subtitle.FixedStartTime.TotalMilliseconds, (int)item.Subtitle.FixedEndTime.TotalMilliseconds);
+    var y1 = 50 * (item.Index % 10);
 
-    if (item.Subtitle.Duration < item.Subtitle.FixedDuration)
+    if ((item.Subtitle.FixedEndTime - item.Subtitle.EndTime).TotalMilliseconds >= 1500)
     {
-        loop = (int)Math.Ceiling(item.Subtitle.FixedDuration / (double)item.Subtitle.Duration);
+        testScript.DrawText(300, y1, $"{item.Index}-原片:{item.Subtitle.StartTime}-{item.Subtitle.EndTime} {y1}", 24, item.Subtitle.StartTime, item.Subtitle.EndTime);
+        testScript.DrawText(640, y1, $"{item.Index}-延长:{item.Subtitle.EndTime}-{item.Subtitle.FixedEndTime}", 24, item.Subtitle.EndTime, item.Subtitle.FixedEndTime);
     }
-
-    var videoClip = rootVideo.Select((int)item.Subtitle.StartTime.TotalMilliseconds, (int)item.Subtitle.EndTime.TotalMilliseconds,loop);
-    output = output.PutVideo(videoClip, (int)item.Subtitle.FixedStartTime.TotalMilliseconds, (int)item.Subtitle.FixedEndTime.TotalMilliseconds);
+    videoClips.Add(videoClip);
 }
+
+var videoTrack = new SimpleFFmpegCommand(testScript) { Index = testScript.GetNewIndex() };
+videoTrack.OutputLable = "[video]";
+videoTrack.Command = $"{videoClips.Select(t => t.OutputLable).Join("")}concat=n={videoClips.Count}{videoTrack.OutputLable}";
+testScript.Commands.Add(videoTrack);
 
 //var t1 = testScript.InputVideoCommands[0];//.Select(0, 1000);
 //var t2 = testScript.InputVideoCommands[1];//.Select(0, 1200);
@@ -98,8 +113,8 @@ foreach (var item in audios)
 //    .PutVideo(t3, 3000, 5000, 400, 400);
 
 testScript.DrawCurrentTime();
-testScript.DrawText(200, 300, "测试", 24, TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(10));
-testScript.Export(output);
+//testScript.DrawText(200, 300, "测试", 24, TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(10));
+testScript.Export(videoTrack);
 
 Console.WriteLine($"时长:{FFmpegHelper.GetDuration(file)}");
 
