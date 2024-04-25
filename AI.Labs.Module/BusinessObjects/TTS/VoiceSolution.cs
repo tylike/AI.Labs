@@ -142,9 +142,10 @@ namespace AI.Labs.Module.BusinessObjects.TTS
         }
         public async Task GenerateAudioToFile(string text, string voiceName,string fileName)
         {
-            var data =await GetTextToSpeechData(text, voiceName);
-            File.WriteAllBytes(fileName,data);
+            var data =await GetTextToSpeechData(text, voiceName);            
+            File.WriteAllBytes(fileName, data);
         }
+
         public string Name
         {
             get { return GetPropertyValue<string>(nameof(Name)); }

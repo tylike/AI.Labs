@@ -1,164 +1,190 @@
 ﻿using AI.Labs.Module.BusinessObjects.VideoTranslate;
-using DevExpress.Charts.Native;
 using DevExpress.Spreadsheet;
-using DevExpress.XtraSpreadsheet.Import.Xls;
 using FFMpegCore.Enums;
-using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Security.Policy;
 using System.Text;
 using YoutubeExplode.Videos;
 using System.Drawing;
-using edu.stanford.nlp.trees.tregex.gui;
-using static com.sun.imageio.plugins.common.PaletteBuilder;
-using static DevExpress.XtraPrinting.Native.ExportOptionsPropertiesNames;
 using NAudio.Wave.SampleProviders;
 using NAudio.Wave;
-using NAudio.Wave;
 using System.Collections.Generic;
+using com.sun.tools.javadoc;
+using DevExpress.CodeParser;
+using NAudio.Utils;
 
 namespace AI.Labs.Module.BusinessObjects
 {
-    public enum SimpleMediaType
-    {
-        Video,
-        Audio
-    }
 
-    public class AudioParameter
-    {
-        public string FileName { get; set; }
-        public int StartTimeMS { get; set; }
-        public int EndTimeMS { get; set; }
-    }
-    public class SimpleFFmpegCommand
-    {
-        public SimpleFFmpegCommand(SimpleFFmpegScript script)
-        {
-            this.Script = script;
-        }
-
-        public int Index { get; set; }
-        public string Command { get; set; }
-
-        string outputLabel;
-        public string OutputLable
-        {
-            get
-            {
-                if (outputLabel == null)
-                {
-                    outputLabel = $"[{SimpleMediaType.ToString().First()}{Index}]";
-                }
-                return outputLabel;
-            }
-            set
-            {
-                outputLabel = value;
-            }
-        }
-
-        public SimpleMediaType SimpleMediaType { get; set; }
-
-        public SimpleFFmpegScript Script { get; }
-
-    }
-    public class SimpleFFmpegInput
-    {
-        public string FileName { get; set; }
-        public int Duration { get; set; }
-        public SimpleMediaType Type { get; set; }
-    }
     public static class FFmpegHelper
     {
-        public static void PutAudios(List<AudioParameter> ps, string outputFileName)
+        public static void DelayVideoCopyLast(this SimpleFFmpegCommand input, double targetDuration)
         {
-            // 用于确保音频片段按顺序插入的当前时间标记
-            int currentPositionMS = 0;
-
-            // 假设所有音频文件采样率和通道数相同，取第一个文件的格式作为输出格式
-            using var firstReader = new AudioFileReader(ps[0].FileName);
-            using var waveFileWriter = new WaveFileWriter(outputFileName, firstReader.WaveFormat);
-            foreach (var audioParam in ps)
-            {
-                // 如果当前位置小于片段开始时间，则插入静音
-                if (currentPositionMS < audioParam.StartTimeMS)
-                {
-                    InsertSilence(waveFileWriter, audioParam.StartTimeMS - currentPositionMS, firstReader.WaveFormat);
-                }
-
-                // 更新当前位置
-                currentPositionMS = audioParam.StartTimeMS;
-                if (!string.IsNullOrEmpty(audioParam.FileName))
-                {
-                    using (var reader = new AudioFileReader(audioParam.FileName))
-                    {
-
-                        // 计算需要截取的音频长度（字节为单位）
-                        var bytesPerMillisecond = reader.WaveFormat.AverageBytesPerSecond / 1000;
-                        var startBytes = 0;// (int)(bytesPerMillisecond * audioParam.StartTimeMS);
-                        var endBytes = (int)(bytesPerMillisecond * (audioParam.EndTimeMS - audioParam.StartTimeMS));
-                        var neededBytes = endBytes - startBytes;
-
-                        // 定位到开始位置
-                        reader.Position = startBytes;
-
-                        // 读取并写入需要的音频片段
-                        var buffer = new byte[reader.WaveFormat.BlockAlign * 1024];
-                        int bytesRead;
-                        // ...
-                        // 读取并写入需要的音频片段
-                        int bytesToRead = Math.Min(buffer.Length, neededBytes);
-                        while (neededBytes > 0 && reader.Position < reader.Length)
-                        {
-                            bytesRead = reader.Read(buffer, 0, bytesToRead);
-                            if (bytesRead <= 0)
-                            {
-                                // 读取完毕或遇到错误
-                                break;
-                            }
-                            waveFileWriter.Write(buffer, 0, bytesRead);
-                            neededBytes -= bytesRead;
-                            bytesToRead = Math.Min(buffer.Length, neededBytes);
-                        }
-
-
-                    }
-                    // 更新当前位置
-                    currentPositionMS = audioParam.EndTimeMS;
-                }
-
-            }
-
-            // ...
-            // 检查是否需要在最后一个片段后面插入静音
-            var lastAudioParamEndTimeMS = ps[ps.Count - 1].EndTimeMS;
-            if (currentPositionMS < lastAudioParamEndTimeMS)
-            {
-                InsertSilence(waveFileWriter, lastAudioParamEndTimeMS - currentPositionMS, firstReader.WaveFormat);
-            }
+            throw new NotImplementedException();
+            ////ffmpeg -i input.mp4 -filter_complex "[0:v]trim=start=10:duration=5,loop=loop=3:size=5[outv];[0:a]atrim=start=10:duration=5,aloop=loop=3:size=5[outa]" -map "[outv]" -map "[outa]" output.mp4
+            //int loopCount = (int)Math.Ceiling(targetDuration / originalDuration);
+            //string arguments = " -loglevel error ";
+            //if (!File.Exists(newOutputFile))
+            //{
+            //    ExecuteCommand(
+            //        $"{taskMemo} 视频延时", targetDuration,
+            //        arguments,
+            //        newOutputFile,
+            //        inputFiles: inputFileName,
+            //        inputOptions: $" -stream_loop {loopCount} ",
+            //        outputOptions: $" -t {targetDuration / 1000} "
+            //        );
+            //}
         }
 
-        private static void InsertSilence(WaveFileWriter writer, int milliseconds, WaveFormat format)
+
+        public static void PutAudiosToTimeLine(List<AudioParameter> ps, string outputFileName)
         {
+            // 假设所有音频文件采样率和通道数相同，取第一个文件的格式作为输出格式
+            using var firstReader = ps[0].WaveFileReader;
+            var providers = new List<ISampleProvider>();
+
+            foreach (var audioParam in ps.OrderBy(t => t.Index))
+            {
+                if (string.IsNullOrEmpty(audioParam.FileName)) continue;
+
+                var duration = audioParam.EndTimeMS - audioParam.StartTimeMS;
+                if (duration != audioParam.WaveFileReader.TotalTime.TotalMilliseconds)
+                {
+                    var offsetSampleProvider = new OffsetSampleProvider(audioParam.WaveFileReader.ToSampleProvider());
+                    offsetSampleProvider.SkipOver = TimeSpan.Zero;
+                    providers.Add(offsetSampleProvider);
+                    if (duration < audioParam.WaveFileReader.TotalTime.TotalMilliseconds)
+                    {
+                        //需要的大于实际的
+                        offsetSampleProvider.Take = TimeSpan.FromMilliseconds(duration);
+                    }
+                    else
+                    {
+                        offsetSampleProvider.Take = TimeSpan.FromMilliseconds(duration);
+                        //需要的小于实际的
+                        offsetSampleProvider.LeadOut = TimeSpan.FromMilliseconds(duration - audioParam.WaveFileReader.TotalTime.TotalMilliseconds);
+                    }
+                }
+                else
+                {
+                    providers.Add(audioParam.WaveFileReader.ToSampleProvider());
+                }
+            }
+            var mixer = new ConcatenatingSampleProvider(providers);
+            WaveFileWriter.CreateWaveFile(outputFileName, mixer.ToWaveProvider());
+        }
+
+        //private static void CopyFromClip(WaveFileReader reader, WaveFileWriter targetWaveFileWriter)
+        //{
+        //    CopyFromClip(reader, targetWaveFileWriter, 0, (int)reader.TotalTime.TotalMilliseconds);
+        //}
+
+        public static void NAudioChangeSpeed(WaveFileReader reader, double speed, Stream output, int resamplerQuality = 60)
+        {
+            if (speed <= 0)
+            {
+                throw new ArgumentException("速度必须大于0");
+            }
+            if (speed == 1)
+            {
+                throw new ArgumentException("速度为1,不需要调整");
+            }
+            // 读取WAV文件
+            // 创建变速处理器，速度系数为1.2
+            var newSampleRate = (int)(reader.WaveFormat.SampleRate * speed);
+            var resampler = new MediaFoundationResampler(reader, new WaveFormat(newSampleRate, reader.WaveFormat.Channels))
+            {
+                ResamplerQuality = resamplerQuality // 设置重采样的质量                
+            };
+            // 输出调整后的WAV文件
+            WaveFileWriter.WriteWavFileToStream(output, resampler);
+
+        }
+
+        /// <summary>
+        /// 复制clip的音频内容到targetWaveFileWrite
+        /// </summary>
+        /// <param name="reader">来源</param>
+        /// <param name="targetWaveFileWriter">目标</param>
+        /// <param name="clipStartMS">开始时间</param>
+        /// <param name="clipEndMS">结束时间</param>
+        private static ISampleProvider SelectAudioClip(WaveFileReader reader, int clipStartMS, int clipEndMS)
+        {
+            #region 参数验证
+            ArgumentNullException.ThrowIfNull(reader, nameof(reader));
+            //ArgumentNullException.ThrowIfNull(targetWaveFileWriter, nameof(targetWaveFileWriter));
+            if (clipStartMS < 0)
+            {
+                throw new ArgumentException($"开始时间小于0,开始时间:{clipStartMS},结束时间:{clipEndMS},音频总时长:{reader.TotalTime.TotalMilliseconds},单位均为毫秒!");
+            }
+            if (clipEndMS < 0)
+            {
+                throw new ArgumentException($"结束时间小于0,开始时间:{clipStartMS},结束时间:{clipEndMS},音频总时长:{reader.TotalTime.TotalMilliseconds},单位均为毫秒!");
+            }
+
+            if (clipEndMS <= clipStartMS)
+            {
+                throw new ArgumentException($"结束时间小于或等于开始时间,无法截取片断!开始时间:{clipStartMS},结束时间:{clipEndMS},音频总时长:{reader.TotalTime.TotalMilliseconds},单位均为毫秒!");
+            }
+            #endregion
+
+            if (clipEndMS > reader.TotalTime.TotalMilliseconds)
+            {
+                clipEndMS = (int)reader.TotalTime.TotalMilliseconds;
+                //throw new ArgumentException($"结束时间太大,不在音频范围内!开始时间:{clipStartMS},结束时间:{clipEndMS},音频总时长:{reader.TotalTime.TotalMilliseconds},单位均为毫秒!");
+            }
+            var offsetSampleProvider = new OffsetSampleProvider(reader.ToSampleProvider());
+            offsetSampleProvider.SkipOver = TimeSpan.FromMilliseconds(clipStartMS);  // 开始时间
+            offsetSampleProvider.Take = TimeSpan.FromMilliseconds(clipEndMS - clipStartMS);   // 结束时间
+            return offsetSampleProvider;
+            //WriteWavFileToStream(targetWaveFileWriter, );
+        }
+        private static ISampleProvider CreateEmptyAudio(int milliseconds, WaveFormat format)
+        {
+            var ms = new MemoryStream();
+            WaveFileWriter writer = new WaveFileWriter(ms, format);
+
             int byteCount = (int)(format.AverageBytesPerSecond / 1000.0 * milliseconds);
             byte[] silence = new byte[byteCount];
             writer.Write(silence, 0, silence.Length);
+            writer.Flush();
+            ms.Flush();
+            ms.Position = 0;
+            return new WaveFileReader(ms).ToSampleProvider();
+        }
+        public static void WriteWavFileToStream(WaveFileWriter targetWriter, IWaveProvider sourceProvider)
+        {
+            byte[] array = new byte[sourceProvider.WaveFormat.AverageBytesPerSecond * 4];
+            while (true)
+            {
+                int num = sourceProvider.Read(array, 0, array.Length);
+                if (num == 0)
+                {
+                    break;
+                }
+
+                targetWriter.Write(array, 0, num);
+            }
+            targetWriter.Flush();
         }
 
-        public static SimpleFFmpegCommand Select(this SimpleFFmpegCommand input, int startMS, int endMS)
+
+
+        public static SimpleFFmpegCommand Select(this SimpleFFmpegCommand input, int startMS, int endMS,int loop = 1)
         {
             var cmd = new SimpleFFmpegCommand(input.Script)
             {
                 Index = input.Script.GetNewIndex(),
             };
             var commandName = input.SimpleMediaType == SimpleMediaType.Video ? "trim" : "atrim";
-            cmd.Command = $"{input.OutputLable}{commandName}=start={startMS / 1000d}:end={endMS / 1000d},setpts=PTS-STARTPTS{cmd.OutputLable}";
+            var loopSize = (endMS - startMS) / 1000d;
+            var loopStr = loop == 1 ? ",setpts=PTS-STARTPTS" : $",loop={loop}:size={loopSize * 30},setpts=PTS-STARTPTS";
+            cmd.Command = $"{input.OutputLable}{commandName}=start={startMS / 1000d}:end={endMS / 1000d}{loopStr}{cmd.OutputLable}";
             input.Script.Commands.Add(cmd);
             return cmd;
         }
-
         public static SimpleFFmpegCommand PutVideo(this SimpleFFmpegCommand backgroundVideo, SimpleFFmpegCommand overlayVideo, int startMS, int endMS, int x = 0, int y = 0)
         {
             /*
@@ -225,8 +251,6 @@ namespace AI.Labs.Module.BusinessObjects
             return cmd;
         }
 
-
-
         public static void CreateEmptyVideo(string outputFile, int durationMS, string image = null, Color? color = null)
         {
             var colorName = "black";
@@ -243,26 +267,26 @@ namespace AI.Labs.Module.BusinessObjects
                 );
         }
 
-        public static void ExecuteFFmpegCommand(string inputOptions = "", string inputFiles = "", string filterComplex = "", string outputOptions = "", string outputFiles = "")
+        public static void ExecuteFFmpegCommand(string inputOptions = "", string inputFiles = "", string filterComplex = "", string outputOptions = "", string outputFiles = "",bool showWindow = false)
         {
             if (!string.IsNullOrEmpty(filterComplex))
             {
                 filterComplex = $"-filter_complex \"{filterComplex}\"";
             }
-            ExecuteFFmpegCommand($"{inputOptions} {inputFiles} {filterComplex} {outputOptions} {outputFiles}");
+            ExecuteFFmpegCommand($"{inputOptions} {inputFiles} {filterComplex} {outputOptions} {outputFiles}",showWindow);
         }
         /// <summary>
         /// 执行ffmpeg        
         /// </summary>
         /// <param name="command">参数部分</param>        
-        public static void ExecuteFFmpegCommand(string command)
+        public static void ExecuteFFmpegCommand(string command,bool showWindow)
         {
             var p = new Process();
             var info = new ProcessStartInfo();
             p.StartInfo = info;
             p.StartInfo.FileName = ffmpegFile;
             p.StartInfo.Arguments = command;
-            //p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.CreateNoWindow = !showWindow;
             p.StartInfo.UseShellExecute = false;
             Debug.WriteLine($"{ffmpegFile} {command}");
 
@@ -507,6 +531,7 @@ namespace AI.Labs.Module.BusinessObjects
             //ffmpeg -i input.mp4 -filter_complex "[0:v]setpts=PTS/2[v];[0:a]atempo=2[a]" -map "[v]" -map "[a]" output_fast.mp4
             ExecuteCommand($"视频调速 {taskMemo}", targetDuration, $"-i {inputFileName} -filter_complex \"[0:v]setpts=PTS/{targetSpeed.ToFFmpegString()}[v];\" -map \"[v]\" ", outputFile);
         }
+
         public static void DelayAudio(string taskMemo, double targetDuration, string inputFileName, double delayMS, string newOutputFile)
         {
             if (!File.Exists(newOutputFile))
@@ -732,6 +757,10 @@ namespace AI.Labs.Module.BusinessObjects
 
         public static double? GetDuration(string inputAudioFile)
         {
+            if (!File.Exists(inputAudioFile))
+            {
+                throw new FileNotFoundException(inputAudioFile);
+            }
             var rst = FFProbe($"-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 {inputAudioFile}");
             //ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 input_audio_file
             if (double.TryParse(rst, out double duration))
@@ -806,10 +835,35 @@ namespace AI.Labs.Module.BusinessObjects
             WaveFileWriter.CreateWaveFile16("output.wav", concatenatingSampleProvider);
         }
 
-        public static void Mp32Wav(string inputFile, string outputFile, int ar = 44100)
+        public static void Mp32Wav(string inputFile, string outputFile, int ar = 44100, double speed = 1.0)
         {
-            ExecuteFFmpegCommand(inputFiles: $"-i {inputFile}", outputOptions: $"-acodec pcm_s16le -ar {ar} -y", outputFiles: outputFile);
+            var filter = "";
+            if (speed != 1.0)
+            {
+                filter = $"-filter:a \"atempo={speed}\" ";
+            }
+            ExecuteFFmpegCommand(inputFiles: $"-i {inputFile}", outputOptions: $"{filter} -acodec pcm_s16le -ar {ar} -y", outputFiles: outputFile);
         }
+
+        public static void NAudioMp32Wav(byte[] mp3data, string outputWavFileName)
+        {
+            var ms = new MemoryStream(mp3data);
+            ms.Position = 0;
+            using (var reader = new Mp3FileReader(ms))
+            {
+                WaveFileWriter.CreateWaveFile(outputWavFileName, reader);
+            }
+        }
+        public static void NAudioMp32Wav(string mp3FileName, string outputWavFileName)
+        {
+            //var ms = new MemoryStream(mp3data);
+            //ms.Position = 0;
+            using (var reader = new Mp3FileReader(mp3FileName))
+            {
+                WaveFileWriter.CreateWaveFile(outputWavFileName, reader);
+            }
+        }
+
         public static void Mp32Flac(string inputFile, string outputFile, int ar = 44100)
         {
             ExecuteFFmpegCommand(inputFiles: $"-i {inputFile}", outputOptions: $"-ar {ar} -y", outputFiles: outputFile);

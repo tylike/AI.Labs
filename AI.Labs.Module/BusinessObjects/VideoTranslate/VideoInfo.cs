@@ -496,6 +496,39 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
         }
 
+        public void SaveFixedSRT()
+        {
+            var cnSrtFile = new SRTFile() { FileName = Path.Combine(ProjectPath, "cnsrt.fix.srt"), UseIndex = true };
+            var enSrtFile = new SRTFile() { FileName = Path.Combine(ProjectPath, "ensrt.fix.srt"), UseIndex = true };
+
+            foreach (var item in Audios)
+            {
+                #region 写字幕文件
+                var cnText = item.Subtitle.CnText;
+                var cnSrtItem = new SRT();
+
+                if (!string.IsNullOrEmpty(cnText))
+                {
+                    cnText = cnText.Replace("\n", "");
+                    cnSrtItem.Index = item.Index;
+                    cnSrtItem.StartTime = item.Subtitle.FixedStartTime;
+                    cnSrtItem.EndTime = item.Subtitle.FixedEndTime;
+                    cnSrtItem.Text = cnText;
+                    cnSrtFile.Texts.Add(cnSrtItem);
+                }
+
+                enSrtFile.Texts.Add(new SRT
+                {
+                    Index = item.Index,
+                    StartTime = cnSrtItem.StartTime,
+                    EndTime = cnSrtItem.EndTime,
+                    Text = item.Subtitle.PlainText
+                });
+                #endregion
+            }
+            cnSrtFile.Save();
+            enSrtFile.Save();
+        }
 
         [XafDisplayName("语言模型")]
         public AIModel Model

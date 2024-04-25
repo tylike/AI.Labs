@@ -79,6 +79,10 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 clip.VideoClip.Next.Subtitle.FixedStartTime = value;
             }
         }
+        public int FixedDuration
+        {
+            get { return (int)(FixedEndTime - FixedStartTime).TotalMilliseconds; }
+        }
 
         public TimeSpan FixedEndTime
         {

@@ -52,20 +52,30 @@ namespace AI.Labs.Module.BusinessObjects
         public List<SimpleFFmpegInput> InputAudios = new List<SimpleFFmpegInput>();
         public List<SimpleFFmpegCommand> InputVideoCommands = new List<SimpleFFmpegCommand>();
         public List<SimpleFFmpegCommand> InputAudioCommands = new List<SimpleFFmpegCommand>();
+
+        public List<AudioParameter> AudioParameters = new List<AudioParameter>();
+
         public SimpleFFmpegCommand InputVideo(string filename)
         {
             return InputFile(filename, SimpleMediaType.Video);
         }
-        public SimpleFFmpegCommand InputAudio(string filename)
+        public void ImportAudioClip(AudioParameter p)
         {
 #warning 简单判断如果是mp3文件
-            var fn = filename;
-            if (Path.GetExtension(filename).ToLower() == ".mp3")
+            var filename = p.FileName;  
+            if ( !string.IsNullOrEmpty(filename) &&  Path.GetExtension(filename).ToLower() == ".mp3")
             {
+                var fn = filename;
                 fn = filename + ".wav";
                 FFmpegHelper.Mp32Wav(filename, fn);
+                p.FileName = fn;
             }
-            return InputFile(fn, SimpleMediaType.Audio);
+            
+            this.AudioParameters.Add(p);
+        }
+        public SimpleFFmpegCommand InputAudio(string filename)
+        {
+            return InputFile(filename, SimpleMediaType.Audio);
         }
 
         public SimpleFFmpegCommand InputFile(string filename, SimpleMediaType type, int? duration = null)
@@ -110,34 +120,44 @@ namespace AI.Labs.Module.BusinessObjects
 
         public List<SimpleFFmpegCommand> Audios { get; set; } = new List<SimpleFFmpegCommand>();
 
-
-
         public void Export(SimpleFFmpegCommand video)
         {
             ArgumentNullException.ThrowIfNull(OutputFileName, nameof(OutputFileName));
-            //var audio = Audios.AMix();
-            var txts = TextTrack.Select(t => t.GetScript()).ToList();
-            txts.Add(this.AddSubtitle("D:\\videotest\\cnsrt.fix.srt"));
-
-            var strTexts = txts.Join(",");
-            var drawTexts = new SimpleFFmpegCommand(this) { OutputLable = "[VOut]" };
-            drawTexts.Command = $"{video.OutputLable}{strTexts}[VOut]";
-
-            this.Commands.Add(drawTexts);
-
+            
+            SimpleFFmpegCommand drawTexts = CreateDrawTextScript(video);
 
             var filterComplex = GetComplexScript();
+
             FFmpegHelper.ExecuteFFmpegCommand(
+                inputOptions:"-report",
                 inputFiles: Inputs.Select(t => $"-i {t.FileName}").Join(" "),
                 filterComplex: filterComplex,
                 outputFiles: OutputFileName,//
-                outputOptions: $"-c:v libx264 -crf 18 -y -map \"{drawTexts.OutputLable}\" -map \"{InputAudioCommands.First().OutputLable[1..^1]}\" "
+                outputOptions: $"-c:v libx264 -crf 18 -y -map \"{drawTexts.OutputLable}\" -map \"{InputAudioCommands.First().OutputLable[1..^1]}\" ",
+                showWindow:true
             );
 
             Console.WriteLine($"时长:{FFmpegHelper.GetDuration(OutputFileName)}");
         }
 
+        private SimpleFFmpegCommand CreateDrawTextScript(SimpleFFmpegCommand video)
+        {
+            //用户填加的文字
+            var txts = TextTrack.Select(t => t.GetScript()).ToList();
+            //字幕
+            txts.AddRange(Subtitles.Select(t=>t.GetScript()));
 
+            var strTexts = txts.Join(",");
+            
+            var drawTexts = new SimpleFFmpegCommand(this) { OutputLable = "[VOut]" };
+
+            drawTexts.Command = $"{video.OutputLable}{strTexts}[VOut]";
+            this.Commands.Add(drawTexts);
+            
+            return drawTexts;
+        }
+
+        #region 绘制文本
         public TextOption DefaultTextOption { get; set; }
 
         List<DrawTextClip> TextTrack = new();
@@ -145,7 +165,6 @@ namespace AI.Labs.Module.BusinessObjects
         {
             return DrawText(x.ToString(), y.ToString(), text, fontSize, start, end);
         }
-
         public DrawTextClip DrawText(string x, string y, string text, int fontSize, TimeSpan start, TimeSpan end)
         {
             var textClip = new DrawTextClip(Session)
@@ -160,7 +179,6 @@ namespace AI.Labs.Module.BusinessObjects
             TextTrack.Add(textClip);
             return textClip;
         }
-
         public DrawTextClip DrawCurrentTime(int x = 10, int y = 450, int fontSize = 24, TimeSpan? start = null, TimeSpan? end = null)
         {
             var currentTime = new DrawTextClip(Session)
@@ -174,15 +192,24 @@ namespace AI.Labs.Module.BusinessObjects
 
             var duration = TimeSpan.FromDays(1);
             currentTime.SetDisplayCurrentVideoTime(duration);
+            TextTrack.Add(currentTime);
             return currentTime;
         }
 
+        #endregion
 
+        public List<SimpleFFmpegSubtitleOption> Subtitles { get;private set; } = new List<SimpleFFmpegSubtitleOption>();
 
-
-        public string AddSubtitle(string srtFile)
+        public void AddSubtitle(string srtFile)
         {
-            return $"subtitles='{DrawTextClip.FixText(srtFile)}':force_style='Fontsize=20,PrimaryColour=&H00ffff00&,MarginV=200'";
+            if(!File.Exists(srtFile))
+            {
+
+                throw new FileNotFoundException(srtFile + "文件不存在!");
+            }
+            var s = new SimpleFFmpegSubtitleOption { SrtFileName = srtFile };
+            Subtitles.Add(s);
+            //return $"subtitles='{DrawTextClip.FixText(srtFile)}':force_style='Fontsize=20,PrimaryColour=&H00ffff00&,MarginV=200'";
         }
     }
 }

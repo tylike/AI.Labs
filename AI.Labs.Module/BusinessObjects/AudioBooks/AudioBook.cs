@@ -126,6 +126,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             {
                 await item.GenerateAudioFile();
             }
+
         }
         public string CheckOutputPath()
         {
@@ -352,6 +353,17 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             await Task.CompletedTask;
         }
 
+        public void FixSubtitleTimes()
+        {
+            AudioBookTextAudioItem pre = null;
+            foreach (var item in this.AudioItems.OrderBy(t => t.Index))
+            {
+                item.Subtitle.FixedStartTime = pre?.Subtitle.FixedEndTime ?? TimeSpan.Zero;
+                item.Subtitle.FixedEndTime = item.Subtitle.FixedStartTime.AddMilliseconds(Math.Max(item.Duration, item.Subtitle.Duration));
+                pre = item;
+            }
+        }
+
 
         #endregion
     }
@@ -443,7 +455,6 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                         writer.Write(buffer, 0, bytesRead);
                     }
                     writer.Flush();
-
                 }
             }
             finally
@@ -519,7 +530,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                 t =>
                 {
                     this.ViewCurrentObject.SSML = t.Content;
-                }, 
+                },
                 ViewCurrentObject.AIModel,
                 ViewCurrentObject.SSMLStream
                 );

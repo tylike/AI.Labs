@@ -35,10 +35,10 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         public SubtitleItem Subtitle
         {
             get { return GetPropertyValue<SubtitleItem>(nameof(Subtitle)); }
-            set 
+            set
             {
                 SetPropertyValue(nameof(Subtitle), value);
-                if (!IsLoading && value!=null)
+                if (!IsLoading && value != null)
                 {
                     ArticleText = value.CnText;
                     Index = value.Index;
@@ -152,9 +152,9 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         {
             get { return GetPropertyValue<int>(nameof(Volumn)); }
             set { SetPropertyValue(nameof(Volumn), value); }
-        } 
-        
-        [XafDisplayName("输出文件")]        
+        }
+
+        [XafDisplayName("输出文件")]
         public string OutputFileName
         {
             get { return GetPropertyValue<string>(nameof(OutputFileName)); }
@@ -261,28 +261,64 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             {
                 this.State = TTSState.Generatting;
                 var vs = GetFinalSolution();
-                var p = Path.Combine(this.AudioBook.OutputPath, $"{Index}.mp3");
+                var p = Path.Combine(this.AudioBook.OutputPath, $"{Index}.wav");
                 await vs.GenerateAudioToFile(this.ArticleText, p);
                 OutputFileName = p;
                 this.State = TTSState.Generated;
-                var rst = (int)(await AudioHelper.GetAudioFileInfo(OutputFileName)).Duration.TotalMilliseconds;
+                var inf = await AudioHelper.GetAudioFileInfo(OutputFileName);
+                var rst = (int)inf.Duration.TotalMilliseconds;
                 this.Duration = rst;
+
+                ChangeSpeed();
+
                 //OutputFileName = rst.Item1;
-                if (Diffence>0)
-                {
-#warning 调整音频时长还没处理
-                    //var fixedAudio = AudioHelper.FixAudio(OutputFileName, Subtitle.Duration, Duration);
-                    //if (fixedAudio.已调整)
-                    //{
-                    //    this.Duration = fixedAudio.调整后时长;
-                    //    this.OutputFileName = fixedAudio.输出文件;
-                    //}
-                }
+
             }
         }
+        [Action(Caption = "自动调速")]
+        public void ChangeSpeed()
+        {
+            var speed = 1d;
+            if (Diffence > 0)
+            {
+                var rst = this.计算调速();
+                if (rst.实际倍速 != 0)
+                {
+                    speed = rst.实际倍速;
+                }
+            }
+            FFmpegHelper.Mp32Wav(OutputFileName, OutputFileName + ".wav", speed: speed);
+            File.Delete(OutputFileName);
+            File.Move(OutputFileName + ".wav", OutputFileName);
+            this.Duration = (int)FFmpegHelper.GetDuration(OutputFileName).Value;
+        }
+
+        public (double 计划倍速, double 实际倍速, bool 调整成功) 计算调速()
+        {
+            if (Duration > Subtitle.Duration)
+            {
+                //音频时长超过字幕时长
+                var planSource = ((double)Duration / Subtitle.Duration);
+                var 计划倍速 = planSource.RoundUp(3);
+                var 实际倍速 = 计划倍速;
+                var 调整成功 = false;
+                if (计划倍速 > 1.3)
+                {
+                    实际倍速 = 1.3;
+                }
+                else
+                {
+                    实际倍速 = 计划倍速;
+                    调整成功 = true;
+                }
+                return (计划倍速, 实际倍速, 调整成功);
+            }
+            return (0, 0, true);
+        }
+
     }
 
-    public class AudioBookTextAudioItemViewController:ObjectViewController<ListView, AudioBookTextAudioItem>
+    public class AudioBookTextAudioItemViewController : ObjectViewController<ListView, AudioBookTextAudioItem>
     {
         public AudioBookTextAudioItemViewController()
         {
@@ -324,6 +360,13 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         private async void Generate_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
             await AudioBook.GenerateAudioBook(e.SelectedObjects.OfType<AudioBookTextAudioItem>());
+
+            //音频生成完成,修正字幕时间.
+            var items = e.SelectedObjects.OfType<AudioBookTextAudioItem>();
+            
+            AudioBook book = items.First().AudioBook;
+            book.FixSubtitleTimes();
+
             var cnt = ObjectSpace.ModifiedObjects.OfType<AudioBookTextAudioItem>().Count();
             ObjectSpace.CommitChanges();
             Application.ShowViewStrategy.ShowMessage($"生成完成,保存了{cnt}个段落!");
@@ -334,7 +377,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             var items = e.SelectedObjects.OfType<AudioBookTextAudioItem>();
             var old = this.View.CollectionSource.List.OfType<AudioBookTextAudioItem>().ToList();
             foreach (var item in items)
-            {                
+            {
                 //要拆分的这一条的原来位置
                 var itemIndex = old.IndexOf(item);
                 //一条要拆分的:
@@ -352,7 +395,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                 this.View.CollectionSource.Remove(item);
                 old.Remove(item);
                 item.Delete();
-                
+
             }
             AutoSetIndex(old);
         }
@@ -393,7 +436,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                 e.ShowViewParameters.Context = TemplateContext.FindPopupWindowContextName;
                 var dc = Application.CreateController<DialogController>();
                 dc.SaveOnAccept = false;
-                dc.Accepting += (s, evt) => 
+                dc.Accepting += (s, evt) =>
                 {
                     var selected = (AudioBookRole)evt.AcceptActionArgs.CurrentObject;
                     if (selected != null)
@@ -404,7 +447,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                         }
                     }
                 };
-                e.ShowViewParameters.Controllers.Add(dc);                
+                e.ShowViewParameters.Controllers.Add(dc);
             }
         }
     }

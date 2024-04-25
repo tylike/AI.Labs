@@ -141,6 +141,11 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             var generateAudioV2 = new SimpleAction(this, "6.1生成音频V2", null);
             generateAudioV2.Execute += GenerateAudioV2_Execute;
 
+            var fixSubtitleTimes = new SimpleAction(this, "6.3修复字幕时间", null);
+            fixSubtitleTimes.ToolTip = "根据中文音频修复字幕时间";
+            fixSubtitleTimes.Execute += FixSubtitleTimes_Execute;
+
+
             var fixJianYingProSrtTime = new SimpleAction(this, "7.修复剪映字幕时间", null);
             fixJianYingProSrtTime.Execute += FixJianYingProSrtTime_Execute;
 
@@ -164,6 +169,12 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             updateFFmpeg.Execute += UpdateFFmpeg_Execute;
 
 
+        }
+
+        private void FixSubtitleTimes_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            this.ViewCurrentObject.CnAudioSolution.FixSubtitleTimes();
+            ObjectSpace.CommitChanges();
         }
 
         void Output(string message, bool showTime = true)
