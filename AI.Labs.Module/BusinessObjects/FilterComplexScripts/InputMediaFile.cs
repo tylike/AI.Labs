@@ -1,6 +1,6 @@
-﻿namespace AI.Labs.Module.BusinessObjects
+﻿namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
 {
-    public class SimpleFFmpegInput
+    public class InputMediaFile
     {
         public string FileName { get; set; }
         public int Duration { get; set; }

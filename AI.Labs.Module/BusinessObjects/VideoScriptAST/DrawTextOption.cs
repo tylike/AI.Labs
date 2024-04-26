@@ -2,41 +2,61 @@
 
 namespace AI.Labs.Module.BusinessObjects;
 
-public class DrawTextClip : ClipBase<DrawTextClip>
+
+public class DrawTextOption : XPObject //ClipBase<DrawTextClip>
 {
-    public DrawTextClip(Session s) : base(s)
+    public DrawTextOption(Session s) : base(s)
     {
     }
 
-    public override string GetClipType()
-    {
-        return "文字";
-    }
 
-    public override string GetOutputLabel()
+    public TimeSpan StartTime
     {
-        throw new NotImplementedException();
+        get { return GetPropertyValue<TimeSpan>(nameof(StartTime)); }
+        set { SetPropertyValue(nameof(StartTime), value); }
     }
-
+    public TimeSpan EndTime
+    {
+        get { return GetPropertyValue<TimeSpan>(nameof(EndTime)); }
+        set { SetPropertyValue(nameof(EndTime), value); }
+    }
 
     public TextOption Option
     {
         get { return GetPropertyValue<TextOption>(nameof(Option)); }
         set { SetPropertyValue(nameof(Option), value); }
     }
-    public string Left { get; set; } = "10";
-    public string Top { get; set; } = "10";
 
-    public string Text { get; set; }
+    public string Left
+    {
+        get { return GetPropertyValue<string>(nameof(Left)); }
+        set { SetPropertyValue(nameof(Left), value); }
+    } 
+
+    public string Top
+    {
+        get { return GetPropertyValue<string>(nameof(Top)); }
+        set { SetPropertyValue(nameof(Top), value); }
+    } 
+
+    [Size(-1)]
+    public string Text
+    {
+        get { return GetPropertyValue<string>(nameof(Text)); }
+        set { SetPropertyValue(nameof(Text), value); }
+    }
+
 
     public void SetText(string text)
     {
         Text = FixText(text);
     }
+
     public void SetDisplayCurrentVideoTime(TimeSpan videoTimeSpan)
     {
         Text = "%{pts\\:hms} / " + FixText(videoTimeSpan.ToString(@"hh\:mm\:ss"));
     }
+
     public static string FixText(string txt)
     {
         if (txt == null)

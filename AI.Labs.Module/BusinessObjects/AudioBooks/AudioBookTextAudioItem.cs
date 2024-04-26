@@ -65,7 +65,6 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             }
         }
 
-
         protected override void OnChanged(string propertyName, object oldValue, object newValue)
         {
             base.OnChanged(propertyName, oldValue, newValue);
@@ -219,16 +218,8 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         public async Task Play()
         {
             //应该改成从文件播放
-            await GenerateAudioFile();
+            await GenerateAudioFile(false, this);
             AudioPlayer.NAudioPlay(this.OutputFileName);
-            //VoiceSolution vs = GetFinalSolution();
-
-            //var text = string.IsNullOrEmpty(SpreakContent) ? ArticleText : SpreakContent;
-            //text = (text + "").Trim();
-            //if (!string.IsNullOrEmpty(text))
-            //{
-            //    await vs.Read(text);
-            //}
         }
 
         private VoiceSolution GetFinalSolution()
@@ -247,41 +238,48 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         /// </summary>
         /// <param name="reGenerate"></param>
         //[Action(Caption = "生成音频")]
-        public async Task GenerateAudioFile()
+        public static async Task<(AudioBookTextAudioItem, int)> GenerateAudioFile(bool reGenerate,AudioBookTextAudioItem item)
         {
-            bool exist = !string.IsNullOrEmpty(OutputFileName) && File.Exists(OutputFileName);
+            bool exist = !string.IsNullOrEmpty(item.OutputFileName) && File.Exists(item.OutputFileName);
+            if (!reGenerate && exist)
+            {
+                return (item, -1);
+            }
 
             //重新生成,并且文件名不为空,并且文件存在,则删除
             if (exist)
             {
-                File.Delete(OutputFileName);
+                File.Delete(item.OutputFileName);
                 exist = false;
             }
+            
             if (!exist)
             {
-                this.State = TTSState.Generatting;
-                var vs = GetFinalSolution();
-                var p = Path.Combine(this.AudioBook.OutputPath, $"{Index}.wav");
-                await vs.GenerateAudioToFile(this.ArticleText, p);
-                OutputFileName = p;
-                this.State = TTSState.Generated;
-                var inf = await AudioHelper.GetAudioFileInfo(OutputFileName);
-                var rst = (int)inf.Duration.TotalMilliseconds;
-                this.Duration = rst;
-
-                ChangeSpeed();
-
+                //this.State = TTSState.Generatting;
+                var vs = item.GetFinalSolution();
+                var p = Path.Combine(item.AudioBook.OutputPath, $"{item.Index}.wav");
+                await vs.GenerateAudioToFile(item.ArticleText, p);
+                //OutputFileName = p;
+                //this.State = TTSState.Generated;
+                var audioDuration = (int)FFmpegHelper.GetDuration(p).Value;
+                ChangeSpeed(p,audioDuration,item.Subtitle.Duration);
                 //OutputFileName = rst.Item1;
-
+                item.OutputFileName = p;
+                Debug.WriteLine("完成:"+item.OutputFileName);
+                return (item, audioDuration);
             }
+
+            throw new Exception("不会发生的错误!");
         }
-        [Action(Caption = "自动调速")]
-        public void ChangeSpeed()
+
+        #region 速度调整
+        //[Action(Caption = "自动调速")]
+        public static int ChangeSpeed(string OutputFileName,int AudioDuration,int SubtitleDuration)
         {
             var speed = 1d;
-            if (Diffence > 0)
+            if (AudioDuration > SubtitleDuration)
             {
-                var rst = this.计算调速();
+                var rst = 计算调速(AudioDuration,SubtitleDuration);
                 if (rst.实际倍速 != 0)
                 {
                     speed = rst.实际倍速;
@@ -290,15 +288,15 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             FFmpegHelper.Mp32Wav(OutputFileName, OutputFileName + ".wav", speed: speed);
             File.Delete(OutputFileName);
             File.Move(OutputFileName + ".wav", OutputFileName);
-            this.Duration = (int)FFmpegHelper.GetDuration(OutputFileName).Value;
+            return (int)FFmpegHelper.GetDuration(OutputFileName).Value;
         }
 
-        public (double 计划倍速, double 实际倍速, bool 调整成功) 计算调速()
+        public static (double 计划倍速, double 实际倍速, bool 调整成功) 计算调速(int Duration,int SubtitleDuration)
         {
-            if (Duration > Subtitle.Duration)
+            if (Duration > SubtitleDuration)
             {
                 //音频时长超过字幕时长
-                var planSource = ((double)Duration / Subtitle.Duration);
+                var planSource = ((double)Duration / SubtitleDuration);
                 var 计划倍速 = planSource.RoundUp(3);
                 var 实际倍速 = 计划倍速;
                 var 调整成功 = false;
@@ -314,7 +312,8 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                 return (计划倍速, 实际倍速, 调整成功);
             }
             return (0, 0, true);
-        }
+        } 
+        #endregion
 
     }
 
@@ -359,7 +358,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
 
         private async void Generate_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            await AudioBook.GenerateAudioBook(e.SelectedObjects.OfType<AudioBookTextAudioItem>());
+            await AudioBook.GenerateAudioBook(e.SelectedObjects.OfType<AudioBookTextAudioItem>(),true);
 
             //音频生成完成,修正字幕时间.
             var items = e.SelectedObjects.OfType<AudioBookTextAudioItem>();

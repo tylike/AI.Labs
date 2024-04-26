@@ -27,21 +27,7 @@ static class Program {
     /// </summary>
     [STAThread]
     public static int Main(string[] args) {
-        //GoogleTranslateFix.FixFile("D:\\videoInfo\\ChatGPT VS Gemini ultra\\cn.srt", "D:\\videoInfo\\ChatGPT VS Gemini ultra\\cn.fixed.srt");
-        //(TimeSpan loc, int ms, string text)[] times = new (TimeSpan loc, int ms, string text)[]
-        //{
-        //    (TimeSpan.Parse("00:00:00"), 1000, "这是1个测试"),
-        //    //(TimeSpan.Parse("00:00:01"), 1000, "这是2个测试"),
-        //    //(TimeSpan.Parse("00:00:02"), 1000, "这是3个测试"),
-        //    //(TimeSpan.Parse("00:00:03"), 1000, "这是4个测试"),
-        //    //(TimeSpan.Parse("00:00:04"), 1000, "这是5个测试"),
-        //    //(TimeSpan.Parse("00:00:05"), 1000, "这是6个测试"),
-        //    //(TimeSpan.Parse("00:00:06"), 1000, "这是7个测试"),
-        //    //(TimeSpan.Parse("00:00:07"), 1000, "这是8个测试"),
-        //    //(TimeSpan.Parse("00:00:08"), 1000, "这是9个测试")
-        //};
-        //VideoHelper.AddFreezeFramesWithText("D:\\videoInfo\\39\\GGUF-GPTQ.mp4", "D:\\videoInfo\\39\\GGUF-GPTQ-yan.mp4", times);
-        //Console.ReadLine();
+
 
         if(ContainsArgument(args, "help") || ContainsArgument(args, "h")) {
             Console.WriteLine("Updates the database when its version does not match the application's version.");

@@ -16,7 +16,8 @@ namespace AI.Labs.Win;
 // For more typical usage scenarios, be sure to check out https://docs.devexpress.com/eXpressAppFramework/DevExpress.ExpressApp.Win.WinApplication._members
 public class LabsWindowsFormsApplication : WinApplication {
     public LabsWindowsFormsApplication() {
-		SplashScreen = new DXSplashScreen(typeof(XafSplashScreen), new DefaultOverlayFormOptions());
+		//SplashScreen = new DXSplashScreen(typeof(XafSplashScreen), new DefaultOverlayFormOptions());
+
         ApplicationName = "AI.Labs";
         CheckCompatibilityType = DevExpress.ExpressApp.CheckCompatibilityType.DatabaseSchema;
         UseOldTemplates = false;

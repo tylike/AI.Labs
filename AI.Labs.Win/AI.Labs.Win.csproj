@@ -25,6 +25,7 @@
     <Optimize>False</Optimize>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Controllers\TranslateTaskViewController.cs" />
     <Compile Remove="Controllers\YoutubeExplode.cs" />
   </ItemGroup>
   <ItemGroup>

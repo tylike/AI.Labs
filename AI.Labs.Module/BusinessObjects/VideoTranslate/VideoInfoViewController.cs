@@ -4,97 +4,24 @@
 using DevExpress.ExpressApp;
 using System.Diagnostics;
 using DevExpress.ExpressApp.Actions;
-using System;
 using YoutubeExplode;
 using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
 using YoutubeExplode.Demo.Cli;
-using DevExpress.Xpo;
 using AI.Labs.Module.BusinessObjects.AudioBooks;
 using Newtonsoft.Json;
 using System.Globalization;
 using OpenAI.ObjectModels.RequestModels;
 using AI.Labs.Module.BusinessObjects.TTS;
-using DevExpress.DashboardCommon.DataProcessing;
 using Xabe.FFmpeg.Downloader;
 using AI.Labs.Module.BusinessObjects.Helper;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CodeAnalysis.Emit;
-using System.Runtime.Loader;
-using IPlugins;
-using System.Reflection;
+using AI.Labs.Module.BusinessObjects.FilterComplexScripts;
+using DevExpress.ExpressApp.Xpo;
+using AI.Labs.Module.BusinessObjects.STT;
 //using SubtitlesParser.Classes.Parsers;
 
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 {
-    public class ScriptGlobals
-    {
-        public VideoInfo video { get; set; }
-        // Add other global variables here.
-        public DevExpress.ExpressApp.Controller controller { get; set; }
-    }
-
-
-    public class SubtitleViewController : ObjectViewController<ObjectView, SubtitleItem>
-    {
-        public SubtitleViewController()
-        {
-            var fixSrt = new SimpleAction(this, "FixSrt", null);
-            fixSrt.Caption = "修复字幕";
-            fixSrt.Execute += FixSrt_Execute;
-            var translateSubtitles = new SimpleAction(this, "TranslateSubtitleItem", null);
-            translateSubtitles.Caption = "翻译字幕";
-            translateSubtitles.Execute += TranslateSubtitles_Execute;
-
-            var translateSubtitlesV2 = new SimpleAction(this, "TranslateSubtitleItemV2", null);
-            translateSubtitlesV2.Caption = "翻译字幕.V2";
-            translateSubtitlesV2.Execute += TranslateSubtitles_Execute1;
-        }
-
-        private async void FixSrt_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            var t = ViewCurrentObject.Video;
-            if (t.Model == null)
-            {
-                throw new UserFriendlyException("请选择模型!");
-            }
-            var subtitles = ViewCurrentObject.Video.Subtitles.OrderBy(t => t.Index).ToArray();
-            foreach (SubtitleItem item in e.SelectedObjects)
-            {
-                await VideoInfoViewController.FixV1EnglishSRT(t, subtitles, item, this, ObjectSpace);
-            }
-        }
-
-        private async void TranslateSubtitles_Execute1(object sender, SimpleActionExecuteEventArgs e)
-        {
-            var t = ViewCurrentObject.Video;
-            if (t.Model == null)
-            {
-                throw new UserFriendlyException("请选择模型!");
-            }
-            var subtitles = ViewCurrentObject.Video.Subtitles.OrderBy(t => t.Index).ToArray();
-            foreach (SubtitleItem item in e.SelectedObjects)
-            {
-                await VideoInfoViewController.TranslateSubtitle(t, subtitles, item, this, ObjectSpace, false);
-            }
-        }
-
-        private async void TranslateSubtitles_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            var t = ViewCurrentObject.Video;
-            if (t.Model == null)
-            {
-                throw new UserFriendlyException("请选择模型!");
-            }
-            var subtitles = ViewCurrentObject.Video.Subtitles.OrderBy(t => t.Index).ToArray();
-            foreach (SubtitleItem item in e.SelectedObjects)
-            {
-                await VideoInfoViewController.TranslateSubtitle(t, subtitles, item, this, ObjectSpace, true);
-            }
-        }
-    }
-
     public class VideoInfoViewController : ObjectViewController<DetailView, VideoInfo>
     {
         #region 按钮定义
@@ -152,7 +79,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             var generateVideo = new SimpleAction(this, "10.生成视频", null);
             generateVideo.Execute += GenerateVideo_Execute;
 
-
             var generateSrtParsePromptFromEnglishContent = new SimpleAction(this, "从英文内容中生成识别提示", "GenerateSTTPrompt");
             generateSrtParsePromptFromEnglishContent.Execute += GenerateSrtParsePromptFromEnglishContent_Execute;
 
@@ -167,8 +93,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             var updateFFmpeg = new SimpleAction(this, "更新FFmpeg", null);
             updateFFmpeg.Execute += UpdateFFmpeg_Execute;
-
-
         }
 
         private void FixSubtitleTimes_Execute(object sender, SimpleActionExecuteEventArgs e)
@@ -180,10 +104,9 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         void Output(string message, bool showTime = true)
         {
             this.ViewCurrentObject.VideoScript.Output += $"{Environment.NewLine} {DateTime.Now.TimeOfDay} {message}";
-
         }
 
-        
+
 
         private async void UpdateFFmpeg_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
@@ -192,14 +115,122 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private async void OneKey_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            准备();
-            GetVideoInfoCore();
-            if (string.IsNullOrEmpty(ViewCurrentObject.VideoFile))
-                await YE.Download(ViewCurrentObject);
-            GetAudioFromVideo();
-            GetSrtJsonFromAudio();
-            await TranslateSrtToChinese();
+            var s = (ObjectSpace as XPObjectSpace).Session;
+            s.ExecuteNonQuery($"update {nameof(VideoInfo)} set {nameof(VideoInfo.VideoScript)} = null");
+            ObjectSpace.CommitChanges();
 
+            if (ViewCurrentObject.Model == null)
+            {
+                ViewCurrentObject.Model = ObjectSpace.GetObjectsQuery<AIModel>().FirstOrDefault(t => t.IsDefault);
+            }
+            if (ViewCurrentObject.STTModel == null)
+            {
+                ViewCurrentObject.STTModel = ObjectSpace.GetObjectsQuery<STTModel>().FirstOrDefault(t => t.IsDefault);
+            }
+
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.Model);
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel);
+
+            准备();
+            if (string.IsNullOrEmpty(ViewCurrentObject.VideoFile))
+            {
+#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+                GetVideoInfoCore();
+#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+                await YE.Download(ViewCurrentObject);
+            }
+
+            if (!File.Exists(ViewCurrentObject.AudioFile))
+            {
+                GetAudioFromVideo();
+            }
+
+            if (!File.Exists(ViewCurrentObject.VideoJsonSRT))
+            {
+                GetSrtJsonFromAudio();
+            }
+
+            if (!File.Exists(ViewCurrentObject.VideoChineseSRT))
+            {
+                await TranslateSrtToChinese();
+            }
+
+            //生成音频片断            
+            await CreateAudioSolution();
+
+            await ViewCurrentObject.CnAudioSolution.CreateAudioBook(false);
+
+            //await AudioBook.GenerateAudioBook(ViewCurrentObject.CnAudioSolution.AudioItems, false);
+
+            ObjectSpace.CommitChanges();
+
+            CreateVideoProduct(this.ObjectSpace, ViewCurrentObject);
+            //调用生成视频
+        }
+        void CreateVideoProduct(IObjectSpace objectSpace, VideoInfo video)
+        {
+            var vi = video;
+            vi.CnAudioSolution.FixSubtitleTimes();
+            var srt = vi.SaveFixedSRT();
+            if (string.IsNullOrEmpty(vi.VideoFileCn))
+            {
+                vi.VideoFileCn = Path.Combine(vi.ProjectPath, $"{vi.Oid}.cn.mp4");
+            }
+            var file = vi.VideoFileCn;
+
+            var testScript = new FilterComplexScript(objectSpace);
+            testScript.OutputFileName = file;
+
+            var rootVideo = testScript.InputVideo(vi.VideoFile);
+
+            var sw = Stopwatch.StartNew();
+            var topClips = 1000;
+            var audios = vi.Audios.OrderBy(t => t.Index)
+                .Take(topClips)
+                .ToArray();
+
+            #region 准备音频
+            //这里的音频成为了视频的最后标准。
+            Parallel.ForEach(audios, item =>
+            {
+                Console.WriteLine("预处理音频" + item.Index);
+                var p = new AudioParameter { Index = item.Index, FileName = item.OutputFileName, StartTimeMS = (int)item.Subtitle.FixedStartTime.TotalMilliseconds, EndTimeMS = (int)item.Subtitle.FixedEndTime.TotalMilliseconds };
+                testScript.ImportAudioClip(p);
+            });
+
+            sw.Stop();
+            var pmsg = $"并行，预处理音频耗时:{sw.ElapsedMilliseconds}ms";
+            Console.WriteLine($"{pmsg}");
+
+            FFmpegHelper.PutAudiosToTimeLine(testScript.AudioParameters, file + ".wav");
+
+            testScript.InputAudio(file + ".wav");
+            #endregion
+
+            foreach (var item in audios)
+            {
+                var videoClip = rootVideo.Select(
+                    (int)item.Subtitle.StartTime.TotalMilliseconds,
+                    (int)item.Subtitle.StartTime.AddMilliseconds((item.Subtitle.FixedEndTime - item.Subtitle.FixedStartTime).TotalMilliseconds).TotalMilliseconds
+                    );
+
+                testScript.VideoProductClips.Add(videoClip);
+
+                var y1 = 50 * (item.Index % 10);
+                if ((item.Subtitle.FixedEndTime - item.Subtitle.EndTime).TotalMilliseconds >= 1500)
+                {
+                    testScript.DrawText(300, y1, $"{item.Index}-原片:{item.Subtitle.StartTime}-{item.Subtitle.EndTime} {y1}", 24, item.Subtitle.StartTime, item.Subtitle.EndTime);
+                    testScript.DrawText(640, y1, $"{item.Index}-延长:{item.Subtitle.EndTime}-{item.Subtitle.FixedEndTime}", 24, item.Subtitle.EndTime, item.Subtitle.FixedEndTime);
+                }
+            }
+
+            testScript.AddSubtitle(new VideoSubtitleOption { SrtFileName = srt.CnSRT, OutlineColour = "#00ff0000",MarginV = 100 });
+            testScript.AddSubtitle(new VideoSubtitleOption { SrtFileName = srt.EnSRT, OutlineColour = "#ff000000",MarginV = 200 }); 
+            testScript.DrawCurrentTime();
+
+            testScript.Export();
+
+            Console.WriteLine($"时长:{FFmpegHelper.GetDuration(file)}");
         }
 
         private async void BatchTranslate_Execute(object sender, SimpleActionExecuteEventArgs e)
@@ -230,29 +261,29 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private async void GenerateVideo_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            var objectSpace = this.ObjectSpace;
+            //var objectSpace = this.ObjectSpace;
 
-            var vi = objectSpace.GetObjectsQuery<VideoInfo>().First(t => t.Oid == 2);
+            //var vi = objectSpace.GetObjectsQuery<VideoInfo>().First(t => t.Oid == 2);
 
-            var script = objectSpace.GetObjectsQuery<VideoScriptProject>().FirstOrDefault(t => t.Name == "test1x");
+            //var script = objectSpace.GetObjectsQuery<VideoScriptProject>().FirstOrDefault(t => t.Name == "test1x");
 
-            if (script == null)
-            {
-                script = objectSpace.CreateObject<VideoScriptProject>();
-                script.Name = "test1";
-                script.VideoInfo = vi;
-                script.CreateProject(objectSpace);
+            //if (script == null)
+            //{
+            //    script = objectSpace.CreateObject<VideoScriptProject>();
+            //    script.Name = "test1";
+            //    script.VideoInfo = vi;
+            //    script.CreateProject(objectSpace);
 
-                var modifiedObjects = objectSpace.ModifiedObjects.OfType<SubtitleItem>().ToList();
+            //    var modifiedObjects = objectSpace.ModifiedObjects.OfType<SubtitleItem>().ToList();
 
-                script.Export();
-                vi.SaveSRTToFile(AI.Labs.Module.BusinessObjects.Helper.SrtLanguage.中文, "fixed", true);
-                vi.SaveSRTToFile(AI.Labs.Module.BusinessObjects.Helper.SrtLanguage.英文, "fixed", true);
+            //    script.Export();
+            //    vi.SaveSRTToFile(AI.Labs.Module.BusinessObjects.Helper.SrtLanguage.中文, "fixed", true);
+            //    vi.SaveSRTToFile(AI.Labs.Module.BusinessObjects.Helper.SrtLanguage.英文, "fixed", true);
 
-                modifiedObjects = objectSpace.ModifiedObjects.OfType<SubtitleItem>().ToList();
+            //    modifiedObjects = objectSpace.ModifiedObjects.OfType<SubtitleItem>().ToList();
 
-                objectSpace.CommitChanges();
-            }
+            //    objectSpace.CommitChanges();
+            //}
 
 
             //await VideoHelper.MakeVideoAsync(ViewCurrentObject);
@@ -409,13 +440,15 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private void GetAudioFromVideo()
         {
-            var pi = new ProcessStartInfo();
             var obj = this.ViewCurrentObject;
             var wavFileName = $"{obj.ProjectPath}\\{obj.Oid}.wav";
+
             if (File.Exists(wavFileName))
             {
                 File.Delete(wavFileName);
             }
+
+            var pi = new ProcessStartInfo();
             pi.FileName = FFmpegHelper.ffmpegFile;// $@"D:\ffmpeg.gui\ffmpeg\bin\ffmpeg.exe";
             pi.Arguments = $"-i \"{obj.VideoFile}\" -ar 16000 -acodec pcm_s16le \"{wavFileName}\"";
             pi.UseShellExecute = true;
@@ -443,8 +476,8 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             #region 1.生成字幕文件
             var pi = new ProcessStartInfo();
-            ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel,"语音识别模型");
-            ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel?.ServerApplication,"语音识别模型启动程序");
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel, "语音识别模型");
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel?.ServerApplication, "语音识别模型启动程序");
             ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel.ModelFilePath, "语音识别模型文件");
 
             pi.FileName = ViewCurrentObject.STTModel.ServerApplication;// $@"F:\ai.stt\whisper.cpp.cublax-11.8.0.x64\main.exe";
@@ -468,10 +501,10 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             pi.Arguments = $@" -m {model} {tdrz} -of {outputFile} {parseSpreaker} -osrt -ojf -otxt {ViewCurrentObject.AudioFile} {prompt}";
 
-            pi.UseShellExecute = true;
+            pi.UseShellExecute = false;
             var inf = Process.Start(pi);
             inf.WaitForExit();
-            
+
             Debug.WriteLine($"{pi.FileName} {pi.Arguments}");
             ViewCurrentObject.VideoDefaultSRT = $"{outputFile}.srt";
             ViewCurrentObject.VideoJsonSRT = $"{outputFile}.json";
@@ -661,7 +694,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                     video.Subtitles.Add(sub);
 
                     //强制的让字幕中间没有空白时间
-                    if(pre != null)
+                    if (pre != null)
                     {
                         if (pre.EndTime != sub.StartTime)
                         {
@@ -671,7 +704,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                     pre = sub;
                 }
             }
-            
+
             ObjectSpace.CommitChanges();
 
 
@@ -776,7 +809,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             foreach (SubtitleItem item in subtitles)
             {
                 await TranslateSubtitle(t, subtitles, item, this, ObjectSpace, true);
-                
+
             }
             t.SaveSRTToFile(SrtLanguage.中文);
             ObjectSpace.CommitChanges();
@@ -846,7 +879,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 streamOut: true,
                 temperature: 0.1f
                 );
-            item.CnText = item.CnText.Replace("[PAD151643]", "").Replace("[PAD151645]","");
+            item.CnText = item.CnText.Replace("[PAD151643]", "").Replace("[PAD151645]", "");
             objectSpace.CommitChanges();
         }
         #endregion
@@ -857,6 +890,17 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         //3.合并为一个音频文件
         private async void GenerateAudio_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
+            await CreateAudioSolution();
+            await ViewCurrentObject.CnAudioSolution.CreateAudioBook(false);
+            //打开:
+            //var os = Application.CreateObjectSpace(typeof(AudioBook));
+            //var s = os.GetObject(audioSolution);
+            //e.ShowViewParameters.CreatedView = Application.CreateDetailView(os, "AudioBook_DetailView", true, s);
+            Application.ShowViewStrategy.ShowMessage("视频方案生成完成!");
+        }
+
+        private async Task CreateAudioSolution()
+        {
             var audioSolution = ViewCurrentObject.CnAudioSolution ?? ObjectSpace.CreateObject<AudioBook>();
 
             audioSolution.Content = ViewCurrentObject.ContentCn;
@@ -865,32 +909,34 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             audioSolution.OutputPath = Path.Combine(ViewCurrentObject.ProjectPath, $"Audio");
             audioSolution.CheckOutputPath();
 
-            if(audioSolution.AudioItems.Count > 0)
-            {
-                ObjectSpace.Delete(audioSolution.AudioItems);
-            }
+#warning 没有考虑好，这里是不是应该删除原有的音频方案。在一键执行时，不该删除，在点击按钮时，可能要删除，因为如果字幕重新翻译了，音频方案也要重新生成。
+            //if (audioSolution.AudioItems.Count > 0)
+            //{
+            //    ObjectSpace.Delete(audioSolution.AudioItems);
+            //}
 
             var def = await audioSolution.CreateOrFindAudioRole("default");
             def.TryReadingText = "这里可以输入一些试听内容!";
-            def.VoiceSolution = ObjectSpace.GetObjectsQuery<VoiceSolution>().FirstOrDefault(t => t.Provider.Engine == VoiceEngine.EdgeTTS);
 
-            foreach (var item in ViewCurrentObject.Subtitles.OrderBy(t => t.Index))
+            if (def.VoiceSolution == null)
+                def.VoiceSolution = ObjectSpace.GetObjectsQuery<VoiceSolution>().FirstOrDefault(t => t.ShortName == "zh-CN-YunjianNeural");
+#warning 这里与是否删除了音频项目有关，已经有的情况下没有创建新的。
+            if (audioSolution.AudioItems.Count <= 0)
             {
-                var n = ObjectSpace.CreateObject<AudioBookTextAudioItem>();
-                n.Subtitle = item;
-                n.AudioRole = def;
-                audioSolution.AudioItems.Add(n);
+                foreach (var item in ViewCurrentObject.Subtitles.OrderBy(t => t.Index))
+                {
+                    var n = ObjectSpace.CreateObject<AudioBookTextAudioItem>();
+                    n.Subtitle = item;
+                    item.Audio = n;
+                    n.AudioRole = def;
+                    audioSolution.AudioItems.Add(n);
+                }
             }
-
             ViewCurrentObject.CnAudioSolution = audioSolution;
 
             ObjectSpace.CommitChanges();
-            //打开:
-            //var os = Application.CreateObjectSpace(typeof(AudioBook));
-            //var s = os.GetObject(audioSolution);
-            //e.ShowViewParameters.CreatedView = Application.CreateDetailView(os, "AudioBook_DetailView", true, s);
-            Application.ShowViewStrategy.ShowMessage("视频方案生成完成!");
         }
+
         private void GenerateAudioV2_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
             var audioSolution = ObjectSpace.CreateObject<AudioBook>();
@@ -921,24 +967,5 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         #region 8.发布
 
         #endregion
-    }
-    public class YoutubeVideoViewController : ObjectViewController<ObjectView, YoutubeVideoInfo>
-    {
-        public YoutubeVideoViewController()
-        {
-            var download = new SimpleAction(this, "Youtube.Download", null);
-            download.Caption = "下载";
-            download.SelectionDependencyType = SelectionDependencyType.RequireSingleObject;
-            download.Execute += Download_Execute;
-        }
-
-        private async void Download_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            var p = ViewCurrentObject.VideoInfo;
-            await YE.DownloadForUrl(p.VideoURL, p.ProjectPath, t =>
-            {
-                Debug.WriteLine(t);
-            }, ViewCurrentObject);
-        }
     }
 }

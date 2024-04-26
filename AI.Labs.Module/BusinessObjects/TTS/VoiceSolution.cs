@@ -23,6 +23,7 @@ namespace AI.Labs.Module.BusinessObjects.TTS
         EdgeTTS = 0,
         AzureTTS = 1
     }
+
     [XafDisplayName("声音风格")]
     [XafDefaultProperty(nameof(Caption))]
     [NavigationItem("设置")]
@@ -128,15 +129,15 @@ namespace AI.Labs.Module.BusinessObjects.TTS
         public async Task<byte[]> GetTextToSpeechData(string text, string voiceName)
         {
             var rst = new List<byte>();
-
             if (this.Engine == VoiceEngine.EdgeTTS)
             {
                 await EdgeTTS.PlayText(text, voiceName, play: false, resultBytes: rst);
-                Debug.WriteLine("EdgeTTS.PlayText调用完成!");
+                Debug.WriteLine("EdgeTTS.生成音频:调用完成!");
             }
             else
             {
                 await AzureTTSEngine.Play(text, voiceName, this.ApiKey, this.BaseUrl, rst);
+                Debug.WriteLine("AzureTTS.生成音频:调用完成!");
             }
             return rst.ToArray();
         }
@@ -181,7 +182,7 @@ namespace AI.Labs.Module.BusinessObjects.TTS
 
     [NavigationItem]
     [XafDisplayName("音色方案")]
-    [XafDefaultProperty(nameof(Title))]
+    [XafDefaultProperty(nameof(ShortName))]
     public class VoiceSolution : XPObject
     {
         public VoiceSolution(Session s) : base(s)
@@ -199,7 +200,8 @@ namespace AI.Labs.Module.BusinessObjects.TTS
         }
         string GetVoiceName()
         {
-            return Provider.Engine == VoiceEngine.EdgeTTS ? this.DisplayName : this.ShortName;
+            return this.ShortName;
+            //return Provider.Engine == VoiceEngine.EdgeTTS ? this.DisplayName : this.ShortName;
         }
         public async Task Read(string text)
         {

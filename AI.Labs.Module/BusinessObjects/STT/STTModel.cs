@@ -38,5 +38,12 @@ namespace AI.Labs.Module.BusinessObjects.STT
             set { SetPropertyValue(nameof(ServerApplication), value); }
         }
 
+        public bool IsDefault
+        {
+            get { return GetPropertyValue<bool>(nameof(IsDefault)); }
+            set { SetPropertyValue(nameof(IsDefault), value); }
+        }
+
+
     }
 }

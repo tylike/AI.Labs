@@ -46,38 +46,7 @@ public abstract class MediaCommand : BaseObject
 
 }
 
-public class ChangeSpeed : MediaCommand
-{
-    public ChangeSpeed(Session s) : base(s)
-    {
 
-    }
-
-    public MediaType MediaType
-    {
-        get { return GetPropertyValue<MediaType>(nameof(MediaType)); }
-        set { SetPropertyValue(nameof(MediaType), value); }
-    }
-
-    public decimal TargetSpeed
-    {
-        get { return GetPropertyValue<decimal>(nameof(TargetSpeed)); }
-        set { SetPropertyValue(nameof(TargetSpeed), value); }
-    }
-    public override string GetScript()
-    {
-        switch (MediaType)
-        {
-            case MediaType.Video:
-                return $"setpts=PTS*{TargetSpeed.ToString("0.0000")}";
-            case MediaType.Audio:
-                return $"asetpts=PTS*{TargetSpeed.ToString("0.0000")}";
-            default:
-                throw new NotImplementedException();
-        }
-        //return $"setpts=PTS/{TargetSpeed.ToString("0.0000")}";
-    }
-}
 
 public abstract class TextOptionBase : MediaCommand
 {
@@ -124,50 +93,3 @@ public abstract class TextOptionBase : MediaCommand
 }
 
 
-public class ConcatMedia : MediaCommand
-{
-    public ConcatMedia(Session s) : base(s)
-    {
-
-    }
-
-
-    public bool ConcatVideo
-    {
-        get { return GetPropertyValue<bool>(nameof(ConcatVideo)); }
-        set { SetPropertyValue(nameof(ConcatVideo), value); }
-    }
-
-    public bool ConcatAudio
-    {
-        get { return GetPropertyValue<bool>(nameof(ConcatAudio)); }
-        set { SetPropertyValue(nameof(ConcatAudio), value); }
-    }
-
-
-
-
-    public int MediaCount
-    {
-        get { return GetPropertyValue<int>(nameof(MediaCount)); }
-        set { SetPropertyValue(nameof(MediaCount), value); }
-    }
-
-    [Size(-1)]
-    public string AddationCommand
-    {
-        get { return GetPropertyValue<string>(nameof(AddationCommand)); }
-        set { SetPropertyValue(nameof(AddationCommand), value); }
-    }
-
-
-    public override string GetScript()
-    {
-        var rst = $"concat=n={MediaCount}:a={(ConcatAudio ? "1" : "0")}:v={(ConcatVideo ? "1" : "0")}";
-        if (!string.IsNullOrEmpty(AddationCommand))
-        {
-            rst += $"{AddationCommand}";
-        }
-        return rst;
-    }
-}

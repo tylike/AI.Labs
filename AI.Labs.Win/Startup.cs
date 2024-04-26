@@ -13,6 +13,7 @@ using DevExpress.ExpressApp.Design;
 namespace AI.Labs.Win;
 
 public class ApplicationBuilder : IDesignTimeApplicationFactory {
+    public static bool SkipLogin { get; set; } = true;
     public static WinApplication BuildApplication(string connectionString) {
         AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
         var builder = WinApplication.CreateBuilder();
@@ -51,27 +52,41 @@ public class ApplicationBuilder : IDesignTimeApplicationFactory {
             //.Add<LabsSTTModule>();
 
         builder.ObjectSpaceProviders
-            .AddSecuredXpo((application, options) => {
-                options.ConnectionString = connectionString;
+            .AddXpo((app, opt) =>
+            {
+
+                opt.ConnectionString = connectionString;
+                opt.ThreadSafe = true;
+
             })
+            //.AddSecuredXpo((application, options) =>
+            //{
+            //    options.ConnectionString = connectionString;
+            //    //options.ThreadSafe = true;
+            //})
             .AddNonPersistent();
-        builder.Security
-            .UseIntegratedMode(options => {
-                options.RoleType = typeof(PermissionPolicyRole);
-                options.UserType = typeof(AI.Labs.Module.BusinessObjects.ApplicationUser);
-                options.UserLoginInfoType = typeof(AI.Labs.Module.BusinessObjects.ApplicationUserLoginInfo);
-                options.UseXpoPermissionsCaching();
-                options.Events.OnSecurityStrategyCreated += securityStrategy => {
-                   // Use the 'PermissionsReloadMode.NoCache' option to load the most recent permissions from the database once
-                   // for every Session instance when secured data is accessed through this instance for the first time.
-                   // Use the 'PermissionsReloadMode.CacheOnFirstAccess' option to reduce the number of database queries.
-                   // In this case, permission requests are loaded and cached when secured data is accessed for the first time
-                   // and used until the current user logs out. 
-                   // See the following article for more details: https://docs.devexpress.com/eXpressAppFramework/DevExpress.ExpressApp.Security.SecurityStrategy.PermissionsReloadMode.
-                   ((SecurityStrategy)securityStrategy).PermissionsReloadMode = PermissionsReloadMode.NoCache;
-                };
-            })
-            .UsePasswordAuthentication();
+        if (!SkipLogin)
+        {
+            builder.Security
+                .UseIntegratedMode(options =>
+                {
+                    options.RoleType = typeof(PermissionPolicyRole);
+                    options.UserType = typeof(AI.Labs.Module.BusinessObjects.ApplicationUser);
+                    options.UserLoginInfoType = typeof(AI.Labs.Module.BusinessObjects.ApplicationUserLoginInfo);
+                    options.UseXpoPermissionsCaching();
+                    options.Events.OnSecurityStrategyCreated += securityStrategy =>
+                    {
+                        // Use the 'PermissionsReloadMode.NoCache' option to load the most recent permissions from the database once
+                        // for every Session instance when secured data is accessed through this instance for the first time.
+                        // Use the 'PermissionsReloadMode.CacheOnFirstAccess' option to reduce the number of database queries.
+                        // In this case, permission requests are loaded and cached when secured data is accessed for the first time
+                        // and used until the current user logs out. 
+                        // See the following article for more details: https://docs.devexpress.com/eXpressAppFramework/DevExpress.ExpressApp.Security.SecurityStrategy.PermissionsReloadMode.
+                        ((SecurityStrategy)securityStrategy).PermissionsReloadMode = PermissionsReloadMode.NoCache;
+                    };
+                })
+                .UsePasswordAuthentication();
+        }
         builder.AddBuildStep(application => {
             application.ConnectionString = connectionString;
 #if DEBUG

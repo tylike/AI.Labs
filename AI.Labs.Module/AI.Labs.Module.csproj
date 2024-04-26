@@ -11,11 +11,33 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Compile Remove="BusinessObjects\Helper\FFmpeg\**" />
+	  <EmbeddedResource Remove="BusinessObjects\Helper\FFmpeg\**" />
+	  <None Remove="BusinessObjects\Helper\FFmpeg\**" />
+	</ItemGroup>
+	<ItemGroup>
 	  <Compile Remove="BusinessObjects\KnowledgeBase\BusinessKnowledgeBaseViewController.cs" />
 	  <Compile Remove="BusinessObjects\Sales\BookViewController.cs" />
 	  <Compile Remove="BusinessObjects\Sales\ChatGemini.cs" />
 	  <Compile Remove="BusinessObjects\Sales\ProductViewController.cs" />
 	  <Compile Remove="BusinessObjects\SK.cs" />
+	  <Compile Remove="BusinessObjects\SRT\NSubtitleItem.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\AudioClip.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\AudioSource.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\ClipBase.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\DrawTextOptions.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\FFmpegProgram.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\MediaClip.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\MediaSource.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\SelectMediaCommand.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\Statement.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\V3\VideoScript.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\VideoClip.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\VideoScriptProject.cs" />
+	  <Compile Remove="BusinessObjects\VideoScriptAST\VideoSource.cs" />
+	  <Compile Remove="BusinessObjects\VideoTranslate\MediaClipViewController.cs" />
+	  <Compile Remove="BusinessObjects\VideoTranslate\TextCompare.cs" />
+	  <Compile Remove="BusinessObjects\VideoTranslate\TranslateTask.cs" />
 	  <Compile Remove="BusinessObjects\VideoTranslate\TranslateTaskViewController.cs" />
 	</ItemGroup>
 	<ItemGroup>
@@ -137,5 +159,8 @@
 	  <None Update="UnusableNodes_zh-Hans.xml">
 	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
 	  </None>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="BusinessObjects\VideoScriptAST\V3\" />
 	</ItemGroup>
 </Project>

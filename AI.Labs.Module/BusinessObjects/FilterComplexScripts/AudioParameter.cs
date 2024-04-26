@@ -1,6 +1,6 @@
 ﻿using NAudio.Wave;
 
-namespace AI.Labs.Module.BusinessObjects
+namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
 {
     public class AudioParameter
     {
@@ -8,9 +8,13 @@ namespace AI.Labs.Module.BusinessObjects
         //是指主时间线的:
         public int StartTimeMS { get; set; }
         public int EndTimeMS { get; set; }
-        //是指当前片段的:
-        public int ClipStartTimeMS { get; set; }
-        public int ClipEndTimeMS { get; set; }
+
+        #region 暂时不用
+        ////是指当前片段的:
+        //public int ClipStartTimeMS { get; set; }
+        //public int ClipEndTimeMS { get; set; } 
+        #endregion
+
         public int Index { get; set; }
 
         /// <summary>
@@ -20,25 +24,14 @@ namespace AI.Labs.Module.BusinessObjects
 
         public double Speed { get; set; } = 1;
 
-        public void ChangeSpeed(double speed)
-        {
-            if (Speed > 0 && Speed != 1)
-            {
-                Stream = new MemoryStream();
-                using var t = new WaveFileReader(FileName);
-                FFmpegHelper.NAudioChangeSpeed(t, Speed, Stream);
-                Stream.Position = 0;
-            }
-        }
-
         WaveFileReader waveFileReader;
-        public WaveFileReader WaveFileReader 
+        public WaveFileReader WaveFileReader
         {
             get
             {
-                if(waveFileReader == null)
+                if (waveFileReader == null)
                 {
-                    if(Stream == null)
+                    if (Stream == null)
                     {
                         Stream = new MemoryStream();
                         File.OpenRead(FileName).CopyTo(Stream);
@@ -48,7 +41,7 @@ namespace AI.Labs.Module.BusinessObjects
                 }
                 return waveFileReader;
             }
-            set { waveFileReader = value; } 
+            set { waveFileReader = value; }
         }
     }
 }

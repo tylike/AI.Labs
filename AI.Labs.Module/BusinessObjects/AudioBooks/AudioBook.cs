@@ -12,6 +12,7 @@ using DevExpress.ExpressApp.Actions;
 using AI.Labs.Module.BusinessObjects.STT;
 using DevExpress.Utils.Filtering.Internal;
 using System.Xml;
+using sun.tools.tree;
 
 namespace AI.Labs.Module.BusinessObjects.AudioBooks
 {
@@ -112,7 +113,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         /// <param name="items"></param>
         /// <param name="reGenerate">对于一个段落,如果已经生成了,是否强制生新生成</param>
         /// <exception cref="UserFriendlyException"></exception>
-        public async static Task GenerateAudioBook(IEnumerable<AudioBookTextAudioItem> items)
+        public async static Task GenerateAudioBook(IEnumerable<AudioBookTextAudioItem> items,bool reGenerate)
         {
             if (!items.Any())
             {
@@ -124,9 +125,40 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
 
             foreach (var item in items)
             {
-                await item.GenerateAudioFile();
+                var rst = await AudioBookTextAudioItem.GenerateAudioFile(reGenerate, item);
+                if (rst.Item2 != -1)
+                {
+                    item.Duration = rst.Item2;
+                }
+                if(item.Duration == -1)
+                {
+                    item.Duration = (int)FFmpegHelper.GetDuration(item.OutputFileName).Value;
+                }
             }
 
+            //List<Task<(AudioBookTextAudioItem,int)>> tasks = new ();
+
+            //Parallel.ForEach(items, new ParallelOptions { MaxDegreeOfParallelism = 3 }, item =>
+            //{
+            //    try
+            //    {
+            //        tasks.Add(AudioBookTextAudioItem.GenerateAudioFile(reGenerate, item));
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Debug.WriteLine(ex.Message);
+            //    }
+            //    Task.Delay(200).Wait();
+            //});
+
+            //Task.WaitAll(tasks.ToArray());
+
+            //foreach (var item in tasks)
+            //{
+            //    item.Result.Item1.Duration = item.Result.Item2;
+            //}
+
+            await Task.CompletedTask;
         }
         public string CheckOutputPath()
         {
@@ -331,12 +363,12 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         /// <summary>
         /// 一键生成书籍,如果条目没有生成则去生成.
         /// </summary>
-        [Action(Caption = "生成书籍", ToolTip = "把每个条目生成的音频合并为一个音频,生成的文件放到了书籍指定的“输出路径”中")]
-        public async void CreateAudioBook()
+        //[Action(Caption = "生成书籍", ToolTip = "把每个条目生成的音频合并为一个音频,生成的文件放到了书籍指定的“输出路径”中")]
+        public async Task CreateAudioBook(bool reGenerate)
         {
             var path = CheckOutputPath();
-            await GenerateAudioBook(this.AudioItems);
-            Mp3FileUtils.Combine(this.AudioItems.Select(t => t.OutputFileName).ToArray(), Path.Combine(path, "audiobook.mp3"));
+            await GenerateAudioBook(this.AudioItems,reGenerate);
+            //Mp3FileUtils.Combine(this.AudioItems.Select(t => t.OutputFileName).ToArray(), Path.Combine(path, "audiobook.mp3"));
             Debug.WriteLine("处理完成!");
             await Task.CompletedTask;
         }
@@ -344,7 +376,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         #endregion
 
         #region 4.播放书籍
-        [Action(Caption = "播放书籍", ToolTip = "播放合成的完整书籍")]
+        //[Action(Caption = "播放书籍", ToolTip = "播放合成的完整书籍")]
         public async void PlayAudioBook()
         {
             var path = CheckOutputPath();

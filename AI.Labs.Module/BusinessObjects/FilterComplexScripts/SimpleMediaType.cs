@@ -1,4 +1,4 @@
-﻿namespace AI.Labs.Module.BusinessObjects
+﻿namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
 {
     public enum SimpleMediaType
     {

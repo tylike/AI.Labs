@@ -13,32 +13,13 @@ using System.Collections.Generic;
 using com.sun.tools.javadoc;
 using DevExpress.CodeParser;
 using NAudio.Utils;
+using AI.Labs.Module.BusinessObjects.FilterComplexScripts;
 
 namespace AI.Labs.Module.BusinessObjects
 {
 
     public static class FFmpegHelper
     {
-        public static void DelayVideoCopyLast(this SimpleFFmpegCommand input, double targetDuration)
-        {
-            throw new NotImplementedException();
-            ////ffmpeg -i input.mp4 -filter_complex "[0:v]trim=start=10:duration=5,loop=loop=3:size=5[outv];[0:a]atrim=start=10:duration=5,aloop=loop=3:size=5[outa]" -map "[outv]" -map "[outa]" output.mp4
-            //int loopCount = (int)Math.Ceiling(targetDuration / originalDuration);
-            //string arguments = " -loglevel error ";
-            //if (!File.Exists(newOutputFile))
-            //{
-            //    ExecuteCommand(
-            //        $"{taskMemo} 视频延时", targetDuration,
-            //        arguments,
-            //        newOutputFile,
-            //        inputFiles: inputFileName,
-            //        inputOptions: $" -stream_loop {loopCount} ",
-            //        outputOptions: $" -t {targetDuration / 1000} "
-            //        );
-            //}
-        }
-
-
         public static void PutAudiosToTimeLine(List<AudioParameter> ps, string outputFileName)
         {
             // 假设所有音频文件采样率和通道数相同，取第一个文件的格式作为输出格式
@@ -75,11 +56,6 @@ namespace AI.Labs.Module.BusinessObjects
             var mixer = new ConcatenatingSampleProvider(providers);
             WaveFileWriter.CreateWaveFile(outputFileName, mixer.ToWaveProvider());
         }
-
-        //private static void CopyFromClip(WaveFileReader reader, WaveFileWriter targetWaveFileWriter)
-        //{
-        //    CopyFromClip(reader, targetWaveFileWriter, 0, (int)reader.TotalTime.TotalMilliseconds);
-        //}
 
         public static void NAudioChangeSpeed(WaveFileReader reader, double speed, Stream output, int resamplerQuality = 60)
         {
@@ -170,31 +146,22 @@ namespace AI.Labs.Module.BusinessObjects
             targetWriter.Flush();
         }
 
-
-
-        public static SimpleFFmpegCommand Select(this SimpleFFmpegCommand input, int startMS, int endMS, int loop = 1)
+        public static FilterComplexCommand Select(this FilterComplexCommand input, int startMS, int endMS, int loop = 1)
         {
-            var cmd = new SimpleFFmpegCommand(input.Script)
-            {
-                Index = input.Script.GetNewIndex(),
-            };
             var commandName = input.SimpleMediaType == SimpleMediaType.Video ? "trim" : "atrim";
-            //var loopSize = (endMS - startMS) / 1000d;
-            //var loopStr = loop == 1 ? ",setpts=PTS-STARTPTS" : $",setpts=PTS-STARTPTS,loop={loop}:size={loopSize * 30}";
-            var loopStr = ",setpts=PTS-STARTPTS";
-
-            cmd.Command = $"{input.OutputLable}{commandName}=start={startMS / 1000d:0.000}:end={endMS / 1000d:0.000}{loopStr}{cmd.OutputLable}";
-            input.Script.Commands.Add(cmd);
-            return cmd;
+            var setpts = ",setpts=PTS-STARTPTS";
+            var cmd = $"{input.OutputLable}{commandName}=start={startMS / 1000d:0.000}:end={endMS / 1000d:0.000}{setpts}";
+            return input.Script.CreateCommand(cmd, input.SimpleMediaType, true);
         }
-        public static SimpleFFmpegCommand PutVideo(this SimpleFFmpegCommand backgroundVideo, SimpleFFmpegCommand overlayVideo, int startMS, int endMS, int x = 0, int y = 0)
+        public static FilterComplexCommand PutVideo(this FilterComplexCommand backgroundVideo, FilterComplexCommand overlayVideo, int startMS, int endMS, int x = 0, int y = 0)
         {
+            #region 示例
             /*
-             ffmpeg -i videoA.mp4 -i videoB.mp4 -filter_complex \
-                "[1:v]trim=start=1:end=3,setpts=PTS-STARTPTS[vb]; \
-                [0:v][vb]overlay=enable='between(t,3.5,6.5)':x=0:y=0[out]" \
-                -map "[out]" -map 0:a -c:v libx264 -c:a copy -y output.mp4
-             */
+     ffmpeg -i videoA.mp4 -i videoB.mp4 -filter_complex \
+        "[1:v]trim=start=1:end=3,setpts=PTS-STARTPTS[vb]; \
+        [0:v][vb]overlay=enable='between(t,3.5,6.5)':x=0:y=0[out]" \
+        -map "[out]" -map 0:a -c:v libx264 -c:a copy -y output.mp4
+     */
             /*
              ffmpeg -i videoA.mp4 -i videoB.mp4 -i videoC.mp4 -filter_complex \
                 "[1:v]trim=start=1:end=3,setpts=PTS-STARTPTS[vb]; \
@@ -202,56 +169,58 @@ namespace AI.Labs.Module.BusinessObjects
                  [0:v][vb]overlay=enable='between(t,3.5,6.5)':x=0:y=0[va]; \
                  [va][vc]overlay=enable='between(t,7,8)':x=0:y=0[out]" \
                 -map "[out]" -map 0:a -c:v libx264 -c:a copy -y output.mp4
-             */
-            var cmd = new SimpleFFmpegCommand(backgroundVideo.Script) { Index = backgroundVideo.Script.GetNewIndex(), SimpleMediaType = backgroundVideo.SimpleMediaType };
+             */ 
+            #endregion
+            
             var commandName = "overlay";
             var loc = $":x={x}:y={y}";
-            cmd.Command = $"{backgroundVideo.OutputLable}{overlayVideo.OutputLable}{commandName}=enable='between(t,{startMS / 1000d:0.000},{endMS / 1000d:0.000}){loc}'{cmd.OutputLable}";
-            backgroundVideo.Script.Commands.Add(cmd);
-            return cmd;
-        }
-        public static SimpleFFmpegCommand AMix(this List<SimpleFFmpegCommand> audios)
-        {
-            //[a1][a2]amix=inputs=2:duration=longest
-            var audio = audios.First();
-            var cmd = new SimpleFFmpegCommand(audio.Script) { Index = audio.Script.GetNewIndex(), SimpleMediaType = audio.SimpleMediaType };
+            var cmd = $"{backgroundVideo.OutputLable}{overlayVideo.OutputLable}{commandName}=enable='between(t,{startMS / 1000d:0.000},{endMS / 1000d:0.000}){loc}'";
 
-            var commandName = $"amix=inputs={audios.Count}:duration=longest";
-            cmd.Command = $"{audios.Select(t => t.OutputLable).Join()}{commandName}{cmd.OutputLable}";
-            audio.Script.Commands.Add(cmd);
-            return cmd;
+            return backgroundVideo.Script.CreateCommand(cmd, backgroundVideo.SimpleMediaType, true);
         }
 
-        public static SimpleFFmpegCommand PutAudio(this SimpleFFmpegCommand audio, int startMS, int? clipStart = 0, int? clipEnd = 0)
-        {
-            /*
-             ffmpeg -i videoA.mp4 -i videoB.mp4 -filter_complex \
-                "[1:v]trim=start=1:end=3,setpts=PTS-STARTPTS[vb]; \
-                [0:v][vb]overlay=enable='between(t,3.5,6.5)':x=0:y=0[out]" \
-                -map "[out]" -map 0:a -c:v libx264 -c:a copy -y output.mp4
-             */
-            /*
-             ffmpeg -i videoA.mp4 -i videoB.mp4 -i videoC.mp4 -filter_complex \
-                "[1:v]trim=start=1:end=3,setpts=PTS-STARTPTS[vb]; \
-                 [2:v]trim=start=2:end=3,setpts=PTS-STARTPTS[vc]; \
-                 [0:v][vb]overlay=enable='between(t,3.5,6.5)':x=0:y=0[va]; \
-                 [va][vc]overlay=enable='between(t,7,8)':x=0:y=0[out]" \
-                -map "[out]" -map 0:a -c:v libx264 -c:a copy -y output.mp4
-             */
-            var cmd = new SimpleFFmpegCommand(audio.Script) { Index = audio.Script.GetNewIndex(), SimpleMediaType = audio.SimpleMediaType };
-            var atrim = "";
-            if (clipEnd.HasValue && clipEnd.HasValue)
-            {
-                atrim = $"atrim=start={clipStart.Value}:end={clipEnd.Value},asetpts=PTS-STARTPTS,";
-            }
+        //public static SimpleFFmpegCommand AMix(this List<SimpleFFmpegCommand> audios)
+        //{
+        //    //[a1][a2]amix=inputs=2:duration=longest
+        //    var audio = audios.First();
+        //    var cmd = new SimpleFFmpegCommand(audio.Script) { Index = audio.Script.GetNewIndex(), SimpleMediaType = audio.SimpleMediaType };
 
-            var commandName = $"{atrim}adelay={startMS}|{startMS}";
+        //    var commandName = $"amix=inputs={audios.Count}:duration=longest";
+        //    cmd.Command = $"{audios.Select(t => t.OutputLable).Join()}{commandName}{cmd.OutputLable}";
+        //    audio.Script.Commands.Add(cmd);
+        //    return cmd;
+        //}
 
-            cmd.Command = $"{audio.OutputLable}{commandName}{cmd.OutputLable}";
-            audio.Script.Commands.Add(cmd);
-            audio.Script.Audios.Add(cmd);
-            return cmd;
-        }
+        //public static SimpleFFmpegCommand PutAudio(this SimpleFFmpegCommand audio, int startMS, int? clipStart = 0, int? clipEnd = 0)
+        //{
+        //    /*
+        //     ffmpeg -i videoA.mp4 -i videoB.mp4 -filter_complex \
+        //        "[1:v]trim=start=1:end=3,setpts=PTS-STARTPTS[vb]; \
+        //        [0:v][vb]overlay=enable='between(t,3.5,6.5)':x=0:y=0[out]" \
+        //        -map "[out]" -map 0:a -c:v libx264 -c:a copy -y output.mp4
+        //     */
+        //    /*
+        //     ffmpeg -i videoA.mp4 -i videoB.mp4 -i videoC.mp4 -filter_complex \
+        //        "[1:v]trim=start=1:end=3,setpts=PTS-STARTPTS[vb]; \
+        //         [2:v]trim=start=2:end=3,setpts=PTS-STARTPTS[vc]; \
+        //         [0:v][vb]overlay=enable='between(t,3.5,6.5)':x=0:y=0[va]; \
+        //         [va][vc]overlay=enable='between(t,7,8)':x=0:y=0[out]" \
+        //        -map "[out]" -map 0:a -c:v libx264 -c:a copy -y output.mp4
+        //     */
+        //    var cmd = new SimpleFFmpegCommand(audio.Script) { Index = audio.Script.GetNewIndex(), SimpleMediaType = audio.SimpleMediaType };
+        //    var atrim = "";
+        //    if (clipEnd.HasValue && clipEnd.HasValue)
+        //    {
+        //        atrim = $"atrim=start={clipStart.Value}:end={clipEnd.Value},asetpts=PTS-STARTPTS,";
+        //    }
+
+        //    var commandName = $"{atrim}adelay={startMS}|{startMS}";
+
+        //    cmd.Command = $"{audio.OutputLable}{commandName}{cmd.OutputLable}";
+        //    audio.Script.Commands.Add(cmd);
+        //    audio.Script.Audios.Add(cmd);
+        //    return cmd;
+        //}
 
         public static void CreateEmptyVideo(string outputFile, int durationMS, string image = null, Color? color = null)
         {
@@ -722,34 +691,34 @@ namespace AI.Labs.Module.BusinessObjects
             }
         }
 
-        public static void Concat(IEnumerable<MediaClip> clips, string outputFile, bool overWriteExist = true, StreamWriter logWriter = null)
-        {
-            var videos = clips.Select(t => t.VideoClip);
-            var audios = clips.Select(t => t.AudioClip);
+        //public static void Concat(IEnumerable<MediaClip> clips, string outputFile, bool overWriteExist = true, StreamWriter logWriter = null)
+        //{
+        //    var videos = clips.Select(t => t.VideoClip);
+        //    var audios = clips.Select(t => t.AudioClip);
 
-            var n = videos.Count();
-            var an = audios.Count();
-            if (n != an)
-                throw new ArgumentException($"videos:{n},audios:{an}", "视频和音频数量不一致！");
+        //    var n = videos.Count();
+        //    var an = audios.Count();
+        //    if (n != an)
+        //        throw new ArgumentException($"videos:{n},audios:{an}", "视频和音频数量不一致！");
 
-            var videoOnly = Path.Combine(Path.GetDirectoryName(outputFile), "VideoOnly.mp4");
-            var audioOnly = Path.Combine(Path.GetDirectoryName(outputFile), "AudioOnly.mp3");
-            var v = Concat(clips.Last().End.TotalMilliseconds, videos.Select(t => t.OutputFile), videoOnly, true, "videolist.txt");
-            var a = Concat(clips.Last().End.TotalMilliseconds, audios.Select(t => t.OutputFile), audioOnly, false, "audiolist.txt");
+        //    var videoOnly = Path.Combine(Path.GetDirectoryName(outputFile), "VideoOnly.mp4");
+        //    var audioOnly = Path.Combine(Path.GetDirectoryName(outputFile), "AudioOnly.mp3");
+        //    var v = Concat(clips.Last().End.TotalMilliseconds, videos.Select(t => t.OutputFile), videoOnly, true, "videolist.txt");
+        //    var a = Concat(clips.Last().End.TotalMilliseconds, audios.Select(t => t.OutputFile), audioOnly, false, "audiolist.txt");
 
-            logWriter?.WriteLine($"VideoOnly 时长:{v},AudioOnly 时长:{a},差异:{v - a}");
-            //ffmpeg
-            var arguments = $" -loglevel error -i {videoOnly} -i {audioOnly} -c:v copy -c:a aac -strict experimental ";
+        //    logWriter?.WriteLine($"VideoOnly 时长:{v},AudioOnly 时长:{a},差异:{v - a}");
+        //    //ffmpeg
+        //    var arguments = $" -loglevel error -i {videoOnly} -i {audioOnly} -c:v copy -c:a aac -strict experimental ";
 
-            try
-            {
-                ExecuteCommand("合并视频", audios.Last().EndTime.TotalSeconds, arguments, outputFile, overWriteExist: overWriteExist);
-            }
-            finally
-            {
-                //File.Delete(tempFile);
-            }
-        }
+        //    try
+        //    {
+        //        ExecuteCommand("合并视频", audios.Last().EndTime.TotalSeconds, arguments, outputFile, overWriteExist: overWriteExist);
+        //    }
+        //    finally
+        //    {
+        //        //File.Delete(tempFile);
+        //    }
+        //}
 
         private static void WriteToFile(string fileName, IEnumerable<string> fileLines)
         {

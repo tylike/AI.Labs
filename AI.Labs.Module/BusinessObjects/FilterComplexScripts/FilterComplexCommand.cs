@@ -1,10 +1,16 @@
-﻿namespace AI.Labs.Module.BusinessObjects
+﻿namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
 {
-    public class SimpleFFmpegCommand
+    public class FilterComplexCommand
     {
-        public SimpleFFmpegCommand(SimpleFFmpegScript script)
+        public FilterComplexCommand()
         {
-            this.Script = script;
+
+        }
+
+        [Obsolete("使用Script.CreateCommand", false)]
+        public FilterComplexCommand(FilterComplexScript script)
+        {
+            Script = script;
         }
 
         public int Index { get; set; }
@@ -29,7 +35,7 @@
 
         public SimpleMediaType SimpleMediaType { get; set; }
 
-        public SimpleFFmpegScript Script { get; }
+        public FilterComplexScript Script { get; internal set; }
 
     }
 }

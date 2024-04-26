@@ -6,10 +6,8 @@ using System.Text;
 //using SubtitlesParser.Classes.Parsers;
 namespace AI.Labs.Module.BusinessObjects.Helper
 {
-
     public static class SRTHelper
     {
-
         #region old
         public static IEnumerable<string> AddPunctuation(IEnumerable<string> lines)
         {

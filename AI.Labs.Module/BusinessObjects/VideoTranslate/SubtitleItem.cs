@@ -4,24 +4,19 @@ using DevExpress.Xpo;
 using DevExpress.ExpressApp.Model;
 using System.Drawing;
 using System.ComponentModel;
+using DevExpress.Persistent.Base;
+using AI.Labs.Module.BusinessObjects.AudioBooks;
 //using SubtitlesParser.Classes.Parsers;
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 {
     [XafDisplayName("字幕")]
     [XafDefaultProperty(nameof(Index))]
-    public class SubtitleItem : SimpleXPObject,ISRT,IClip
+    public class SubtitleItem : SimpleXPObject,ISRT //,IClip
     {
         public SubtitleItem(Session s) : base(s)
         {
 
         }
-
-        //[Association]
-        //public NSubtitleItem NSubtitle
-        //{
-        //    get { return GetPropertyValue<NSubtitleItem>(nameof(NSubtitle)); }
-        //    set { SetPropertyValue(nameof(NSubtitle), value); }
-        //}
 
         [Association]
         [XafDisplayName("所属视频")]
@@ -40,6 +35,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         
         [XafDisplayName("开始时间")]
         [ModelDefault("DisplayFormat", "{0:HH:mm:ss.fff}")]
+        [ToolTip("指在原视频中的开始显示时间")]
         public TimeSpan StartTime
         {
             get { return GetPropertyValue<TimeSpan>(nameof(StartTime)); }
@@ -54,7 +50,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             set { SetPropertyValue(nameof(EndTime), value); }
         }
 
-
+        [XafDisplayName("开始时间.实际")]
         public TimeSpan FixedStartTime
         {
             get { return GetPropertyValue<TimeSpan>(nameof(FixedStartTime)); }
@@ -71,37 +67,17 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
         }
 
-        public void SetFixedEndTime(TimeSpan value,MediaClip clip)
-        {
-            FixedEndTime = value;
-            if (clip != null && clip.VideoClip.Next!=null)
-            {
-                clip.VideoClip.Next.Subtitle.FixedStartTime = value;
-            }
-        }
+        [XafDisplayName("时长.实际")]
         public int FixedDuration
         {
             get { return (int)(FixedEndTime - FixedStartTime).TotalMilliseconds; }
         }
 
+        [XafDisplayName("结束时间.实际")]
         public TimeSpan FixedEndTime
         {
-            get 
-            {
-                return GetPropertyValue<TimeSpan>(nameof(FixedEndTime)); 
-            }
-            set 
-            {
-                if (!IsLoading)
-                {
-                    if(value.Seconds == 3)
-                    {
-
-                    }
-
-                }
-                SetPropertyValue(nameof(FixedEndTime), value); 
-            }
+            get => GetPropertyValue<TimeSpan>(nameof(FixedEndTime));
+            set => SetPropertyValue(nameof(FixedEndTime), value);
         }
 
 
@@ -155,16 +131,12 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         string ISRT.Text { get => PlainText; set => PlainText = value; }
 
-        string IClip.GetClipType() => "字幕";
 
-
-
-        //[Association]
-        //public TranslateTask TranslateTask
-        //{
-        //    get { return GetPropertyValue<TranslateTask>(nameof(TranslateTask)); }
-        //    set { SetPropertyValue(nameof(TranslateTask), value); }
-        //}
+        public AudioBookTextAudioItem Audio
+        {
+            get { return GetPropertyValue<AudioBookTextAudioItem>(nameof(Audio)); }
+            set { SetPropertyValue(nameof(Audio), value); }
+        }
 
 
     }

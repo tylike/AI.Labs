@@ -6,7 +6,7 @@ namespace AI.Labs.Module.BusinessObjects
 {
     public static class XabeFFmpegExtendesion
     {
-        public async static Task<IConversionResult> Run(this Xabe.FFmpeg.IConversion conversion)
+        public async static Task<IConversionResult> Run(this IConversion conversion)
         {
             var cmd = conversion.Build();
             Debug.WriteLine(cmd);

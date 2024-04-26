@@ -1,8 +1,6 @@
 ﻿using DevExpress.ExpressApp.DC;
 using DevExpress.Xpo;
-using System.Text;
 //using SubtitlesParser.Classes; // 引入SubtitlesParser的命名空间
-using System.Text.RegularExpressions;
 using DevExpress.Persistent.Base;
 using DevExpress.ExpressApp.Model;
 using DevExpress.ExpressApp;
@@ -20,105 +18,6 @@ using AI.Labs.Module.BusinessObjects.Helper;
 //using SubtitlesParser.Classes.Parsers;
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 {
-    public class SrtChecker
-    {
-        public static string CheckSrtFile(string filePath)
-        {
-            var sb = new StringBuilder();
-            var lines = File.ReadAllLines(filePath);
-            var regex = new Regex(@"^\d+$");
-            var timeRegex = new Regex(@"\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}");
-
-            for (int i = 0; i < lines.Length; i++)
-            {
-                if (i % 4 == 0 && !regex.IsMatch(lines[i]))
-                {
-                    sb.AppendLine($"错误行号: {i + 1}: {lines[i]} 不是有效的行号.");
-                }
-                else if (i % 4 == 1 && !timeRegex.IsMatch(lines[i]))
-                {
-                    sb.AppendLine($"错误行号: {i + 1}: {lines[i]} 不是有效的时间格式.");
-                }
-            }
-            return sb.ToString();
-        }
-        public static string CheckSrt(string input)
-        {
-            var sb = new StringBuilder();
-            var lines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-            var regex = new Regex(@"^\d+$");
-            var timeRegex = new Regex(@"\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}");
-
-            for (int i = 0; i < lines.Length; i++)
-            {
-                if (i % 4 == 0 && !regex.IsMatch(lines[i]))
-                {
-                    sb.AppendLine($"错误行号: {i + 1}: {lines[i]} 不是有效的行号.");
-                }
-                else if (i % 4 == 1 && !timeRegex.IsMatch(lines[i]))
-                {
-                    sb.AppendLine($"错误行号: {i + 1}: {lines[i]} 不是有效的时间格式.");
-                }
-            }
-            return sb.ToString();
-        }
-    }
-    public class SrtFixer
-    {
-        public static string AutoFixSrtFormat(string input)
-        {
-            var lines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-            var sb = new StringBuilder();
-            for (int i = 0; i < lines.Length; i++)
-            {
-                if (i > 0 && IsNumeric(lines[i]) && !string.IsNullOrWhiteSpace(lines[i - 1]))
-                {
-                    sb.AppendLine();
-                }
-                sb.AppendLine(lines[i]);
-            }
-            return sb.ToString();
-        }
-
-        public static void AutoFixSrtFileFormat(string filePath)
-        {
-            var lines = File.ReadAllLines(filePath);
-            using (var sw = new StreamWriter(filePath))
-            {
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    if (i > 0 && IsNumeric(lines[i]) && !string.IsNullOrWhiteSpace(lines[i - 1]))
-                    {
-                        sw.WriteLine();
-                    }
-                    sw.WriteLine(lines[i]);
-                }
-            }
-        }
-
-        private static bool IsNumeric(string line)
-        {
-            return Regex.IsMatch(line, @"^\d+$");
-        }
-    }
-
-    public static class StringExtensions
-    {
-        //c#中，如何将一个字符串按长度分成N个组
-        public static IEnumerable<string> SplitIntoGroups(this string input, int groupSize)
-        {
-            if (string.IsNullOrEmpty(input))
-                throw new ArgumentException("Input string cannot be null or empty.");
-
-            if (groupSize <= 0)
-                throw new ArgumentException("Group size must be greater than zero.");
-
-            for (int i = 0; i < input.Length; i += groupSize)
-            {
-                yield return input.Substring(i, Math.Min(groupSize, input.Length - i));
-            }
-        }
-    }
 
     public class YoutubeChannel : SimpleXPObject
     {
@@ -144,44 +43,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         {
             get { return GetPropertyValue<string>(nameof(ChannelUrl)); }
             set { SetPropertyValue(nameof(ChannelUrl), value); }
-        }
-    }
-
-    public class FFmpegScript : SimpleXPObject
-    {
-        public FFmpegScript(Session s) : base(s)
-        {
-
-        }
-
-
-        public VideoInfo Video
-        {
-            get { return GetPropertyValue<VideoInfo>(nameof(Video)); }
-            set { SetPropertyValue(nameof(Video), value); }
-        }
-
-
-        [Size(-1)]
-        [ModelDefault("RowCount","0")]
-        public string StartCommand
-        {
-            get { return GetPropertyValue<string>(nameof(StartCommand)); }
-            set { SetPropertyValue(nameof(StartCommand), value); }
-        }
-
-        [Size(-1)]
-        public string FilterComplexText
-        {
-            get { return GetPropertyValue<string>(nameof(FilterComplexText)); }
-            set { SetPropertyValue(nameof(FilterComplexText), value); }
-        }
-
-        [Size(-1)]
-        public string Output
-        {
-            get { return GetPropertyValue<string>(nameof(Output)); }
-            set { SetPropertyValue(nameof(Output), value); }
         }
     }
 
@@ -484,11 +345,11 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         #endregion
 
 
-        public FFmpegScript VideoScript
+        public VisualFilterComplexScript VideoScript
         {
             get 
             {
-                return GetPropertyValue<FFmpegScript>(nameof(VideoScript));
+                return GetPropertyValue<VisualFilterComplexScript>(nameof(VideoScript));
             }
             set 
             {
@@ -496,7 +357,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
         }
 
-        public void SaveFixedSRT()
+        public (string CnSRT,string EnSRT) SaveFixedSRT()
         {
             var cnSrtFile = new SRTFile() { FileName = Path.Combine(ProjectPath, "cnsrt.fix.srt"), UseIndex = true };
             var enSrtFile = new SRTFile() { FileName = Path.Combine(ProjectPath, "ensrt.fix.srt"), UseIndex = true };
@@ -528,6 +389,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
             cnSrtFile.Save();
             enSrtFile.Save();
+            return (cnSrtFile.FileName, enSrtFile.FileName);
         }
 
         [XafDisplayName("语言模型")]
@@ -592,7 +454,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         {
             if (this.VideoScript == null)
             {
-                this.VideoScript = new FFmpegScript(Session);
+                this.VideoScript = new VisualFilterComplexScript(Session);
                 this.VideoScript.Video = this;
             }
         }
@@ -871,35 +733,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         仅有视频,
         仅有音频,
         完整视频
-    }
-    public static class ListExtensions
-    {
-        // 分页扩展方法
-        public static IEnumerable<IEnumerable<T>> Paginate<T>(this IEnumerable<T> source, int pageSize)
-        {
-            if (pageSize <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
-            }
-
-            using (var enumerator = source.GetEnumerator())
-            {
-                while (enumerator.MoveNext())
-                {
-                    yield return GetPage(enumerator, pageSize);
-                }
-            }
-        }
-
-        // 用于从迭代器中获取单个分页的帮助器方法
-        private static IEnumerable<T> GetPage<T>(IEnumerator<T> source, int pageSize)
-        {
-            do
-            {
-                yield return source.Current;
-            }
-            while (--pageSize > 0 && source.MoveNext());
-        }
     }
 
 }

@@ -57,10 +57,10 @@ public static class YE
         video.VideoFile = await Download(video.VideoURL, video.ProjectPath, t =>
         {
             video.DownloadProgress = t;
-        });
+        },video.Oid.ToString());
     }
 
-    public static async Task<string> Download(string url, string outputPath,Action<double> progressBar)
+    public static async Task<string> Download(string url, string outputPath,Action<double> progressBar,string mainFileName)
     {
         //Console.Title = "YoutubeExplode Demo";
 
@@ -81,9 +81,9 @@ public static class YE
             Console.Error.WriteLine("This video has no muxed streams.");
             return string.Empty;
         }
-
+        mainFileName = mainFileName ?? videoId;
         // Download the stream
-        var fileName = Path.Combine(outputPath, $"{videoId}.{streamInfo.Container.Name}");
+        var fileName = Path.Combine(outputPath, $"{mainFileName}.{streamInfo.Container.Name}");
 
         Console.Write(
             $"Downloading stream: {streamInfo.VideoQuality.Label} / {streamInfo.Container.Name}... "

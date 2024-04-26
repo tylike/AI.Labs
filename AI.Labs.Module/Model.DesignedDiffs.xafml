@@ -9,7 +9,7 @@
       <Action Id="呼叫助理主窗" Index="4" />
       <Action Id="生成语音" Index="5" />
       <Action Id="招聘助理" Index="6" />
-      <Action Id="AudioBook.CreateAudioBook" ImageName="Actions_Book" Index="7" PaintStyle="CaptionAndImage" />
+      <!--<Action Id="AudioBook.CreateAudioBook" ImageName="Actions_Book" Index="7" PaintStyle="CaptionAndImage" />-->
       <Action Id="AudioBook.ParseParagerahs" ImageName="SnapEmptyParagraphSeparator" Index="8" PaintStyle="CaptionAndImage" />
       <Action Id="AudioBook.PlayAudioBook" ImageName="Action_SimpleAction" Index="10" PaintStyle="CaptionAndImage" />
       <Action Id="BingChat.Chat" Index="13" />
