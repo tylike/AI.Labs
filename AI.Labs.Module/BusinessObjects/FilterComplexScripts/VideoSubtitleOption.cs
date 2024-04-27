@@ -9,35 +9,46 @@ using VisioForge.Libs.AForge.Imaging.Filters;
 using Xabe.FFmpeg;
 
 namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
-{
-    public enum FontAlignment
+{       
+    // 枚举定义
+    public enum TextAlignment
     {
-        TopLeft = 1,
-        TopCenter,
-        TopRight,
-        CenterLeft,
-        Center,
-        CenterRight,
-        BottomLeft,
-        BottomCenter,
-        BottomRight
+        BottomLeft = 1,
+        BottomCenter = 2,
+        BottomRight = 3,
+        MiddleLeft = 4,
+        MiddleCenter = 5,
+        MiddleRight = 6,
+        TopLeft = 7,
+        TopCenter = 8,
+        TopRight = 9
+    }
+
+    public enum BorderStyle
+    {
+        Normal = 1,
+        NoBorderShadow = 3
     }
     public class VideoSubtitleOption
     {
         public string SrtFileName { get; set; }
         public int? FontSize { get; set; }
-        public string FontName { get; set; } = "微软雅黑";
-        public string PrimaryColour { get; set; }
-        public string SecondaryColour { get; set; }
-        public string TertiaryColour { get; set; }
-        public string BackColour { get; set; }
-        public string OutlineColour { get; set; }
-        public int? OutlineThickness { get; set; }
-        public FontAlignment? Alignment { get; set; }
+        public string FontName { get; set; }
+        public string PrimaryColor { get; set; }
+        public string SecondaryColor { get; set; }
+        public string OutlineColor { get; set; }
+        public string BackColor { get; set; }
+        public bool? Bold { get; set; }
+        public bool? Italic { get; set; }
+        public bool? Underline { get; set; }
+        public bool? StrikeOut { get; set; }
+        public int? Outline { get; set; }
+        public int? Shadow { get; set; }
         public int? MarginL { get; set; }
         public int? MarginR { get; set; }
         public int? MarginV { get; set; }
-
+        public TextAlignment? Alignment { get; set; }
+        public BorderStyle? BorderStyle { get; set; }
         public string GetStyle()
         {
             var styleOptions = new List<string>();
@@ -48,44 +59,124 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
             if (!string.IsNullOrEmpty(FontName))
                 styleOptions.Add($"Fontname={FontName}");
 
-            if (!string.IsNullOrEmpty(PrimaryColour))
-                styleOptions.Add($"PrimaryColour={PrimaryColour}");
-
-            if (!string.IsNullOrEmpty(SecondaryColour))
-                styleOptions.Add($"SecondaryColour={SecondaryColour}");
-
-            if (!string.IsNullOrEmpty(TertiaryColour))
-                styleOptions.Add($"TertiaryColour={TertiaryColour}");
-
-            if (!string.IsNullOrEmpty(BackColour))
-                styleOptions.Add($"BackColour={BackColour}");
-
-            if (!string.IsNullOrEmpty(OutlineColour))
-                styleOptions.Add($"OutlineColour={OutlineColour}");
-
-            if (OutlineThickness.HasValue)
-                styleOptions.Add($"OutlineThickness={OutlineThickness.Value}");
-
-            if (Alignment.HasValue)
-                styleOptions.Add($"Alignment={(int)Alignment.Value}");
-
+            if (!string.IsNullOrEmpty(PrimaryColor))
+                styleOptions.Add($"PrimaryColour={PrimaryColor}");
+            if (!string.IsNullOrEmpty(SecondaryColor))
+                styleOptions.Add($"SecondaryColour={SecondaryColor}");
+            if (!string.IsNullOrEmpty(OutlineColor))
+                styleOptions.Add($"OutlineColour={OutlineColor}");
+            if (!string.IsNullOrEmpty(BackColor))
+                styleOptions.Add($"BackColour={BackColor}");
+            if (Bold.HasValue)
+                styleOptions.Add($"Bold={(Bold.Value ? -1 : 0)}");
+            if (Italic.HasValue)
+                styleOptions.Add($"Italic={(Italic.Value ? -1 : 0)}");
+            if (Underline.HasValue)
+                styleOptions.Add($"Underline={(Underline.Value ? -1 : 0)}");
+            if (StrikeOut.HasValue)
+                styleOptions.Add($"StrikeOut={(StrikeOut.Value ? -1 : 0)}");
+            if (Outline.HasValue)
+                styleOptions.Add($"Outline={Outline.Value}");
+            if (Shadow.HasValue)
+                styleOptions.Add($"Shadow={Shadow.Value}");
             if (MarginL.HasValue)
                 styleOptions.Add($"MarginL={MarginL.Value}");
-
             if (MarginR.HasValue)
                 styleOptions.Add($"MarginR={MarginR.Value}");
-
             if (MarginV.HasValue)
                 styleOptions.Add($"MarginV={MarginV.Value}");
+            if (Alignment.HasValue)
+                styleOptions.Add($"Alignment={(int)Alignment.Value}");
+            if (BorderStyle.HasValue)
+                styleOptions.Add($"BorderStyle={(int)BorderStyle.Value}");
 
             return string.Join(",", styleOptions);
         }
 
         public string GetScript()
         {
+            // Assuming DrawTextOption.FixText is a method to sanitize SrtFileName
             return $"subtitles='{DrawTextOption.FixText(SrtFileName)}':force_style='{GetStyle()}'";
         }
     }
+
+
+    //public enum FontAlignment
+    //{
+    //    TopLeft = 1,
+    //    TopCenter,
+    //    TopRight,
+    //    CenterLeft,
+    //    Center,
+    //    CenterRight,
+    //    BottomLeft,
+    //    BottomCenter,
+    //    BottomRight
+    //}
+    //public class VideoSubtitleOption
+    //{
+    //    public string SrtFileName { get; set; }
+    //    public int? FontSize { get; set; }
+    //    public string FontName { get; set; } = "微软雅黑";
+    //    public string PrimaryColour { get; set; }
+    //    public string SecondaryColour { get; set; }
+    //    public string TertiaryColour { get; set; }
+    //    public string BackColour { get; set; }
+    //    public string OutlineColour { get; set; }
+    //    public int? OutlineThickness { get; set; }
+    //    public FontAlignment? Alignment { get; set; }
+    //    public int? MarginL { get; set; }
+    //    public int? MarginR { get; set; }
+    //    public int? MarginV { get; set; }
+
+    //    public string GetStyle()
+    //    {
+    //        var styleOptions = new List<string>();
+
+    //        if (FontSize.HasValue)
+    //            styleOptions.Add($"Fontsize={FontSize.Value}");
+
+    //        if (!string.IsNullOrEmpty(FontName))
+    //            styleOptions.Add($"Fontname={FontName}");
+
+    //        if (!string.IsNullOrEmpty(PrimaryColour))
+    //            styleOptions.Add($"PrimaryColour={PrimaryColour}");
+
+    //        if (!string.IsNullOrEmpty(SecondaryColour))
+    //            styleOptions.Add($"SecondaryColour={SecondaryColour}");
+
+    //        if (!string.IsNullOrEmpty(TertiaryColour))
+    //            styleOptions.Add($"TertiaryColour={TertiaryColour}");
+            
+    //        if (!string.IsNullOrEmpty(BackColour))
+    //            styleOptions.Add($"BackColour={BackColour}");
+
+    //        if (!string.IsNullOrEmpty(OutlineColour))
+    //            styleOptions.Add($"OutlineColour={OutlineColour}");
+
+    //        if (OutlineThickness.HasValue)
+    //            styleOptions.Add($"OutlineThickness={OutlineThickness.Value}");
+
+    //        if (Alignment.HasValue)
+    //            styleOptions.Add($"Alignment={(int)Alignment.Value}");
+
+    //        if (MarginL.HasValue)
+    //            styleOptions.Add($"MarginL={MarginL.Value}");
+
+    //        if (MarginR.HasValue)
+    //            styleOptions.Add($"MarginR={MarginR.Value}");
+
+    //        if (MarginV.HasValue)
+    //            styleOptions.Add($"MarginV={MarginV.Value}");
+
+    //        return string.Join(",", styleOptions);
+    //    }
+
+    //    public string GetScript()
+    //    {
+    //        return $"subtitles='{DrawTextOption.FixText(SrtFileName)}':force_style='{GetStyle()}'";
+    //    }
+    //}
 }
 
 //5.Style Lines, [v4 + Styles] section

@@ -258,7 +258,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                 //this.State = TTSState.Generatting;
                 var vs = item.GetFinalSolution();
                 var p = Path.Combine(item.AudioBook.OutputPath, $"{item.Index}.wav");
-                await vs.GenerateAudioToFile(item.ArticleText, p);
+                await vs.GenerateAudioToFile(item.Subtitle.CnText, p);
                 //OutputFileName = p;
                 //this.State = TTSState.Generated;
                 var audioDuration = (int)FFmpegHelper.GetDuration(p).Value;

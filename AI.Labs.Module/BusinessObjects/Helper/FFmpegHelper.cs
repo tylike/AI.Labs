@@ -238,7 +238,10 @@ namespace AI.Labs.Module.BusinessObjects
                 );
         }
 
-        public static void ExecuteFFmpegCommand(string inputOptions = "", string inputFiles = "", string filterComplex = "", string outputOptions = "", string outputFiles = "", bool showWindow = false)
+        public static void ExecuteFFmpegCommand(
+            string inputOptions = "", string inputFiles = "", string filterComplex = "", string outputOptions = "", string outputFiles = "", 
+            bool showWindow = false,
+            bool writeDebugBat = false)
         {
             if (!string.IsNullOrEmpty(filterComplex))
             {
@@ -249,7 +252,13 @@ namespace AI.Labs.Module.BusinessObjects
 
                 filterComplex = $"-/filter_complex {filterComplexFile}";
             }
-            ExecuteFFmpegCommand($"{inputOptions} {inputFiles} {filterComplex} {outputOptions} {outputFiles}", showWindow);
+            var cmd = $"{inputOptions} {inputFiles} {filterComplex} {outputOptions} {outputFiles}";
+            if (!string.IsNullOrEmpty(outputFiles) && writeDebugBat)
+            {
+                File.WriteAllText(outputFiles + ".bat", $"{ffmpegFile} {cmd}");
+            }
+
+            ExecuteFFmpegCommand(cmd, showWindow);
         }
         /// <summary>
         /// 执行ffmpeg        
@@ -265,7 +274,6 @@ namespace AI.Labs.Module.BusinessObjects
             p.StartInfo.CreateNoWindow = !showWindow;
             p.StartInfo.UseShellExecute = false;
             Debug.WriteLine($"{ffmpegFile} {command}");
-
             Debug.WriteLine($"{ffmpegFile} {command.Replace(";", ";\n")}");
 
 

@@ -18,6 +18,7 @@ using AI.Labs.Module.BusinessObjects.Helper;
 using AI.Labs.Module.BusinessObjects.FilterComplexScripts;
 using DevExpress.ExpressApp.Xpo;
 using AI.Labs.Module.BusinessObjects.STT;
+using System.Drawing;
 //using SubtitlesParser.Classes.Parsers;
 
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
@@ -115,9 +116,9 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private async void OneKey_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            var s = (ObjectSpace as XPObjectSpace).Session;
-            s.ExecuteNonQuery($"update {nameof(VideoInfo)} set {nameof(VideoInfo.VideoScript)} = null");
-            ObjectSpace.CommitChanges();
+            //var s = (ObjectSpace as XPObjectSpace).Session;
+            //s.ExecuteNonQuery($"update {nameof(VideoInfo)} set {nameof(VideoInfo.VideoScript)} = null");
+            //ObjectSpace.CommitChanges();
 
             if (ViewCurrentObject.Model == null)
             {
@@ -167,7 +168,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             CreateVideoProduct(this.ObjectSpace, ViewCurrentObject);
             //调用生成视频
         }
-        void CreateVideoProduct(IObjectSpace objectSpace, VideoInfo video)
+        public static void CreateVideoProduct(IObjectSpace objectSpace, VideoInfo video)
         {
             var vi = video;
             vi.CnAudioSolution.FixSubtitleTimes();
@@ -190,13 +191,18 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 .ToArray();
 
             #region 准备音频
-            //这里的音频成为了视频的最后标准。
+            //这里的音频成为了视频的最后标准。并行有时会有null的元素
+            //为什么?
             Parallel.ForEach(audios, item =>
+            {
+
+            });
+            foreach (var item in audios)
             {
                 Console.WriteLine("预处理音频" + item.Index);
                 var p = new AudioParameter { Index = item.Index, FileName = item.OutputFileName, StartTimeMS = (int)item.Subtitle.FixedStartTime.TotalMilliseconds, EndTimeMS = (int)item.Subtitle.FixedEndTime.TotalMilliseconds };
                 testScript.ImportAudioClip(p);
-            });
+            }
 
             sw.Stop();
             var pmsg = $"并行，预处理音频耗时:{sw.ElapsedMilliseconds}ms";
@@ -216,21 +222,27 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
                 testScript.VideoProductClips.Add(videoClip);
 
-                var y1 = 50 * (item.Index % 10);
-                if ((item.Subtitle.FixedEndTime - item.Subtitle.EndTime).TotalMilliseconds >= 1500)
-                {
-                    testScript.DrawText(300, y1, $"{item.Index}-原片:{item.Subtitle.StartTime}-{item.Subtitle.EndTime} {y1}", 24, item.Subtitle.StartTime, item.Subtitle.EndTime);
-                    testScript.DrawText(640, y1, $"{item.Index}-延长:{item.Subtitle.EndTime}-{item.Subtitle.FixedEndTime}", 24, item.Subtitle.EndTime, item.Subtitle.FixedEndTime);
-                }
+                //var y1 = 50 * (item.Index % 10);
+                //if ((item.Subtitle.FixedEndTime - item.Subtitle.EndTime).TotalMilliseconds >= 1500)
+                //{
+                //    testScript.DrawText(300, y1, $"{item.Index}-原片:{item.Subtitle.StartTime}-{item.Subtitle.EndTime} {y1}", 24, item.Subtitle.StartTime, item.Subtitle.EndTime);
+                //    testScript.DrawText(640, y1, $"{item.Index}-延长:{item.Subtitle.EndTime}-{item.Subtitle.FixedEndTime}", 24, item.Subtitle.EndTime, item.Subtitle.FixedEndTime);
+                //}
             }
 
-            testScript.AddSubtitle(new VideoSubtitleOption { SrtFileName = srt.CnSRT, OutlineColour = "#00ff0000",MarginV = 100 });
-            testScript.AddSubtitle(new VideoSubtitleOption { SrtFileName = srt.EnSRT, OutlineColour = "#ff000000",MarginV = 200 }); 
+            testScript.AddSubtitle(new VideoSubtitleOption { SrtFileName = srt.CnSRT, FontSize = 12, PrimaryColor = ColorToFFmpegColorString(Color.Black), OutlineColor = ColorToFFmpegColorString(Color.White), Outline = 1, MarginV = 60 });
+            testScript.AddSubtitle(new VideoSubtitleOption { SrtFileName = srt.EnSRT, FontSize = 10, PrimaryColor = ColorToFFmpegColorString(Color.Yellow), OutlineColor = ColorToFFmpegColorString(Color.Black), Outline = 1, MarginV = 20 });
+
             testScript.DrawCurrentTime();
 
             testScript.Export();
 
             Console.WriteLine($"时长:{FFmpegHelper.GetDuration(file)}");
+        }
+
+        public static string ColorToFFmpegColorString(Color color)
+        {
+            return $"&H{255 - color.A:X2}{color.B:X2}{color.G:X2}{color.R:X2}";
         }
 
         private async void BatchTranslate_Execute(object sender, SimpleActionExecuteEventArgs e)

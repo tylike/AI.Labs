@@ -91,18 +91,19 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
         public List<FilterComplexCommand> VideoProductClips { get; set; } = new List<FilterComplexCommand>();
 
 
-        public void ImportAudioClip(AudioParameter p)
+        public void ImportAudioClip(AudioParameter audioParameter)
         {
+            ArgumentNullException.ThrowIfNull(audioParameter,nameof(audioParameter));
 #warning 简单判断如果是mp3文件
-            var filename = p.FileName;
+            var filename = audioParameter.FileName;
             if (!string.IsNullOrEmpty(filename) && Path.GetExtension(filename).ToLower() == ".mp3")
             {
                 var fn = filename;
                 fn = filename + ".wav";
                 FFmpegHelper.Mp32Wav(filename, fn);
-                p.FileName = fn;
+                audioParameter.FileName = fn;
             }
-            AudioParameters.Add(p);
+            AudioParameters.Add(audioParameter);
         }
 
         public FilterComplexCommand InputAudio(string filename)
@@ -164,7 +165,8 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
                 filterComplex: filterComplex,
                 outputFiles: OutputFileName,//
                 outputOptions: $"-c:v libx264 -crf 18 -y -map \"{videoProductV2_WithDrawTexts.OutputLable}\" -map \"{InputAudioCommands.First().OutputLable[1..^1]}\" ",
-                showWindow: true
+                showWindow: true,
+                writeDebugBat:true
             );
 
             Console.WriteLine($"时长:{FFmpegHelper.GetDuration(OutputFileName)}");
@@ -224,6 +226,7 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
                 Top = y.ToString(),
                 Option = DefaultTextOption,
                 StartTime = TimeSpan.Zero,
+               
                 EndTime = TimeSpan.FromSeconds(90)
             };
 

@@ -15,6 +15,7 @@ using AI.Labs.Module.BusinessObjects.AudioBooks;
 using AI.Labs.Module.BusinessObjects.STT;
 using System.Security.Cryptography;
 using AI.Labs.Module.BusinessObjects.Helper;
+using System.Text;
 //using SubtitlesParser.Classes.Parsers;
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 {
@@ -347,17 +348,43 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         public VisualFilterComplexScript VideoScript
         {
-            get 
+            get
             {
                 return GetPropertyValue<VisualFilterComplexScript>(nameof(VideoScript));
             }
-            set 
+            set
             {
-                SetPropertyValue(nameof(VideoScript), value); 
+                SetPropertyValue(nameof(VideoScript), value);
             }
         }
 
-        public (string CnSRT,string EnSRT) SaveFixedSRT()
+        public static string InsertNewlines(string text, int maxLineLength)
+        {
+            StringBuilder sb = new StringBuilder();
+            int currentLineLength = 0;
+
+            foreach (char c in text)
+            {
+                if (currentLineLength >= maxLineLength && !char.IsWhiteSpace(c))
+                {
+                    sb.Append("\n");
+                    currentLineLength = 0;
+                }
+
+                sb.Append(c);
+                currentLineLength++;
+
+                // Reset line length after newline
+                if (c == '\n' || c == '\r' || c == '\\')
+                {
+                    currentLineLength = 0;
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        public (string CnSRT, string EnSRT) SaveFixedSRT()
         {
             var cnSrtFile = new SRTFile() { FileName = Path.Combine(ProjectPath, "cnsrt.fix.srt"), UseIndex = true };
             var enSrtFile = new SRTFile() { FileName = Path.Combine(ProjectPath, "ensrt.fix.srt"), UseIndex = true };
@@ -370,7 +397,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
                 if (!string.IsNullOrEmpty(cnText))
                 {
-                    cnText = cnText.Replace("\n", "");
+                    cnText = InsertNewlines(cnText.Replace("\n", ""), 40);
                     cnSrtItem.Index = item.Index;
                     cnSrtItem.StartTime = item.Subtitle.FixedStartTime;
                     cnSrtItem.EndTime = item.Subtitle.FixedEndTime;
@@ -641,20 +668,23 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             this.VideoScript.Output += $"{Environment.NewLine} {DateTime.Now.TimeOfDay} {str}";
         }
 
-        public void SaveSRTToFile(SrtLanguage lang,string addationName = "",bool saveFixed = false)
+        public void SaveSRTToFile(SrtLanguage lang, string addationName = "", bool saveFixed = false)
         {
             var t = this;
             //保存翻译结果
             var fileName = Path.Combine(t.ProjectPath, $"{t.Oid}.{lang.ToString()}{addationName}.srt");
-            SRTHelper.SaveToSrtFile(t.Subtitles, fileName, lang,saveFixed);
-            t.VideoChineseSRT = fileName;
+            SRTHelper.SaveToSrtFile(t.Subtitles, fileName, lang, saveFixed);
+            if (lang == SrtLanguage.中文)
+            {
+                t.VideoChineseSRT = fileName;
+            }
         }
     }
 
-    public class Log:XPObject
+    public class Log : XPObject
     {
 
-       public Log(Session s) : base(s)
+        public Log(Session s) : base(s)
         {
 
         }
