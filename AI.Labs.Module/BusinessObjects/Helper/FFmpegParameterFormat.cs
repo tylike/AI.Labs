@@ -1,9 +1,14 @@
-﻿using System.Text;
+﻿using System.Drawing;
+using System.Text;
 
 namespace AI.Labs.Module.BusinessObjects
 {
     public static class FFmpegParameterFormat
     {
+        public static string ToFFmpegColorString(this Color color)
+        {
+            return $"&H{255 - color.A:X2}{color.B:X2}{color.G:X2}{color.R:X2}";
+        }
         public static void AppendNotEmptyOrNull(this StringBuilder sb, string text, bool appendLine = false)
         {
             if (!string.IsNullOrEmpty(text))

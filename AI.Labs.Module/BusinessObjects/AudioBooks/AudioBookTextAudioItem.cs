@@ -257,12 +257,14 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             {
                 //this.State = TTSState.Generatting;
                 var vs = item.GetFinalSolution();
-                var p = Path.Combine(item.AudioBook.OutputPath, $"{item.Index}.wav");
+                var p = Path.Combine(item.AudioBook.OutputPath, $"{item.Index}.mp3");
                 await vs.GenerateAudioToFile(item.Subtitle.CnText, p);
                 //OutputFileName = p;
                 //this.State = TTSState.Generated;
                 var audioDuration = (int)FFmpegHelper.GetDuration(p).Value;
+                //****//
                 ChangeSpeed(p,audioDuration,item.Subtitle.Duration);
+
                 //OutputFileName = rst.Item1;
                 item.OutputFileName = p;
                 Debug.WriteLine("完成:"+item.OutputFileName);
@@ -274,20 +276,23 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
 
         #region 速度调整
         //[Action(Caption = "自动调速")]
-        public static int ChangeSpeed(string OutputFileName,int AudioDuration,int SubtitleDuration)
+        public static int ChangeSpeed(string OutputFileName, int AudioDuration, int SubtitleDuration)
         {
             var speed = 1d;
             if (AudioDuration > SubtitleDuration)
             {
-                var rst = 计算调速(AudioDuration,SubtitleDuration);
+                var rst = 计算调速(AudioDuration, SubtitleDuration);
                 if (rst.实际倍速 != 0)
                 {
                     speed = rst.实际倍速;
                 }
             }
-            FFmpegHelper.Mp32Wav(OutputFileName, OutputFileName + ".wav", speed: speed);
+
+            var output = OutputFileName + ".mp3";
+            FFmpegHelper.ChangeAudioSpeed(OutputFileName, output, speed: speed);
+            //FFmpegHelper.Mp32Wav(OutputFileName, OutputFileName + ".wav", speed: speed);
             File.Delete(OutputFileName);
-            File.Move(OutputFileName + ".wav", OutputFileName);
+            File.Move(output, OutputFileName);
             return (int)FFmpegHelper.GetDuration(OutputFileName).Value;
         }
 

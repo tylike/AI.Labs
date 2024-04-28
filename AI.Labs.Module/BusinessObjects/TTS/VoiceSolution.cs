@@ -141,9 +141,10 @@ namespace AI.Labs.Module.BusinessObjects.TTS
             }
             return rst.ToArray();
         }
+
         public async Task GenerateAudioToFile(string text, string voiceName,string fileName)
         {
-            var data =await GetTextToSpeechData(text, voiceName);            
+            var data =await GetTextToSpeechData(text, voiceName);
             File.WriteAllBytes(fileName, data);
         }
 

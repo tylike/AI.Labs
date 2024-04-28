@@ -24,8 +24,8 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
 
         public double Speed { get; set; } = 1;
 
-        WaveFileReader waveFileReader;
-        public WaveFileReader WaveFileReader
+        Mp3FileReader waveFileReader;
+        public Mp3FileReader WaveFileReader
         {
             get
             {
@@ -37,7 +37,7 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
                         File.OpenRead(FileName).CopyTo(Stream);
                     }
                     Stream.Position = 0;
-                    waveFileReader = new WaveFileReader(Stream);
+                    waveFileReader = new Mp3FileReader(Stream);
                 }
                 return waveFileReader;
             }

@@ -1,10 +1,13 @@
 ﻿using AI.Labs.Module.BusinessObjects;
+using AI.Labs.Module.BusinessObjects.VideoTranslate;
+using DevExpress.DashboardCommon.DataProcessing;
 using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Xpo;
 using DevExpress.Spreadsheet;
 using DevExpress.Xpo;
 using DevExpress.XtraRichEdit.Layout.Engine;
 using System.Drawing;
+using System.Text;
 using VisioForge.Libs.MediaFoundation.OPM;
 
 namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
@@ -16,9 +19,13 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
         public Session Session => (os as XPObjectSpace).Session;
         #endregion
 
-        public FilterComplexScript(IObjectSpace os)
+        public FilterComplexScript(IObjectSpace os,VideoInfo video)
         {
             this.os = os;
+            this.video = video;
+            DefaultTextOption = new TextOption(Session) { FontSize = 11 };
+
+            // new TextOption(Session) { FontSize = fontSize, HasBoxBorder = true },
         }
         public string OutputFileName { get; set; }
 
@@ -94,15 +101,15 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
         public void ImportAudioClip(AudioParameter audioParameter)
         {
             ArgumentNullException.ThrowIfNull(audioParameter,nameof(audioParameter));
-#warning 简单判断如果是mp3文件
-            var filename = audioParameter.FileName;
-            if (!string.IsNullOrEmpty(filename) && Path.GetExtension(filename).ToLower() == ".mp3")
-            {
-                var fn = filename;
-                fn = filename + ".wav";
-                FFmpegHelper.Mp32Wav(filename, fn);
-                audioParameter.FileName = fn;
-            }
+            //#warning 简单判断如果是mp3文件
+            //var filename = audioParameter.FileName;
+            //if (!string.IsNullOrEmpty(filename) && Path.GetExtension(filename).ToLower() == ".mp3")
+            //{
+            //    var fn = filename;
+            //    fn = filename + ".wav";
+            //    FFmpegHelper.Mp32Wav(filename, fn);
+            //    audioParameter.FileName = fn;
+            //}
             AudioParameters.Add(audioParameter);
         }
 
@@ -149,22 +156,30 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
         {
             return Commands.Where(t => !string.IsNullOrEmpty(t.Command)).Select(t => t.Command).Join(";\n");
         }
+
+        public int? ForceDuration { get; set; }
+
         public void Export()
         {
             ArgumentNullException.ThrowIfNull(OutputFileName, nameof(OutputFileName));
 
             var videoProductV1 = CreateVideoProduct(VideoProductClips);
 
-            FilterComplexCommand videoProductV2_WithDrawTexts = CreateDrawTextScript(videoProductV1);
+            var videoProductV2_WithDrawTexts = CreateDrawTextScript(videoProductV1);
+
+            var videoProductV3_WithDrawProgressBar = 
+                CreateCommand(
+                    DrawProgressBar(videoProductV2_WithDrawTexts.OutputLable, "[VOut]")
+                    , SimpleMediaType.Video, false,outputLabel:"[VOut]");
 
             var filterComplex = GetComplexScript();
-
+            var forceDuration = ForceDuration.HasValue ? $"-t {ForceDuration.Value / 1000}" : "";
             FFmpegHelper.ExecuteFFmpegCommand(
                 inputOptions: "-report",
                 inputFiles: Inputs.Select(t => $"-i {t.FileName}").Join(" "),
                 filterComplex: filterComplex,
                 outputFiles: OutputFileName,//
-                outputOptions: $"-c:v libx264 -crf 18 -y -map \"{videoProductV2_WithDrawTexts.OutputLable}\" -map \"{InputAudioCommands.First().OutputLable[1..^1]}\" ",
+                outputOptions: $"-c:v libx264 -crf 18 -y -map \"{videoProductV3_WithDrawProgressBar.OutputLable}\" -map \"{InputAudioCommands.First().OutputLable[1..^1]}\" {forceDuration}",
                 showWindow: true,
                 writeDebugBat:true
             );
@@ -179,6 +194,31 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
             var videoTrack = CreateCommand(cmds, SimpleMediaType.Video, true, outputLabel);
             return videoTrack;
         }
+        VideoInfo video;
+
+        public string DrawProgressBar(string inputLabel,string outputLabel)
+        {
+            return $@"color=c=red:s=1280x10[bar];{inputLabel}[bar]overlay=-w+(w/{video.CnVideoDuration.TotalSeconds})*t:50:shortest=1{outputLabel}";
+        }
+        public void DrawChaptersText()
+        {
+            int i = 0;
+            foreach (var item in this.video.Chapters)
+            {
+                DrawText((int)item.StartTime.TotalMilliseconds / 1280, 40 + ( (i % 3) * 20), item.Title, 11, TimeSpan.Zero, video.CnVideoDuration);
+                i++;
+            }
+        }
+
+        IEnumerable< string> DrawChapterBoxs()
+        {
+            var boxs = new List<string>();  
+            foreach (var item in this.video.Chapters)
+            {
+                boxs.Add($"drawbox=x={(int)item.StartTime.TotalMilliseconds / 1280}:y=50:w={(item.EndTime-item.StartTime).TotalMilliseconds /1280 }:h=10:thickness=1:color=red@0.5");
+            }
+            return boxs;
+        }
 
         private FilterComplexCommand CreateDrawTextScript(FilterComplexCommand video)
         {
@@ -186,11 +226,11 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
             var drawTexts = TextTrack.Select(t => t.GetScript()).ToList();
             //字幕
             drawTexts.AddRange(Subtitles.Select(t => t.GetScript()));
-
+            drawTexts.AddRange(DrawChapterBoxs());
             var strTextsAndSubtitle = drawTexts.Join(",\n");
             var cmds = $"{video.OutputLable}{strTextsAndSubtitle}";
 
-            var drawTextsCmd = CreateCommand(cmds, SimpleMediaType.Video, outputLabel: "[VOut]", addOutputLabel: true);
+            var drawTextsCmd = CreateCommand(cmds, SimpleMediaType.Video, addOutputLabel: true);
 
             return drawTextsCmd;
         }
@@ -212,7 +252,7 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
                 Top = y.ToString(),
                 Option = DefaultTextOption,
                 StartTime = start,
-                EndTime = end
+                EndTime = end,                
             };
             textClip.SetText(text);
             TextTrack.Add(textClip);
@@ -224,7 +264,7 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
             {
                 Left = x.ToString(),
                 Top = y.ToString(),
-                Option = DefaultTextOption,
+                Option = new TextOption(Session) { FontSize = fontSize, HasBoxBorder = true },
                 StartTime = TimeSpan.Zero,
                
                 EndTime = TimeSpan.FromSeconds(90)

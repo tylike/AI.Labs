@@ -7,6 +7,25 @@
 		<Deterministic>false</Deterministic>
 		<BaseOutputPath>D:\VideoInfo</BaseOutputPath>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="Command\**" />
+	  <Compile Remove="MediaSource\**" />
+	  <Compile Remove="Segment\**" />
+	  <Compile Remove="Track\**" />
+	  <EmbeddedResource Remove="Command\**" />
+	  <EmbeddedResource Remove="MediaSource\**" />
+	  <EmbeddedResource Remove="Segment\**" />
+	  <EmbeddedResource Remove="Track\**" />
+	  <None Remove="Command\**" />
+	  <None Remove="MediaSource\**" />
+	  <None Remove="Segment\**" />
+	  <None Remove="Track\**" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Remove="Test.cs" />
+	  <Compile Remove="VideoProject.cs" />
+	  <Compile Remove="VideoSegmentLogic.cs" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\AI.Labs.Module\AI.Labs.Module.csproj" />

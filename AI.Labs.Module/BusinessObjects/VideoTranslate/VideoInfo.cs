@@ -252,6 +252,14 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             set { SetPropertyValue(nameof(Duration), value); }
         }
 
+        [XafDisplayName("中文视频时长")]
+        public TimeSpan CnVideoDuration
+        {
+            get { return GetPropertyValue<TimeSpan>(nameof(CnVideoDuration)); }
+            set { SetPropertyValue(nameof(CnVideoDuration), value); }
+        }
+
+
         #region 播放统计
         [XafDisplayName("播放次数")]
         public int ViewCount
@@ -358,6 +366,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
         }
 
+        #region srt
         public static string InsertNewlines(string text, int maxLineLength)
         {
             StringBuilder sb = new StringBuilder();
@@ -417,7 +426,8 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             cnSrtFile.Save();
             enSrtFile.Save();
             return (cnSrtFile.FileName, enSrtFile.FileName);
-        }
+        } 
+        #endregion
 
         [XafDisplayName("语言模型")]
         public AIModel Model
@@ -619,7 +629,8 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         }
 
         #region 子级集合
-
+        [Association, DevExpress.Xpo.Aggregated]
+        public XPCollection<Chapter> Chapters => GetCollection<Chapter>(nameof(Chapters));
         public XPCollection<AudioBookTextAudioItem> Audios
         {
             get => CnAudioSolution?.AudioItems;

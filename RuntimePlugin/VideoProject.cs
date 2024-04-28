@@ -1,5 +1,4 @@
 ﻿using AI.Labs.Module.BusinessObjects;
-using JiebaNet.Segmenter.Common;
 using System.Diagnostics;
 using System.Net;
 using System.Text;

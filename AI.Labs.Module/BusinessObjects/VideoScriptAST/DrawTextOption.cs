@@ -68,7 +68,7 @@ public class DrawTextOption : XPObject //ClipBase<DrawTextClip>
     {
         var fontSize = Option?.FontSize ?? 24;
         var hasBorder = Option?.HasBoxBorder ?? false;
-        var command = $"drawtext=font='微软雅黑': text='{Text}': fontcolor='white':x={Left}: y={Top}: fontsize={fontSize}";
+        var command = $"drawtext=font='微软雅黑': text='{Text}': fontcolor='white':x={Left}: y={Top}:borderw=1: fontsize={fontSize}";
         if (StartTime!= TimeSpan.Zero && EndTime != TimeSpan.Zero)
         {
             command += $": enable='between(t,{StartTime.TotalSeconds},{EndTime.TotalSeconds})'";

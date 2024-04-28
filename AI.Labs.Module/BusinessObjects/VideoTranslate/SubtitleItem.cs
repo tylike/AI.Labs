@@ -18,6 +18,15 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         }
 
+        [XafDisplayName("所属章节")]
+        [Association]
+        public Chapter Chapter
+        {
+            get { return GetPropertyValue<Chapter>(nameof(Chapter)); }
+            set { SetPropertyValue(nameof(Chapter), value); }
+        }
+
+
         [Association]
         [XafDisplayName("所属视频")]
         public VideoInfo Video

@@ -79,7 +79,6 @@
 		<PackageReference Include="DevExpress.Persistent.BaseImpl.Xpo" Version="23.1.4" />
 		<PackageReference Include="DiffPlex" Version="1.7.2" />
 		<PackageReference Include="FFMpegCore" Version="5.1.0" />
-		<PackageReference Include="jieba.NET" Version="0.42.2" />
 		<PackageReference Include="LLamaSharp.kernel-memory" Version="0.9.1" />
 		<PackageReference Include="LLamaSharp.semantic-kernel" Version="0.9.1" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.9.2" />

@@ -728,8 +728,14 @@ namespace AI.Labs.Module.BusinessObjects
         //    }
         //}
 
+        /// <summary>
+        /// 写ffmpeg的文件列表
+        /// 在concat时会用到
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="fileLines"></param>
         private static void WriteToFile(string fileName, IEnumerable<string> fileLines)
-        {
+        {            
             using (StreamWriter writer = new StreamWriter(fileName))
             {
                 foreach (var item in fileLines)
@@ -827,6 +833,16 @@ namespace AI.Labs.Module.BusinessObjects
             }
             ExecuteFFmpegCommand(inputFiles: $"-i {inputFile}", outputOptions: $"{filter} -acodec pcm_s16le -ar {ar} -y", outputFiles: outputFile);
         }
+        public static void ChangeAudioSpeed(string inputFile, string outputFile, int ar = 44100, double speed = 1.0)
+        {
+            var filter = "";
+            if (speed != 1.0)
+            {
+                filter = $"-filter:a \"atempo={speed}\" ";
+            }
+            ExecuteFFmpegCommand(inputFiles: $"-i {inputFile}", outputOptions: $"{filter} -ar {ar} -y", outputFiles: outputFile);
+        }
+
         public static void NAudioMp32Wav(byte[] mp3data, string outputWavFileName)
         {
             var ms = new MemoryStream(mp3data);
