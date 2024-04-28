@@ -263,8 +263,11 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                 //this.State = TTSState.Generated;
                 var audioDuration = (int)FFmpegHelper.GetDuration(p).Value;
                 //****//
-                ChangeSpeed(p,audioDuration,item.Subtitle.Duration);
-
+                var newDuration = ChangeSpeed(p,audioDuration,item.Subtitle.Duration);
+                if (newDuration != 0)
+                {
+                    audioDuration = newDuration;
+                }
                 //OutputFileName = rst.Item1;
                 item.OutputFileName = p;
                 Debug.WriteLine("完成:"+item.OutputFileName);
@@ -282,9 +285,13 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             if (AudioDuration > SubtitleDuration)
             {
                 var rst = 计算调速(AudioDuration, SubtitleDuration);
-                if (rst.实际倍速 != 0)
+                if (rst.实际倍速 > 0)
                 {
                     speed = rst.实际倍速;
+                }
+                else
+                {
+                    speed = 1;
                 }
             }
 
@@ -351,6 +358,18 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             var play = new SimpleAction(this, "PlayAudioTextItem", null);
             play.Caption = "播放";
             play.Execute += Play_Execute;
+            var updateDuration =  new SimpleAction(this,"更新时长",null);
+            updateDuration.Execute += UpdateDuration_Execute;
+        }
+
+        private void UpdateDuration_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var items = e.SelectedObjects.OfType<AudioBookTextAudioItem>();
+            foreach (var item in items)
+            {
+                item.Duration = (int)FFmpegHelper.GetDuration(item.OutputFileName).Value;
+            }
+            ObjectSpace.CommitChanges();
         }
 
         private async void Play_Execute(object sender, SimpleActionExecuteEventArgs e)

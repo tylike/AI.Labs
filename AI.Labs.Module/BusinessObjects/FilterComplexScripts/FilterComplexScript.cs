@@ -23,8 +23,6 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
         {
             this.os = os;
             this.video = video;
-            DefaultTextOption = new TextOption(Session) { FontSize = 11 };
-
             // new TextOption(Session) { FontSize = fontSize, HasBoxBorder = true },
         }
         public string OutputFileName { get; set; }
@@ -198,14 +196,18 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
 
         public string DrawProgressBar(string inputLabel,string outputLabel)
         {
-            return $@"color=c=red:s=1280x10[bar];{inputLabel}[bar]overlay=-w+(w/{video.CnVideoDuration.TotalSeconds})*t:50:shortest=1{outputLabel}";
+            return $@"color=c=red@0.5:s=1280x10[bar];{inputLabel}[bar]overlay=-w+(w/{video.CnVideoDuration.TotalSeconds})*t:50:shortest=1{outputLabel}";
         }
         public void DrawChaptersText()
         {
             int i = 0;
             foreach (var item in this.video.Chapters)
             {
-                DrawText((int)item.StartTime.TotalMilliseconds / 1280, 40 + ( (i % 3) * 20), item.Title, 11, TimeSpan.Zero, video.CnVideoDuration);
+                DrawText((int)item.StartTime.TotalMilliseconds / 1280, 
+                    //40 + ( (i % 3) * 11)
+                    51
+                    , 
+                    item.Title, 10, TimeSpan.Zero, video.CnVideoDuration,Color.White);
                 i++;
             }
         }
@@ -237,20 +239,19 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
         #endregion
 
         #region 绘制文本
-        public TextOption DefaultTextOption { get; set; }
 
         List<DrawTextOption> TextTrack = new();
-        public DrawTextOption DrawText(int x, int y, string text, int fontSize, TimeSpan start, TimeSpan end)
+        public DrawTextOption DrawText(int x, int y, string text, int fontSize, TimeSpan start, TimeSpan end, Color fontColor)
         {
-            return DrawText(x.ToString(), y.ToString(), text, fontSize, start, end);
+            return DrawText(x.ToString(), y.ToString(), text, fontSize, start, end,fontColor);
         }
-        public DrawTextOption DrawText(string x, string y, string text, int fontSize, TimeSpan start, TimeSpan end)
+        public DrawTextOption DrawText(string x, string y, string text, int fontSize, TimeSpan start, TimeSpan end,Color fontColor)
         {
             var textClip = new DrawTextOption(Session)
             {
                 Left = x.ToString(),
                 Top = y.ToString(),
-                Option = DefaultTextOption,
+                Option = new TextOption(Session) { FontSize = fontSize, FontColor = fontColor  },
                 StartTime = start,
                 EndTime = end,                
             };
@@ -264,7 +265,7 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
             {
                 Left = x.ToString(),
                 Top = y.ToString(),
-                Option = new TextOption(Session) { FontSize = fontSize, HasBoxBorder = true },
+                Option = new TextOption(Session) { FontSize = fontSize, HasBorder = false ,FontColor = Color.White },
                 StartTime = TimeSpan.Zero,
                
                 EndTime = TimeSpan.FromSeconds(90)

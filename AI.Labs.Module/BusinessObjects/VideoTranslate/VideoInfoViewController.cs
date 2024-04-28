@@ -31,6 +31,9 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             var getVideoInfo = new SimpleAction(this, "1.获取视频信息", null);
             getVideoInfo.Execute += GetVideoInfo_Execute;
 
+            var getChapters = new SimpleAction(this, "1.1解析章节", null);
+            getChapters.Execute += GetChapters_Execute;
+
             var downloadVideo = new SimpleAction(this, "2.下载视频", null);
             downloadVideo.Execute += DownloadVideo_Execute;
 
@@ -102,6 +105,11 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             var updateFFmpeg = new SimpleAction(this, "更新FFmpeg", null);
             updateFFmpeg.Execute += UpdateFFmpeg_Execute;
+        }
+
+        private void GetChapters_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            CreateChapters(TimeSpan.Parse(ViewCurrentObject.Duration));
         }
 
         private void TranslateToVideo_Execute(object sender, SimpleActionExecuteEventArgs e)
@@ -410,18 +418,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             ViewCurrentObject.Title = mvideo.Title;
             ViewCurrentObject.Description = (mvideo.Description + "").Replace("\n", Environment.NewLine);
-            var descs = new VideoDescription(ViewCurrentObject.Description).ParseChapters();
-            if (!ViewCurrentObject.Chapters.Any())
-            {
-                foreach (var item in descs)
-                {
-                    var c = ObjectSpace.CreateObject<Chapter>();
-                    c.Title = item.Name;
-                    c.StartTime = item.StartTimespan;
-                    c.EndTime = item.EndTimespan ?? mvideo.Duration.Value;
-                    ViewCurrentObject.Chapters.Add(c);
-                }
-            }
+            CreateChapters(mvideo.Duration.Value);
             ViewCurrentObject.Keywords = string.Join("\n", mvideo.Keywords);
 
             ViewCurrentObject.Duration = mvideo.Duration.ToString();
@@ -445,6 +442,22 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             ViewCurrentObject.Channel = findAuthor;
             #endregion
             //ViewCurrentObject.VideoFile = $"{videoId}.{mvideo.Duration.ToString()}.mp4";
+        }
+
+        private void CreateChapters(TimeSpan duration)
+        {
+            var descs = new VideoDescription(ViewCurrentObject.Description).ParseChapters();
+            if (!ViewCurrentObject.Chapters.Any())
+            {
+                foreach (var item in descs)
+                {
+                    var c = ObjectSpace.CreateObject<Chapter>();
+                    c.Title = item.Name;
+                    c.StartTime = item.StartTimespan;
+                    c.EndTime = item.EndTimespan ?? duration;
+                    ViewCurrentObject.Chapters.Add(c);
+                }
+            }
         }
         #endregion
 

@@ -67,15 +67,15 @@ public class DrawTextOption : XPObject //ClipBase<DrawTextClip>
     public string GetScript()
     {
         var fontSize = Option?.FontSize ?? 24;
-        var hasBorder = Option?.HasBoxBorder ?? false;
-        var command = $"drawtext=font='微软雅黑': text='{Text}': fontcolor='white':x={Left}: y={Top}:borderw=1: fontsize={fontSize}";
+        var hasBorder = Option?.HasBorder ?? false;
+        var command = $"drawtext=font='微软雅黑': text='{Text}': fontcolor='{Option?.FontColor.Name.ToLower() ?? "white"}':x={Left}: y={Top}: fontsize={fontSize}";
         if (StartTime!= TimeSpan.Zero && EndTime != TimeSpan.Zero)
         {
             command += $": enable='between(t,{StartTime.TotalSeconds},{EndTime.TotalSeconds})'";
         }
         if (hasBorder)
         {
-            command += $": box=1";//:boxborderw={BoxBorderWidth}:boxborderh={BoxBorderHeight}:boxbordera={BoxBorderAlpha}";//:color={BoxBorderColor}
+            command += $": borderw=1";//:boxborderw={BoxBorderWidth}:boxborderh={BoxBorderHeight}:boxbordera={BoxBorderAlpha}";//:color={BoxBorderColor}
         }
         //command += $"";//color={FontColor}:
         return command;

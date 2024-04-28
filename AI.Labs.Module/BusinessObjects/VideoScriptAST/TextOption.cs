@@ -29,10 +29,10 @@ public class TextOption : BaseObject
 
     //public bool BoxStyle { get; set; } = SubtitleBorderStyle.Box;
 
-    public bool HasBoxBorder
+    public bool HasBorder
     {
-        get { return GetPropertyValue<bool>(nameof(HasBoxBorder)); }
-        set { SetPropertyValue(nameof(HasBoxBorder), value); }
+        get { return GetPropertyValue<bool>(nameof(HasBorder)); }
+        set { SetPropertyValue(nameof(HasBorder), value); }
     }
 
     //public int BoxBorderWidth { get; set; } = 5;

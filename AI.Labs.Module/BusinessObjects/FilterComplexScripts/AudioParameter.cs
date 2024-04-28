@@ -38,6 +38,18 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
                     }
                     Stream.Position = 0;
                     waveFileReader = new Mp3FileReader(Stream);
+
+                    //if(waveFileReader.WaveFormat.SampleRate!= 44100)
+                    //{
+
+                    //    FFmpegHelper.ChangeAudioSpeed(FileName,FileName+".new.mp3", ar:44100, speed: 1);
+                    //    Stream = new MemoryStream();
+                    //    Stream.Position = 0;
+                    //    File.OpenRead(FileName+".new.mp3").CopyTo(Stream);
+
+                    //    waveFileReader = new Mp3FileReader(Stream);
+                    //}
+
                 }
                 return waveFileReader;
             }
