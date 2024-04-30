@@ -2,7 +2,7 @@
 //using SubtitlesParser.Classes; // 引入SubtitlesParser的命名空间
 
 //using SubtitlesParser.Classes.Parsers;
-namespace AI.Labs.Module.BusinessObjects.VideoTranslate
+namespace AI.Labs.Module.BusinessObjects.Helper
 {
     public static class StringBuilderExtendesion
     {

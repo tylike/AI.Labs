@@ -76,6 +76,8 @@ public class DrawTextOption : XPObject //ClipBase<DrawTextClip>
         if (hasBorder)
         {
             command += $": borderw=1";//:boxborderw={BoxBorderWidth}:boxborderh={BoxBorderHeight}:boxbordera={BoxBorderAlpha}";//:color={BoxBorderColor}
+            if(Option?.BorderColor != null)
+                command += $": bordercolor={Option.BorderColor.Name.ToLower()}";//:color={BoxBorderColor}
         }
         //command += $"";//color={FontColor}:
         return command;

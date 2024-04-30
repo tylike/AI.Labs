@@ -35,6 +35,13 @@ public class TextOption : BaseObject
         set { SetPropertyValue(nameof(HasBorder), value); }
     }
 
+    public Color BorderColor
+    {
+        get { return GetPropertyValue<Color>(nameof(BorderColor)); }
+        set { SetPropertyValue(nameof(BorderColor), value); }
+    }
+
+
     //public int BoxBorderWidth { get; set; } = 5;
     //public int BoxBorderHeight { get; set; } = 1;
     //public double BoxBorderAlpha { get; set; } = 1.0;

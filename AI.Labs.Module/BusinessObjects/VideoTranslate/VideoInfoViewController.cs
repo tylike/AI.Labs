@@ -112,14 +112,14 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             CreateChapters(TimeSpan.Parse(ViewCurrentObject.Duration));
         }
 
-        private void TranslateToVideo_Execute(object sender, SimpleActionExecuteEventArgs e)
+        private async void TranslateToVideo_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            throw new NotImplementedException();
+            await TranslateResultToVideo();
         }
 
-        private void OneKeyTranslate_Execute(object sender, SimpleActionExecuteEventArgs e)
+        private async  void OneKeyTranslate_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            throw new NotImplementedException();
+            await OneKeyTranslate();
         }
 
         private void FixSubtitleTimes_Execute(object sender, SimpleActionExecuteEventArgs e)
@@ -208,6 +208,17 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         {
             var vi = video;
             vi.CnAudioSolution.FixSubtitleTimes();
+            var first = vi.Chapters.FirstOrDefault(t=>t.StartTime == TimeSpan.Zero);
+            //如果没有从0开始的
+            if(first == null)
+            {
+                first = objectSpace.CreateObject<Chapter>();
+                first.StartTime = TimeSpan.Zero;
+                first.EndTime = vi.Chapters.Min(t => t.EndTime);
+            }
+
+            //如果没有最大视频结束的。
+
             var srt = vi.SaveFixedSRT();
             if (string.IsNullOrEmpty(vi.VideoFileCn))
             {
@@ -266,11 +277,15 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 //    testScript.DrawText(640, y1, $"{item.Index}-延长:{item.Subtitle.EndTime}-{item.Subtitle.FixedEndTime}", 24, item.Subtitle.EndTime, item.Subtitle.FixedEndTime);
                 //}
             }
-
+            if (vi.ForceDuration > 0)
+                testScript.ForceDuration = vi.ForceDuration;
             testScript.AddSubtitle(new VideoSubtitleOption { SrtFileName = srt.CnSRT, FontSize = 12, PrimaryColor = Color.Black.ToFFmpegColorString(), OutlineColor = Color.White.ToFFmpegColorString(), Outline = 1, MarginV = 60 });
             testScript.AddSubtitle(new VideoSubtitleOption { SrtFileName = srt.EnSRT, FontSize = 10, PrimaryColor = Color.Yellow.ToFFmpegColorString(), OutlineColor = Color.Black.ToFFmpegColorString(), Outline = 1, MarginV = 20 });
 
             testScript.DrawCurrentTime();
+            
+            testScript.CalcChapterBoxs();
+
             testScript.DrawChaptersText();
 
             testScript.Export();

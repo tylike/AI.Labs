@@ -393,7 +393,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                 item.Subtitle.FixedStartTime = pre?.Subtitle.FixedEndTime ?? TimeSpan.Zero;
                 item.Subtitle.FixedEndTime = item.Subtitle.FixedStartTime.AddMilliseconds(Math.Max(item.Duration, item.Subtitle.Duration));
                 pre = item;
-            }
+            }           
         }
 
 

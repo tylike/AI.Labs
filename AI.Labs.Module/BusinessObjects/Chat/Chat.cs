@@ -81,7 +81,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
             get { return GetPropertyValue<bool>(nameof(ReadMessage)); }
             set { SetPropertyValue(nameof(ReadMessage), value); }
         }
-        
+
         public bool SendMessageAfterClear
         {
             get { return GetPropertyValue<bool>(nameof(SendMessageAfterClear)); }

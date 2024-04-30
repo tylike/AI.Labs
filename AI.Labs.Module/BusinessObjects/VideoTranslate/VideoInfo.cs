@@ -51,7 +51,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
     [NavigationItem("视频翻译")]
     public class VideoInfo : SimpleXPObject
     {
-#warning 4.一键完成所有工作    手动创建剪映项目，导出视频，然后上传，准备的标题等
 #warning 5.最终实现全部的自动化，可以自动下载一个频道的所有视频，然后自动翻译，自动上传到剪映
         public VideoInfo(Session s) : base(s)
         {
@@ -453,6 +452,13 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 return GetPropertyValue<string>(nameof(STTPrompt)) ?? "按语义填加标点符号,尽量每个完整句子为一段";
             }
             set { SetPropertyValue(nameof(STTPrompt), value); }
+        }
+
+        [XafDisplayName("强制时长")]
+        public int ForceDuration
+        {
+            get { return GetPropertyValue<int>(nameof(ForceDuration)); }
+            set { SetPropertyValue(nameof(ForceDuration), value); }
         }
 
 

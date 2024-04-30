@@ -6,6 +6,7 @@ using DevExpress.ExpressApp.Xpo;
 using DevExpress.Spreadsheet;
 using DevExpress.Xpo;
 using DevExpress.XtraRichEdit.Layout.Engine;
+using FFMpegCore.Arguments;
 using System.Drawing;
 using System.Text;
 using VisioForge.Libs.MediaFoundation.OPM;
@@ -19,7 +20,7 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
         public Session Session => (os as XPObjectSpace).Session;
         #endregion
 
-        public FilterComplexScript(IObjectSpace os,VideoInfo video)
+        public FilterComplexScript(IObjectSpace os, VideoInfo video)
         {
             this.os = os;
             this.video = video;
@@ -98,7 +99,7 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
 
         public void ImportAudioClip(AudioParameter audioParameter)
         {
-            ArgumentNullException.ThrowIfNull(audioParameter,nameof(audioParameter));
+            ArgumentNullException.ThrowIfNull(audioParameter, nameof(audioParameter));
             //#warning 简单判断如果是mp3文件
             //var filename = audioParameter.FileName;
             //if (!string.IsNullOrEmpty(filename) && Path.GetExtension(filename).ToLower() == ".mp3")
@@ -165,22 +166,25 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
 
             var videoProductV2_WithDrawTexts = CreateDrawTextScript(videoProductV1);
 
-            var videoProductV3_WithDrawProgressBar = 
+            var videoProductV3_WithDrawProgressBar =
                 CreateCommand(
                     DrawProgressBar(videoProductV2_WithDrawTexts.OutputLable, "[VOut]")
-                    , SimpleMediaType.Video, false,outputLabel:"[VOut]");
+                    , SimpleMediaType.Video, false, outputLabel: "[VOut]");
 
             var filterComplex = GetComplexScript();
             var forceDuration = ForceDuration.HasValue ? $"-t {ForceDuration.Value / 1000}" : "";
-            FFmpegHelper.ExecuteFFmpegCommand(
-                inputOptions: "-report",
-                inputFiles: Inputs.Select(t => $"-i {t.FileName}").Join(" "),
-                filterComplex: filterComplex,
-                outputFiles: OutputFileName,//
-                outputOptions: $"-c:v libx264 -crf 18 -y -map \"{videoProductV3_WithDrawProgressBar.OutputLable}\" -map \"{InputAudioCommands.First().OutputLable[1..^1]}\" {forceDuration}",
-                showWindow: true,
-                writeDebugBat:true
-            );
+
+            var p = os.CreateObject<VisualFilterComplexScript>();
+
+            p.InputOptions = "-report";
+            p.InputFiles = Inputs.Select(t => $"-i {t.FileName}").Join(" ");
+            p.FilterComplexText = filterComplex;
+            p.OutputFiles = OutputFileName;
+            p.OutputOptions = $"-c:v libx264 -crf 18 -y -map \"{videoProductV3_WithDrawProgressBar.OutputLable}\" -map \"{InputAudioCommands.First().OutputLable[1..^1]}\" {forceDuration}";
+            p.ShowWindow = true;
+            p.WriteDebugBatchFile = true;
+
+            p.Execute();
 
             Console.WriteLine($"时长:{FFmpegHelper.GetDuration(OutputFileName)}");
         }
@@ -194,30 +198,47 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
         }
         VideoInfo video;
 
-        public string DrawProgressBar(string inputLabel,string outputLabel)
+        public string DrawProgressBar(string inputLabel, string outputLabel)
         {
-            return $@"color=c=red@0.5:s=1280x10[bar];{inputLabel}[bar]overlay=-w+(w/{video.CnVideoDuration.TotalSeconds})*t:50:shortest=1{outputLabel}";
+            return $@"color=c=red@0.5:s=1280x20[bar];{inputLabel}[bar]overlay=-w+(w/{video.CnVideoDuration.TotalSeconds})*t:50:shortest=1{outputLabel}";
         }
+
         public void DrawChaptersText()
         {
             int i = 0;
+            var opt = new TextOption(Session) { FontColor = Color.White, HasBorder = true,BorderColor = Color.Black,FontSize=12 };
             foreach (var item in this.video.Chapters)
             {
-                DrawText((int)item.StartTime.TotalMilliseconds / 1280, 
-                    //40 + ( (i % 3) * 11)
-                    51
-                    , 
-                    item.Title, 10, TimeSpan.Zero, video.CnVideoDuration,Color.White);
+                DrawText(
+                    item.BoxX +1 ,
+                    38 + ( (i % 3) * 12),
+                    //51,
+                    item.Title, TimeSpan.Zero, video.CnVideoDuration, opt );
                 i++;
             }
         }
-
-        IEnumerable< string> DrawChapterBoxs()
+        public void CalcChapterBoxs()
         {
-            var boxs = new List<string>();  
+            int? lastX = null;
             foreach (var item in this.video.Chapters)
             {
-                boxs.Add($"drawbox=x={(int)item.StartTime.TotalMilliseconds / 1280}:y=50:w={(item.EndTime-item.StartTime).TotalMilliseconds /1280 }:h=10:thickness=1:color=red@0.5");
+                var x = 0;
+                var w = (int)((item.FixedEndTime - item.FixedStartTime).TotalMilliseconds / 1280);
+                if (lastX.HasValue)
+                {
+                    x = lastX.Value + 1;
+                }
+                lastX = x + w;
+                item.BoxX = x;
+                item.BoxW = w;
+            }
+        }
+        IEnumerable<string> DrawChapterBoxs()
+        {
+            var boxs = new List<string>();
+            foreach (var item in this.video.Chapters)
+            {
+                boxs.Add($"drawbox=x={item.BoxX}:y=50:w={item.BoxW}:h=20:color=gray@0.5:t=fill");
             }
             return boxs;
         }
@@ -225,10 +246,15 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
         private FilterComplexCommand CreateDrawTextScript(FilterComplexCommand video)
         {
             //用户填加的文字
-            var drawTexts = TextTrack.Select(t => t.GetScript()).ToList();
+            var drawTexts = new List<string>();
             //字幕
             drawTexts.AddRange(Subtitles.Select(t => t.GetScript()));
+
             drawTexts.AddRange(DrawChapterBoxs());
+
+            drawTexts.AddRange(TextTrack.Select(t => t.GetScript()));
+
+
             var strTextsAndSubtitle = drawTexts.Join(",\n");
             var cmds = $"{video.OutputLable}{strTextsAndSubtitle}";
 
@@ -241,33 +267,34 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
         #region 绘制文本
 
         List<DrawTextOption> TextTrack = new();
-        public DrawTextOption DrawText(int x, int y, string text, int fontSize, TimeSpan start, TimeSpan end, Color fontColor)
+        public DrawTextOption DrawText(int x, int y, string text, TimeSpan start, TimeSpan end, TextOption option)
         {
-            return DrawText(x.ToString(), y.ToString(), text, fontSize, start, end,fontColor);
+            return DrawText(x.ToString(), y.ToString(), text, start, end, option);
         }
-        public DrawTextOption DrawText(string x, string y, string text, int fontSize, TimeSpan start, TimeSpan end,Color fontColor)
+        public DrawTextOption DrawText(string x, string y, string text, TimeSpan start, TimeSpan end, TextOption option)
         {
             var textClip = new DrawTextOption(Session)
             {
                 Left = x.ToString(),
                 Top = y.ToString(),
-                Option = new TextOption(Session) { FontSize = fontSize, FontColor = fontColor  },
+                Option = option,
                 StartTime = start,
-                EndTime = end,                
+                EndTime = end,
             };
             textClip.SetText(text);
             TextTrack.Add(textClip);
             return textClip;
         }
+
         public DrawTextOption DrawCurrentTime(int x = 10, int y = 450, int fontSize = 24, TimeSpan? start = null, TimeSpan? end = null)
         {
             var currentTime = new DrawTextOption(Session)
             {
                 Left = x.ToString(),
                 Top = y.ToString(),
-                Option = new TextOption(Session) { FontSize = fontSize, HasBorder = false ,FontColor = Color.White },
+                Option = new TextOption(Session) { FontSize = fontSize, HasBorder = false, FontColor = Color.White },
                 StartTime = TimeSpan.Zero,
-               
+
                 EndTime = TimeSpan.FromSeconds(90)
             };
 

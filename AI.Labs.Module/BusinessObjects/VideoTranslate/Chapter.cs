@@ -18,6 +18,30 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             set { SetPropertyValue(nameof(Video), value); }
         }
 
+        public int BoxX
+        {
+            get { return GetPropertyValue<int>(nameof(BoxX)); }
+            set { SetPropertyValue(nameof(BoxX), value); }
+        }
+
+        public int BoxW
+        {
+            get { return GetPropertyValue<int>(nameof(BoxW)); }
+            set { SetPropertyValue(nameof(BoxW), value); }
+        }
+
+
+
+        public TimeSpan FixedStartTime
+        {
+            get =>Subtitles.Min(t=>t.FixedStartTime);
+        }
+
+        public TimeSpan FixedEndTime
+        {
+            get => Subtitles.Max(t => t.FixedEndTime);
+        }
+
 
         public TimeSpan StartTime
         {

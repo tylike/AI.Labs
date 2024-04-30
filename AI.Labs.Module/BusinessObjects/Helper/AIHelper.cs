@@ -108,71 +108,78 @@ namespace AI.Labs.Module.BusinessObjects
         //}
         public static bool localServerStarted = false;
         public static Process LlmServerProcess;
+        public static object flag = new object();
         public static OpenAIService CreateOpenAIService(AIModel model, int n_ctx = 512
             //string apiKey = "sk-7A5enIMIVH4PtxML4TL0M6Khi1ty8INWpQfvR6gykqgfCY6z",
             //string baseDomain = "http://127.0.0.1:8000"
             ////string baseDomain = "https://api.openai-proxy.org"
             )
         {
-            if (model.ModelCategory == ModelCategory.LlamaCPPLocalServer)
+            lock (flag)
             {
-                if (!localServerStarted)
+                if (model.ModelCategory == ModelCategory.LlamaCPPLocalServer)
                 {
-                    var ngl = "";
-                    if (model.LoadGpuLayer != 0)
+                    if (!localServerStarted)
                     {
-                        ngl = $"-ngl {model.LoadGpuLayer}";
-                    }
-                    var host = "";
-                    if (!string.IsNullOrEmpty(model.ApiUrlBase))
-                    {
-                        host = $"--host {model.Host}";
-                    }
-                    var port = "";
-                    if (model.LocalServicePort != 0)
-                    {
-                        port = $"--port {model.LocalServicePort}";
-                    }
-                    var ctx = "";
-                    if (n_ctx != 512)
-                    {
-                        ctx = $"-c {n_ctx}";
-                    }
-                    var psi = new ProcessStartInfo();
-                    psi.UseShellExecute = false;
-                    psi.FileName = model.ServerProgramFilePath;
-                    psi.Arguments = $" -m {model.ModelFilePath} {ngl} {host} {port} {model.LocalServerArgument} {ctx}";
-                    var p = new Process();
-                    p.EnableRaisingEvents = true;
-                    p.StartInfo = psi;
-                    p.Exited += P_Exited;
-                    LlmServerProcess = p;
-                    p.Start();
+                        var ngl = "";
+                        if (model.LoadGpuLayer != 0)
+                        {
+                            ngl = $"-ngl {model.LoadGpuLayer}";
+                        }
+                        var host = "";
+                        if (!string.IsNullOrEmpty(model.ApiUrlBase))
+                        {
+                            host = $"--host {model.Host}";
+                        }
+                        var port = "";
+                        if (model.LocalServicePort != 0)
+                        {
+                            port = $"--port {model.LocalServicePort}";
+                        }
+                        var ctx = "";
+                        if (n_ctx != 512)
+                        {
+                            ctx = $"-c {n_ctx}";
+                        }
+                        var psi = new ProcessStartInfo();
+                        psi.UseShellExecute = false;
+                        psi.FileName = model.ServerProgramFilePath;
+                        psi.Arguments = $" -m {model.ModelFilePath} {ngl} {host} {port} {model.LocalServerArgument} {ctx}";
+
+                        Debug.WriteLine($"{psi.FileName} {psi.Arguments}");
+
+                        var p = new Process();
+                        p.EnableRaisingEvents = true;
+                        p.StartInfo = psi;
+                        p.Exited += P_Exited;
+                        LlmServerProcess = p;
+                        p.Start();
 
 
-                    localServerStarted = true;
-                }
-            }
-
-            var baseDomain = model.ApiUrlBase;
-            if (model.LocalServicePort != 0)
-            {
-                if (baseDomain.EndsWith("/"))
-                {
-                    baseDomain = baseDomain[..^1];
+                        localServerStarted = true;
+                    }
                 }
 
-                baseDomain += ":" + model.LocalServicePort.ToString();
-            }
-
-            return new OpenAIService(
-                    new OpenAiOptions()
+                var baseDomain = model.ApiUrlBase;
+                if (model.LocalServicePort != 0)
+                {
+                    if (baseDomain.EndsWith("/"))
                     {
-                        BaseDomain = baseDomain,
-                        ApiKey = string.IsNullOrEmpty(model.ApiKey) ? "1" : model.ApiKey
-                        //"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"
-                        //"sk-7A5enIMIVH4PtxML4TL0M6Khi1ty8INWpQfvR6gykqgfCY6z"
-                    });
+                        baseDomain = baseDomain[..^1];
+                    }
+
+                    baseDomain += ":" + model.LocalServicePort.ToString();
+                }
+
+                return new OpenAIService(
+                        new OpenAiOptions()
+                        {
+                            BaseDomain = baseDomain,
+                            ApiKey = string.IsNullOrEmpty(model.ApiKey) ? "1" : model.ApiKey
+                            //"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"
+                            //"sk-7A5enIMIVH4PtxML4TL0M6Khi1ty8INWpQfvR6gykqgfCY6z"
+                        });
+            }
         }
 
         private static void P_Exited(object sender, EventArgs e)

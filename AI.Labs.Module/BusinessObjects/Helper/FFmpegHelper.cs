@@ -14,6 +14,7 @@ using com.sun.tools.javadoc;
 using DevExpress.CodeParser;
 using NAudio.Utils;
 using AI.Labs.Module.BusinessObjects.FilterComplexScripts;
+using DevExpress.ExpressApp;
 
 namespace AI.Labs.Module.BusinessObjects
 {
@@ -238,10 +239,12 @@ namespace AI.Labs.Module.BusinessObjects
                 );
         }
 
+
         public static void ExecuteFFmpegCommand(
             string inputOptions = "", string inputFiles = "", string filterComplex = "", string outputOptions = "", string outputFiles = "", 
             bool showWindow = false,
-            bool writeDebugBat = false)
+            bool writeDebugBat = false            
+            )
         {
             if (!string.IsNullOrEmpty(filterComplex))
             {
@@ -257,7 +260,6 @@ namespace AI.Labs.Module.BusinessObjects
             {
                 File.WriteAllText(outputFiles + ".bat", $"{ffmpegFile} {cmd}");
             }
-
             ExecuteFFmpegCommand(cmd, showWindow);
         }
         /// <summary>
