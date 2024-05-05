@@ -1,15 +1,5 @@
-﻿using com.sun.java.swing.plaf.windows.resources;
-using com.sun.tools.corba.se.idl.constExpr;
-using com.sun.tools.doclets.@internal.toolkit.util;
-using de.jollyday.config;
-using DevExpress.CodeParser;
-using DevExpress.XtraRichEdit.Model;
-using static org.joda.time.chrono.AssembledChronology;
-using VisioForge.Libs.AForge.Imaging.Filters;
-using Xabe.FFmpeg;
-
-namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
-{       
+﻿namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
+{
     // 枚举定义
     public enum TextAlignment
     {
@@ -98,7 +88,7 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
             // Assuming DrawTextOption.FixText is a method to sanitize SrtFileName
             return $"subtitles='{DrawTextOption.FixText(SrtFileName)}':force_style='{GetStyle()}'";
         }
-    }    
+    }
 }
 
 //5.Style Lines, [v4 + Styles] section

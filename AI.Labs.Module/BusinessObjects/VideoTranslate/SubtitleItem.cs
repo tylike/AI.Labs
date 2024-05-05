@@ -18,6 +18,15 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         }
 
+
+
+        public AudioBookTextAudioItem AudioItem
+        {
+            get { return GetPropertyValue<AudioBookTextAudioItem>(nameof(AudioItem)); }
+            set { SetPropertyValue(nameof(AudioItem), value); }
+        }
+
+
         [XafDisplayName("所属章节")]
         [Association]
         public Chapter Chapter

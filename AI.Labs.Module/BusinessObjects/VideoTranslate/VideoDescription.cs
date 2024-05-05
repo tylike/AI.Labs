@@ -2,7 +2,6 @@
 // 引入SubtitlesParser的命名空间
 //using SubtitlesParser.Classes.Parsers;
 
-using Cairo;
 using System.Text.RegularExpressions;
 
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate

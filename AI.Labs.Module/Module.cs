@@ -14,11 +14,18 @@ using DevExpress.ExpressApp.Model.NodeGenerators;
 using DevExpress.Xpo;
 using DevExpress.ExpressApp.Xpo;
 using AI.Labs.Module.BusinessObjects.VideoTranslate;
+using AI.Labs.Module.BusinessObjects;
 
 namespace AI.Labs.Module;
 
 // For more typical usage scenarios, be sure to check out https://docs.devexpress.com/eXpressAppFramework/DevExpress.ExpressApp.ModuleBase.
 public sealed class LabsModule : ModuleBase {
+
+    static LabsModule()
+    {
+        Xabe.FFmpeg.FFmpeg.SetExecutablesPath(Path.GetDirectoryName(FFmpegHelper.ffmpegFile));
+    }
+
     public const string HtmlTemplateItemsPropertyEditor = "HtmlTemplateItems";
     public const string HtmlPropertyEditor = "HtmlContentPropertyEditor";
     public LabsModule() {

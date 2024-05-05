@@ -16,6 +16,7 @@ using AI.Labs.Module.BusinessObjects.STT;
 using System.Security.Cryptography;
 using AI.Labs.Module.BusinessObjects.Helper;
 using System.Text;
+using Xabe.FFmpeg;
 //using SubtitlesParser.Classes.Parsers;
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 {
@@ -352,6 +353,52 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         //} 
         #endregion
 
+        IMediaInfo info;
+        public async Task<IMediaInfo> GetMediaInfo()
+        {
+            if (info == null)
+            {
+                try
+                {
+                    //FFMpegCore.FFMpeg.
+                    info = await FFmpeg.GetMediaInfo(VideoFile);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            return info;
+        }
+
+        public int Width
+        {
+            get
+            {
+                return GetPropertyValue<int>(nameof(Width));
+            }
+            set
+            {
+                SetPropertyValue(nameof(Width), value);
+            }
+        }
+
+        public int Height
+        {
+            get { return GetPropertyValue<int>(nameof(Height)); }
+            set { SetPropertyValue(nameof(Height), value); }
+        }
+                
+        public async Task GetVideoScreenSize()
+        {
+            if (!string.IsNullOrEmpty(VideoFile) && File.Exists(VideoFile))
+            {
+                if (Width == 0)
+                    this.Width = (await GetMediaInfo()).VideoStreams.First().Width;
+                if (Height == 0)
+                    this.Height = (await GetMediaInfo()).VideoStreams.First().Height;
+            }
+        }
 
         public VisualFilterComplexScript VideoScript
         {
@@ -425,7 +472,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             cnSrtFile.Save();
             enSrtFile.Save();
             return (cnSrtFile.FileName, enSrtFile.FileName);
-        } 
+        }
         #endregion
 
         [XafDisplayName("语言模型")]
@@ -478,7 +525,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         public override void AfterConstruction()
         {
             base.AfterConstruction();
-            TranslateTaskPrompt = @"请将英文字成为中文,专用的名词不需要翻译,如Transformers,Llama,Lang,LlamaIndex等";
+            TranslateTaskPrompt = @"用白话文，诙谐幽默的语言，请将英文字成为中文,专用的名词不需要翻译,如Transformers,Llama,Lang,LlamaIndex等";
             //AddSymbolPrompt = @"将以下内容加上标点符号,保持原有格式，保留换行，不要合并多条，不要移动单词位置，一段字幕没有表达完整时末尾加上省略号，不要输出除字幕以外的解释，结果是纯文本格式:";
             //FixSubtitleBatchCount = 30;
             //Environment.SpecialFolder

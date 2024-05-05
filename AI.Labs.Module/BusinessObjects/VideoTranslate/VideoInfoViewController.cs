@@ -157,7 +157,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             ObjectSpace.CommitChanges();
 
-            CreateVideoProduct(this.ObjectSpace, ViewCurrentObject);
+            await CreateVideoProduct(this.ObjectSpace, ViewCurrentObject);
             //调用生成视频
         }
 
@@ -204,17 +204,34 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
         }
 
-        public static void CreateVideoProduct(IObjectSpace objectSpace, VideoInfo video,int? forceDuration = null)
+        public async static Task CreateVideoProduct(IObjectSpace objectSpace, VideoInfo video,int? forceDuration = null)
         {
             var vi = video;
             vi.CnAudioSolution.FixSubtitleTimes();
-            var first = vi.Chapters.FirstOrDefault(t=>t.StartTime == TimeSpan.Zero);
-            //如果没有从0开始的
-            if(first == null)
+            vi.CnVideoDuration = vi.Subtitles.Max(t => t.FixedEndTime);
+
+            if (vi.Chapters.Any())
             {
-                first = objectSpace.CreateObject<Chapter>();
-                first.StartTime = TimeSpan.Zero;
-                first.EndTime = vi.Chapters.Min(t => t.EndTime);
+                var first = vi.Chapters.FirstOrDefault(t => t.StartTime == TimeSpan.Zero);
+                //如果没有从0开始的
+                if (first == null)
+                {
+                    first = objectSpace.CreateObject<Chapter>();
+                    first.StartTime = TimeSpan.Zero;
+                    first.EndTime = vi.Chapters.Min(t => t.EndTime);
+                }
+
+                foreach (var item in vi.Chapters)
+                {
+                    if (string.IsNullOrEmpty(item.CnTitle))
+                    {
+                        await AIHelper.Ask("超级精简的将英文翻译为中文", item.Title, t =>
+                        {
+                            item.CnTitle += t.Content;
+                        }, vi.Model);
+                    }
+                }
+
             }
 
             //如果没有最大视频结束的。
@@ -817,14 +834,26 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private async Task TranslateSrtToChinese()
         {
-            ViewCurrentObject.TitleCn = "";
-            var video = ViewCurrentObject;
-            Translate(GetWithIgnoreText(ViewCurrentObject.Title, video), t => { ViewCurrentObject.TitleCn += t.Content; });
-            ViewCurrentObject.DescriptionCn = "";
-            Translate(GetWithIgnoreText(ViewCurrentObject.Description, video), t => { ViewCurrentObject.DescriptionCn += t.Content; });
-            ViewCurrentObject.KeywordsCn = "";
-            Translate(GetWithIgnoreText(ViewCurrentObject.Keywords, video), t => { ViewCurrentObject.KeywordsCn += t.Content; });
 
+            var video = ViewCurrentObject;
+
+            if (string.IsNullOrEmpty(ViewCurrentObject.TitleCn))
+            {
+                ViewCurrentObject.TitleCn = "";
+                Translate(GetWithIgnoreText(ViewCurrentObject.Title, video), t => { ViewCurrentObject.TitleCn += t.Content; });
+            }
+
+            if (string.IsNullOrEmpty(ViewCurrentObject.DescriptionCn))
+            {
+                ViewCurrentObject.DescriptionCn = "";
+                Translate(GetWithIgnoreText(ViewCurrentObject.Description, video), t => { ViewCurrentObject.DescriptionCn += t.Content; });
+            }
+
+            if (string.IsNullOrEmpty(ViewCurrentObject.KeywordsCn))
+            {
+                ViewCurrentObject.KeywordsCn = "";
+                Translate(GetWithIgnoreText(ViewCurrentObject.Keywords, video), t => { ViewCurrentObject.KeywordsCn += t.Content; });
+            }
 
             #region 说明
             //系统提示:
@@ -859,22 +888,46 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             //contenxt size 32K
             //temp:0 
             #endregion
+
+            //创建音频方案
+            await CreateAudioSolution();
+
             var t = ViewCurrentObject;
             if (t.Model == null)
             {
                 throw new UserFriendlyException("请选择模型!");
             }
             var subtitles = ViewCurrentObject.Subtitles.OrderBy(t => t.Index).ToArray();
+            var tasks = new List<Task<(AudioBookTextAudioItem Item,int Duration,string FileName)>>();
             foreach (SubtitleItem item in subtitles)
             {
-                await TranslateSubtitle(t, subtitles, item, this, ObjectSpace, true);
+                Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:开始翻译");
 
+
+                await TranslateSubtitle(t, subtitles, item, this, ObjectSpace, true);
+                Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:翻译完成:{item.Index},生成音频");
+                tasks.Add(AudioBookTextAudioItem.GenerateAudioFile(false, item.AudioItem));
+                Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:生成音频任务已提交！");
             }
+
+            await Task.WhenAll(tasks.ToArray());
+            Debug.WriteLine("音频生成全部完成");
+            foreach (var item in tasks)
+            {
+                if (item.Result.Item.Duration != -1)
+                {
+                    item.Result.Item.Duration = item.Result.Duration;
+                    item.Result.Item.OutputFileName = item.Result.FileName;
+                }
+            }
+
             t.SaveSRTToFile(SrtLanguage.中文);
+
+            //全完成了:
+            
+
             ObjectSpace.CommitChanges();
         }
-
-
 
         private async void TranslateSubtitlesV2_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
@@ -989,6 +1042,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                     item.Audio = n;
                     n.AudioRole = def;
                     audioSolution.AudioItems.Add(n);
+                    item.AudioItem = n;
                 }
             }
             ViewCurrentObject.CnAudioSolution = audioSolution;

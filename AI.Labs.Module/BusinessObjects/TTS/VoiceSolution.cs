@@ -126,27 +126,13 @@ namespace AI.Labs.Module.BusinessObjects.TTS
             }
         }
 
-        public async Task<byte[]> GetTextToSpeechData(string text, string voiceName)
-        {
-            var rst = new List<byte>();
-            if (this.Engine == VoiceEngine.EdgeTTS)
-            {
-                await EdgeTTS.PlayText(text, voiceName, play: false, resultBytes: rst);
-                Debug.WriteLine("EdgeTTS.生成音频:调用完成!");
-            }
-            else
-            {
-                await AzureTTSEngine.Play(text, voiceName, this.ApiKey, this.BaseUrl, rst);
-                Debug.WriteLine("AzureTTS.生成音频:调用完成!");
-            }
-            return rst.ToArray();
-        }
+        public async Task<byte[]> Text2AudioData(string text, string voiceName) => await TTSHelper.Text2AudioData(text, voiceName, this.Engine, this.ApiKey, this.BaseUrl);
 
-        public async Task GenerateAudioToFile(string text, string voiceName,string fileName)
-        {
-            var data =await GetTextToSpeechData(text, voiceName);
-            File.WriteAllBytes(fileName, data);
-        }
+        //public async Task Text2AudioFile(string text, string voiceName, string fileName)
+        //{
+        //    var data = await Text2AudioData(text, voiceName);
+        //    await data.SaveAudioDataToFile(fileName);
+        //}
 
         public string Name
         {
@@ -209,15 +195,15 @@ namespace AI.Labs.Module.BusinessObjects.TTS
             await Provider.Read(text, GetVoiceName());
         }
 
-        public async Task<byte[]> GetTextToSpeechData(string text)
+        public async Task<byte[]> Text2AudioData(string text)
         {
-            return await Provider.GetTextToSpeechData(text, GetVoiceName());
+            return await Provider.Text2AudioData(text, GetVoiceName());
         }
 
-        public async Task GenerateAudioToFile(string text,string fileName)
-        {
-            await Provider.GenerateAudioToFile(text, this.GetVoiceName(), fileName);
-        }
+        //public async Task Text2AudilFile(string text, string fileName)
+        //{
+        //    await Provider.Text2AudioFile(text, this.GetVoiceName(), fileName);
+        //}
 
         [XafDisplayName("服务渠道")]
         [Association]

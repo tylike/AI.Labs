@@ -24,7 +24,7 @@ namespace PPTMaker.Module.Controllers
             {
                 if (item.FileContent == null || item.FileContent.Length <= 0)
                 {
-                    item.FileContent =await item.Solution.GetTextToSpeechData(item.Text);// TTSEngine.GetTextToSpeechData((string)item.Text, (string)item.Solution.DisplayName);
+                    item.FileContent =await item.Solution.Text2AudioData(item.Text);// TTSEngine.GetTextToSpeechData((string)item.Text, (string)item.Solution.DisplayName);
                 }
 
                 TTSEngine.Play(item.FileContent);
@@ -39,7 +39,7 @@ namespace PPTMaker.Module.Controllers
                 {
                     //x.GetAudioFile();
                     
-                    x.FileContent =await x.Solution.GetTextToSpeechData(x.Text);
+                    x.FileContent =await x.Solution.Text2AudioData(x.Text);
                     
                 }
                 Application.ShowViewStrategy.ShowMessage($"{e.SelectedObjects.Count}条语音生成完成,可以进行播放了!");

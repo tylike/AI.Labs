@@ -58,6 +58,9 @@ public static class YE
         {
             video.DownloadProgress = t;
         },video.Oid.ToString());
+
+        await video.GetVideoScreenSize();
+
     }
 
     public static async Task<string> Download(string url, string outputPath,Action<double> progressBar,string mainFileName)

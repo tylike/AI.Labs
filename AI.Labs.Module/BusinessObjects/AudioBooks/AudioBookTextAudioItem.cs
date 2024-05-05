@@ -238,12 +238,13 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         /// </summary>
         /// <param name="reGenerate"></param>
         //[Action(Caption = "生成音频")]
-        public static async Task<(AudioBookTextAudioItem, int)> GenerateAudioFile(bool reGenerate,AudioBookTextAudioItem item)
+        public static async Task<(AudioBookTextAudioItem Item, int Duration,string FileName)> GenerateAudioFile(bool reGenerate,AudioBookTextAudioItem item)
         {
+            #region 是否需要重新生成
             bool exist = !string.IsNullOrEmpty(item.OutputFileName) && File.Exists(item.OutputFileName);
             if (!reGenerate && exist)
             {
-                return (item, -1);
+                return (item, -1,item.OutputFileName);
             }
 
             //重新生成,并且文件名不为空,并且文件存在,则删除
@@ -252,29 +253,29 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                 File.Delete(item.OutputFileName);
                 exist = false;
             }
-            
-            if (!exist)
+            #endregion
+
+            if (exist)
             {
-                //this.State = TTSState.Generatting;
-                var vs = item.GetFinalSolution();
-                var p = Path.Combine(item.AudioBook.OutputPath, $"{item.Index}.mp3");
-                await vs.GenerateAudioToFile(item.Subtitle.CnText, p);
-                //OutputFileName = p;
-                //this.State = TTSState.Generated;
-                var audioDuration = (int)FFmpegHelper.GetDuration(p).Value;
-                //****//
-                var newDuration = ChangeSpeed(p,audioDuration,item.Subtitle.Duration);
-                if (newDuration != 0)
-                {
-                    audioDuration = newDuration;
-                }
-                //OutputFileName = rst.Item1;
-                item.OutputFileName = p;
-                Debug.WriteLine("完成:"+item.OutputFileName);
-                return (item, audioDuration);
+                throw new Exception("不会发生的错误!");
             }
 
-            throw new Exception("不会发生的错误!");
+            var vs = item.GetFinalSolution();
+            
+            var p = Path.Combine(item.AudioBook.OutputPath, $"{item.Index}.mp3");
+            Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:开始生成音频");
+            await (await vs.Text2AudioData(item.Subtitle.CnText)).SaveAudioDataToFile(p);
+            Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:完成生成音频");
+
+            var audioDuration = (int)FFmpegHelper.GetDuration(p).Value;
+            var newDuration = ChangeSpeed(p, audioDuration, item.Subtitle.Duration);
+            if (newDuration != 0)
+            {
+                audioDuration = newDuration;
+            }
+            item.OutputFileName = p;
+            Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:完成变速" + item.OutputFileName);
+            return (item, audioDuration,p);
         }
 
         #region 速度调整

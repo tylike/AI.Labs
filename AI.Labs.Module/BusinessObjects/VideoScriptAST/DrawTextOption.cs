@@ -54,14 +54,29 @@ public class DrawTextOption : XPObject //ClipBase<DrawTextClip>
 
     public void SetDisplayCurrentVideoTime(TimeSpan videoTimeSpan)
     {
-        Text = "%{pts\\:hms} / " + FixText(videoTimeSpan.ToString(@"hh\:mm\:ss"));
+        //%{pts\\:gmtime\\:0\\:%M\\\:%S}
+        //%{pts\\:hms}
+        var durationText = "";
+        if((int)videoTimeSpan.TotalHours>0)
+        {
+            durationText = $"{FixText(EndTime.ToString(@"hh\:mm\:ss"))}";
+        }
+        else
+        {
+            durationText = $"{FixText(EndTime.ToString(@"mm\:ss"))}";
+        }
+        Text = @$"%{{pts\:gmtime\:0\:%M\\\:%S}} / {durationText}";
     }
 
     public static string FixText(string txt)
     {
         if (txt == null)
             return "";
-        return txt.Replace("\\", "\\\\").Replace(":", "\\:").Replace("|","\n");
+        return txt.Replace("\\", "\\\\")
+            .Replace(":", "\\:")
+            .Replace(",", "，")
+            .Replace("'", "’")
+            .Replace("|","\n");
     }
 
     public string GetScript()

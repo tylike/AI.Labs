@@ -1,15 +1,13 @@
 ﻿using AI.Labs.Module.BusinessObjects;
 using AI.Labs.Module.BusinessObjects.VideoTranslate;
-using DevExpress.DashboardCommon.DataProcessing;
 using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Xpo;
 using DevExpress.Spreadsheet;
 using DevExpress.Xpo;
 using DevExpress.XtraRichEdit.Layout.Engine;
-using FFMpegCore.Arguments;
 using System.Drawing;
 using System.Text;
-using VisioForge.Libs.MediaFoundation.OPM;
+
 
 namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
 {
@@ -198,32 +196,16 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
         }
         VideoInfo video;
 
-        public string DrawProgressBar(string inputLabel, string outputLabel)
-        {
-            return $@"color=c=red@0.5:s=1280x20[bar];{inputLabel}[bar]overlay=-w+(w/{video.CnVideoDuration.TotalSeconds})*t:50:shortest=1{outputLabel}";
-        }
 
-        public void DrawChaptersText()
-        {
-            int i = 0;
-            var opt = new TextOption(Session) { FontColor = Color.White, HasBorder = true,BorderColor = Color.Black,FontSize=12 };
-            foreach (var item in this.video.Chapters)
-            {
-                DrawText(
-                    item.BoxX +1 ,
-                    38 + ( (i % 3) * 12),
-                    //51,
-                    item.Title, TimeSpan.Zero, video.CnVideoDuration, opt );
-                i++;
-            }
-        }
         public void CalcChapterBoxs()
         {
             int? lastX = null;
+            var per = 1280/video.CnVideoDuration.TotalMilliseconds;
+
             foreach (var item in this.video.Chapters)
             {
                 var x = 0;
-                var w = (int)((item.FixedEndTime - item.FixedStartTime).TotalMilliseconds / 1280);
+                var w = (int)((item.FixedEndTime - item.FixedStartTime).TotalMilliseconds * per);
                 if (lastX.HasValue)
                 {
                     x = lastX.Value + 1;
@@ -233,12 +215,35 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
                 item.BoxW = w;
             }
         }
+        public void DrawChaptersText()
+        {
+            if(this.video.Chapters.Any() == false)
+            {
+                return;
+            }
+
+            int i = 0;
+            var opt = new TextOption(Session) { FontColor = Color.White, HasBorder = true,BorderColor = Color.Black,FontSize=12 };
+            foreach (var item in this.video.Chapters)
+            {
+                DrawText(
+                    item.BoxX +1 ,
+                    36 + ( (i % 3) * 14)+1,
+                    //51,
+                    item.CnTitle, TimeSpan.Zero, video.CnVideoDuration, opt );
+                i++;
+            }
+        }
+        public string DrawProgressBar(string inputLabel, string outputLabel)
+        {
+            return $@"color=c=red@0.5:s=1280x14[bar];{inputLabel}[bar]overlay=-w+(w/{video.CnVideoDuration.TotalSeconds})*t:50:shortest=1{outputLabel}";
+        }
         IEnumerable<string> DrawChapterBoxs()
         {
             var boxs = new List<string>();
             foreach (var item in this.video.Chapters)
             {
-                boxs.Add($"drawbox=x={item.BoxX}:y=50:w={item.BoxW}:h=20:color=gray@0.5:t=fill");
+                boxs.Add($"drawbox=x={item.BoxX}:y=50:w={item.BoxW}:h=14:color=gray@0.5:t=fill");
             }
             return boxs;
         }
@@ -286,7 +291,7 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
             return textClip;
         }
 
-        public DrawTextOption DrawCurrentTime(int x = 10, int y = 450, int fontSize = 24, TimeSpan? start = null, TimeSpan? end = null)
+        public DrawTextOption DrawCurrentTime(int x = 10, int y = 10, int fontSize = 24, TimeSpan? start = null, TimeSpan? end = null)
         {
             var currentTime = new DrawTextOption(Session)
             {
@@ -294,11 +299,10 @@ namespace AI.Labs.Module.BusinessObjects.FilterComplexScripts
                 Top = y.ToString(),
                 Option = new TextOption(Session) { FontSize = fontSize, HasBorder = false, FontColor = Color.White },
                 StartTime = TimeSpan.Zero,
-
-                EndTime = TimeSpan.FromSeconds(90)
+                EndTime = video.CnVideoDuration
             };
 
-            var duration = TimeSpan.FromDays(1);
+            var duration = video.CnVideoDuration;
             currentTime.SetDisplayCurrentVideoTime(duration);
             TextTrack.Add(currentTime);
             return currentTime;

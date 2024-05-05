@@ -24,6 +24,8 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             set { SetPropertyValue(nameof(BoxX), value); }
         }
 
+        public int BoxR => BoxX + BoxW;
+
         public int BoxW
         {
             get { return GetPropertyValue<int>(nameof(BoxW)); }
@@ -34,12 +36,12 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         public TimeSpan FixedStartTime
         {
-            get =>Subtitles.Min(t=>t.FixedStartTime);
+            get => this.Subtitles.Any() ? Subtitles.Min(t => t.FixedStartTime) : StartTime;
         }
 
         public TimeSpan FixedEndTime
         {
-            get => Subtitles.Max(t => t.FixedEndTime);
+            get => this.Subtitles.Any() ? Subtitles.Max(t => t.FixedEndTime) : EndTime;
         }
 
 
@@ -60,6 +62,13 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             get { return GetPropertyValue<string>(nameof(Title)); }
             set { SetPropertyValue(nameof(Title), value); }
         }
+
+        public string CnTitle
+        {
+            get { return GetPropertyValue<string>(nameof(CnTitle)); }
+            set { SetPropertyValue(nameof(CnTitle), value); }
+        }
+
 
         [Size(-1)]
         public string Memo

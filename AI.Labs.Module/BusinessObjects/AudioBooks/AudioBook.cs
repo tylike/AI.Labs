@@ -129,6 +129,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                 if (rst.Item2 != -1)
                 {
                     item.Duration = rst.Item2;
+                    item.OutputFileName = rst.FileName;
                 }
                 if(item.Duration == -1)
                 {
