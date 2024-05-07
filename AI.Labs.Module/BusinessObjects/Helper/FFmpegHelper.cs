@@ -10,7 +10,7 @@ using System.Drawing;
 using NAudio.Wave.SampleProviders;
 using NAudio.Wave;
 using System.Collections.Generic;
-using com.sun.tools.javadoc;
+
 using DevExpress.CodeParser;
 using NAudio.Utils;
 using AI.Labs.Module.BusinessObjects.FilterComplexScripts;

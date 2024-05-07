@@ -214,9 +214,9 @@ namespace AI.Labs.Module.BusinessObjects.KnowledgeBase
         public async Task GenerateKeyword(XafApplication app)
         {
             //1.提取用户关键词
-            var rst = WordProcesser.GetWords(this.Question); //await GetKeywordsFromAI(app);
-            QuestionKeywords = string.Join(" ", rst);
-            QuestionKeywordList = rst.Select(t=>t.ToLower()).ToArray(); //QuestionKeywords.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim().ToLower()).Distinct().ToArray();
+            //var rst = WordProcesser.GetWords(this.Question); //await GetKeywordsFromAI(app);
+            //QuestionKeywords = string.Join(" ", rst);
+            //QuestionKeywordList = rst.Select(t=>t.ToLower()).ToArray(); //QuestionKeywords.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim().ToLower()).Distinct().ToArray();
         }
 
         private async Task<StringBuilder> GetKeywordsFromAI(XafApplication app,AIModel model)

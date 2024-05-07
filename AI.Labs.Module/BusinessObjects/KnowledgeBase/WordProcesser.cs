@@ -1,9 +1,4 @@
 ﻿using System.Diagnostics;
-using edu.stanford.nlp.pipeline;
-using java.util;
-using edu.stanford.nlp.ling;
-using edu.stanford.nlp.util;
-using java.io;
 
 namespace AI.Labs.Module.BusinessObjects.KnowledgeBase
 {

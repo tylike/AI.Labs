@@ -1,558 +1,564 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows8.0</TargetFramework>
-    <CheckEolTargetFramework>false</CheckEolTargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ApplicationIcon>ExpressApp.ico</ApplicationIcon>
-    <Deterministic>false</Deterministic>
-    <AssemblyVersion>1.0.*</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
-    <Configurations>Debug;Release;EasyTest;NewDebug</Configurations>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Platforms>AnyCPU;x64</Platforms>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <Optimize>True</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Optimize>True</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <Optimize>False</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Optimize>False</Optimize>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Controllers\TranslateTaskViewController.cs" />
-    <Compile Remove="Controllers\YoutubeExplode.cs" />
-  </ItemGroup>
-  <ItemGroup>
-	<Using Include="DevExpress.ExpressApp.ListView" Alias="ListView" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Model.xafml" />
-    <None Remove="Images\Logo.svg" />
-    <None Remove="Model_zh-CN.xafml" />
-    <None Remove="Model_zh-Hans.xafml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Model.xafml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Model_zh-CN.xafml">
-      <DependentUpon>Model.xafml</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Model_zh-Hans.xafml">
-      <DependentUpon>Model.xafml</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Images\Logo.svg" />
-    <EmbeddedResource Include="Images\ExpressAppLogo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="DevExpress.ExpressApp" Version="23.1.4" />
-    <PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="23.1.4" />
-    <PackageReference Include="DevExpress.ExpressApp.Dashboards.Win" Version="23.1.4" />
-    <PackageReference Include="DevExpress.ExpressApp.FileAttachment.Win" Version="23.1.4" />
-    <PackageReference Include="DevExpress.ExpressApp.Notifications.Win" Version="23.1.4" />
-    <PackageReference Include="DevExpress.ExpressApp.Office.Win" Version="23.1.4" />
-    <PackageReference Include="DevExpress.ExpressApp.ReportsV2.Win" Version="23.1.4" />
-    <PackageReference Include="DevExpress.ExpressApp.Security.Xpo" Version="23.1.4" />
-    <PackageReference Include="DevExpress.ExpressApp.TreeListEditors.Win" Version="23.1.4" />
-    <PackageReference Include="DevExpress.ExpressApp.Validation.Win" Version="23.1.4" />
-    <PackageReference Include="DevExpress.ExpressApp.Win" Version="23.1.4" />
-    <PackageReference Include="DevExpress.ExpressApp.Win.Design" Version="23.1.4" />
-    <PackageReference Include="DevExpress.ExpressApp.Xpo" Version="23.1.4" />
-    <PackageReference Include="DevExpress.Persistent.Base" Version="23.1.4" />
-    <PackageReference Include="DevExpress.Persistent.BaseImpl.Xpo" Version="23.1.4" />
-    <PackageReference Include="DevExpress.RichEdit.Export" Version="23.1.4" />
-    <PackageReference Include="DevExpress.Win.Design" Version="23.1.4" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
-    <PackageReference Include="VideoLibrary" Version="3.2.3" />
-    <PackageReference Include="WebView2.DevTools.Dom" Version="3.0.1" />
-	  <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.9.2" />
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net7.0-windows8.0</TargetFramework>
+		<CheckEolTargetFramework>false</CheckEolTargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ApplicationIcon>ExpressApp.ico</ApplicationIcon>
+		<Deterministic>false</Deterministic>
+		<AssemblyVersion>1.0.*</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<Configurations>Debug;Release;EasyTest;NewDebug</Configurations>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Platforms>AnyCPU;x64</Platforms>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<Optimize>True</Optimize>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<Optimize>True</Optimize>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<Optimize>False</Optimize>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+		<Optimize>False</Optimize>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="Controllers\TranslateTaskViewController.cs" />
+		<Compile Remove="Controllers\YouTubeDownloader.cs" />
+		<Compile Remove="Controllers\YoutubeExplode.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<Using Include="DevExpress.ExpressApp.ListView" Alias="ListView" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="Model.xafml" />
+		<None Remove="Images\Logo.svg" />
+		<None Remove="Model_zh-CN.xafml" />
+		<None Remove="Model_zh-Hans.xafml" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="Model.xafml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Model_zh-CN.xafml">
+			<DependentUpon>Model.xafml</DependentUpon>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Model_zh-Hans.xafml">
+			<DependentUpon>Model.xafml</DependentUpon>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Images\Logo.svg" />
+		<EmbeddedResource Include="Images\ExpressAppLogo.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="DevExpress.ExpressApp" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Dashboards.Win" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.FileAttachment.Win" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Notifications.Win" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Office.Win" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.ReportsV2.Win" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Security.Xpo" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.TreeListEditors.Win" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Validation.Win" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Win" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Win.Design" Version="23.1.4" />
+		<PackageReference Include="DevExpress.ExpressApp.Xpo" Version="23.1.4" />
+		<PackageReference Include="DevExpress.Persistent.Base" Version="23.1.4" />
+		<PackageReference Include="DevExpress.Persistent.BaseImpl.Xpo" Version="23.1.4" />
+		<PackageReference Include="DevExpress.RichEdit.Export" Version="23.1.4" />
+		<PackageReference Include="DevExpress.Win.Design" Version="23.1.4" />
+		
+		<!--<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.1" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.3.1" />-->
 
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AI.Labs.Module\AI.Labs.Module.csproj" />
-    <ProjectReference Include="..\IPlugin\IPlugin.csproj" />
-    <ProjectReference Include="..\STT\STT.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Controllers\ChatGPT\FrmChatGPT.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="ai.labs.1.s3db">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Update="inject.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Database\readme.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Template\Message.Css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Template\Message.Html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Template\MyMessage.Css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Template\MyMessage.Html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="UnusableNodes.xml">
-      <DependentUpon>Model.xafml</DependentUpon>
-    </None>
-    <None Update="UnusableNodes1.xml">
-      <DependentUpon>Model.xafml</DependentUpon>
-    </None>
-    <None Update="UnusableNodes2.xml">
-      <DependentUpon>Model.xafml</DependentUpon>
-    </None>
-    <None Update="UnusableNodes3.xml">
-      <DependentUpon>Model.xafml</DependentUpon>
-    </None>
-    <None Update="UnusableNodes4.xml">
-      <DependentUpon>Model.xafml</DependentUpon>
-    </None>
-    <None Update="UnusableNodes5.xml">
-      <DependentUpon>Model.xafml</DependentUpon>
-    </None>
-    <None Update="UnusableNodes6.xml">
-      <DependentUpon>Model.xafml</DependentUpon>
-    </None>
-    <None Update="UnusableNodes_zh-Hans.xml">
-      <DependentUpon>Model.xafml</DependentUpon>
-    </None>
-    <None Update="voice.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.AspNetCore.Resources.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Blazor.Reporting.v23.1.Viewer.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Blazor.RichEdit.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Blazor.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Charts.Designer.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Dashboard.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Dashboard.v23.1.Web.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Dashboard.v23.1.Win.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Data.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.DataAccess.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.DataAccess.v23.1.UI.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Diagram.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Dialogs.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Drawing.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.EntityFrameworkCore.Security.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.AuditTrail.Xpo.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Blazor.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Chart.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.CloneObject.Xpo.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Dashboards.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Dashboards.Web.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Dashboards.Win.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.FileAttachment.Blazor.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.FileAttachment.Web.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.FileAttachment.Win.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.HtmlPropertyEditor.Win.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Kpi.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Maps.Web.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Notifications.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Notifications.Web.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Objects.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Office.Web.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Office.Win.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.PivotChart.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.PivotChart.Web.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.PivotChart.Win.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.PivotGrid.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.PivotGrid.Web.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Reports.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Reports.Web.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Reports.Win.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.ReportsV2.Blazor.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.ReportsV2.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.ReportsV2.Web.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.ReportsV2.Win.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Scheduler.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Scheduler.Web.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Scheduler.Win.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.ScriptRecorder.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.ScriptRecorder.Win.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Security.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Security.Xpo.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.StateMachine.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Validation.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Validation.Win.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.ViewVariantsModule.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Web.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Win.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Workflow.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ExpressApp.Workflow.Win.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Map.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Mvvm.v23.1.DataModel.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Office.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Pdf.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Persistent.Base.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.PivotGrid.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Printing.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.ReportServer.v23.1.Localization.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.RichEdit.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Snap.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Snap.v23.1.Extensions.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Snap.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Sparkline.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Spreadsheet.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Utils.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Utils.v23.1.UI.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Web.ASPxDiagram.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Web.ASPxGantt.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Web.ASPxHtmlEditor.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Web.ASPxRichEdit.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Web.ASPxScheduler.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Web.ASPxSpellChecker.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Web.ASPxSpreadsheet.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Web.ASPxTreeList.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Web.Resources.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Web.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.Charts.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.CodeView.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.Controls.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.Core.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.Docking.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.DocumentViewer.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.Gantt.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.Gauges.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.Grid.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.LayoutControl.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.NavBar.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.PdfViewer.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.Printing.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.PropertyGrid.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.ReportDesigner.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.Ribbon.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.RichEdit.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.Scheduler.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.Scheduling.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.SpellChecker.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpf.Spreadsheet.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.Xpo.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraBars.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraCharts.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraCharts.v23.1.Wizard.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraEditors.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraGantt.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraGauges.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraGauges.v23.1.Presets.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraGrid.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraLayout.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraNavBar.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraPdfViewer.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraPivotGrid.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraPrinting.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraReports.v23.1.Extensions.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraReports.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraReports.v23.1.Web.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraRichEdit.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraScheduler.v23.1.Core.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraScheduler.v23.1.Extensions.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraScheduler.v23.1.Reporting.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraScheduler.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraSpellChecker.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraSpreadsheet.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraTreeList.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraVerticalGrid.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="zh-hans\DevExpress.XtraWizard.v23.1.resources.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
+		<PackageReference Include="WebView2.DevTools.Dom" Version="3.0.1" />
+
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\AI.Labs.Module\AI.Labs.Module.csproj" />
+		<ProjectReference Include="..\STT\STT.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Update="Controllers\ChatGPT\FrmChatGPT.cs">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="ai.labs.1.s3db">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+		<None Update="inject.js">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Database\readme.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Template\Message.Css">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Template\Message.Html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Template\MyMessage.Css">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Template\MyMessage.Html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="UnusableNodes.xml">
+			<DependentUpon>Model.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes1.xml">
+			<DependentUpon>Model.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes2.xml">
+			<DependentUpon>Model.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes3.xml">
+			<DependentUpon>Model.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes4.xml">
+			<DependentUpon>Model.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes5.xml">
+			<DependentUpon>Model.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes6.xml">
+			<DependentUpon>Model.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes_zh-Hans.xml">
+			<DependentUpon>Model.xafml</DependentUpon>
+		</None>
+		<None Update="voice.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.AspNetCore.Resources.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Blazor.Reporting.v23.1.Viewer.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Blazor.RichEdit.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Blazor.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Charts.Designer.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Dashboard.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Dashboard.v23.1.Web.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Dashboard.v23.1.Win.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Data.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.DataAccess.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.DataAccess.v23.1.UI.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Diagram.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Dialogs.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Drawing.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.EntityFrameworkCore.Security.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.AuditTrail.Xpo.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Blazor.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Chart.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.CloneObject.Xpo.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Dashboards.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Dashboards.Web.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Dashboards.Win.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.FileAttachment.Blazor.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.FileAttachment.Web.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.FileAttachment.Win.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.HtmlPropertyEditor.Win.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Kpi.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Maps.Web.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Notifications.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Notifications.Web.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Objects.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Office.Web.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Office.Win.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.PivotChart.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.PivotChart.Web.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.PivotChart.Win.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.PivotGrid.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.PivotGrid.Web.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Reports.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Reports.Web.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Reports.Win.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.ReportsV2.Blazor.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.ReportsV2.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.ReportsV2.Web.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.ReportsV2.Win.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Scheduler.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Scheduler.Web.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Scheduler.Win.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.ScriptRecorder.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.ScriptRecorder.Win.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Security.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Security.Xpo.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.StateMachine.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Validation.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Validation.Win.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.ViewVariantsModule.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Web.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Win.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Workflow.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ExpressApp.Workflow.Win.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Map.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Mvvm.v23.1.DataModel.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Office.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Pdf.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Persistent.Base.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.PivotGrid.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Printing.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.ReportServer.v23.1.Localization.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.RichEdit.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Snap.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Snap.v23.1.Extensions.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Snap.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Sparkline.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Spreadsheet.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Utils.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Utils.v23.1.UI.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Web.ASPxDiagram.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Web.ASPxGantt.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Web.ASPxHtmlEditor.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Web.ASPxRichEdit.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Web.ASPxScheduler.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Web.ASPxSpellChecker.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Web.ASPxSpreadsheet.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Web.ASPxTreeList.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Web.Resources.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Web.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.Charts.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.CodeView.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.Controls.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.Core.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.Docking.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.DocumentViewer.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.Gantt.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.Gauges.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.Grid.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.LayoutControl.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.NavBar.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.PdfViewer.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.Printing.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.PropertyGrid.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.ReportDesigner.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.Ribbon.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.RichEdit.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.Scheduler.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.Scheduling.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.SpellChecker.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpf.Spreadsheet.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.Xpo.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraBars.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraCharts.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraCharts.v23.1.Wizard.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraEditors.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraGantt.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraGauges.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraGauges.v23.1.Presets.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraGrid.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraLayout.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraNavBar.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraPdfViewer.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraPivotGrid.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraPrinting.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraReports.v23.1.Extensions.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraReports.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraReports.v23.1.Web.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraRichEdit.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraScheduler.v23.1.Core.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraScheduler.v23.1.Extensions.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraScheduler.v23.1.Reporting.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraScheduler.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraSpellChecker.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraSpreadsheet.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraTreeList.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraVerticalGrid.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="zh-hans\DevExpress.XtraWizard.v23.1.resources.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>

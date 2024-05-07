@@ -1,13 +1,11 @@
 ﻿using DevExpress.DashboardCommon.DataBinding;
 using DevExpress.ExpressApp;
-using Humanizer;
-using Json.More;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Speech.Recognition;
+
 using System.Text;
 using System.Threading.Tasks;
 

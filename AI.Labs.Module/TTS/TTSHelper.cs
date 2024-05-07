@@ -1,8 +1,6 @@
 ﻿using AI.Labs.Module.BusinessObjects.TTS;
 using EdgeTTSSharp;
-using sun.awt.image;
 using System.Diagnostics;
-using System.Speech.Synthesis;
 
 public static class TTSHelper
 {
