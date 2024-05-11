@@ -1,8 +1,6 @@
 ﻿using DevExpress.ExpressApp;
 using AI.Labs.Module.BusinessObjects.STT;
 using AI.Labs.Module.BusinessObjects;
-using DevExpress.Persistent.Base;
-using Humanizer;
 
 namespace AI.Labs.Module.DatabaseUpdate;
 

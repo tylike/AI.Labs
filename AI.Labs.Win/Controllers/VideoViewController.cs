@@ -1,28 +1,7 @@
 ﻿//using SubtitlesParser.Classes; // 引入SubtitlesParser的命名空间
-using AI.Labs.Module.BusinessObjects.KnowledgeBase;
 using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Actions;
-using DevExpress.ExpressApp.Editors;
-using DevExpress.ExpressApp.Office.Win;
-using DevExpress.XtraRichEdit;
-using DevExpress.XtraRichEdit.API.Native;
-using System.Diagnostics;
-using System.Reflection.Metadata;
-using System.Text;
-using Browser;
 using System.IO;
-using DevExpress.ExpressApp.Xpo;
-using static sun.font.LayoutPathImpl;
-using org.omg.CosNaming.NamingContextPackage;
-using DevExpress.XtraRichEdit.API.Layout;
-using com.sun.org.apache.xml.@internal.res;
-using YoutubeExplode.Demo.Cli;
-using YoutubeExplode.Demo.Cli.Utils;
-using YoutubeExplode.Videos;
-using YoutubeExplode;
-using YoutubeExplode.Videos.Streams;
-using DevExpress.ExpressApp.SystemModule;
-using IPlugins;
 using System.Reflection;
 //using SubtitlesParser.Classes.Parsers;
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
@@ -66,38 +45,38 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             Output("开始执行脚本!");
             await Task.Run(() =>
             {
-                RunVideoScriptCore();
+                //RunVideoScriptCore();
             });
         }
 
-        private void RunVideoScriptCore()
-        {
-            var video = ViewCurrentObject;
-            WeakReference weakReference;
+        //private void RunVideoScriptCore()
+        //{
+        //    var video = ViewCurrentObject;
+        //    WeakReference weakReference;
 
-            LoadRun(out weakReference);
+        //    LoadRun(out weakReference);
 
-            // 循环尝试强制GC，直到WeakReference不再存活或达到循环次数限制
-            for (int i = 0; i < 10 && weakReference.IsAlive; i++)
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
+        //    // 循环尝试强制GC，直到WeakReference不再存活或达到循环次数限制
+        //    for (int i = 0; i < 10 && weakReference.IsAlive; i++)
+        //    {
+        //        GC.Collect();
+        //        GC.WaitForPendingFinalizers();
+        //        GC.Collect();
 
-                Thread.Sleep(500); // 稍微等待一段时间，让系统有时间处理卸载
+        //        Thread.Sleep(500); // 稍微等待一段时间，让系统有时间处理卸载
 
-                if (!weakReference.IsAlive)
-                {
-                    Output("成功:插件执行完毕,卸载完成!");
-                    break;
-                }
-            }
+        //        if (!weakReference.IsAlive)
+        //        {
+        //            Output("成功:插件执行完毕,卸载完成!");
+        //            break;
+        //        }
+        //    }
 
-            if (weakReference.IsAlive)
-            {
-                Output("强制卸载之后,仍然没有成功卸载\n报错:上下文尚未完全卸载。可能需要进一步检查持有的引用。");
-            }
-        }
+        //    if (weakReference.IsAlive)
+        //    {
+        //        Output("强制卸载之后,仍然没有成功卸载\n报错:上下文尚未完全卸载。可能需要进一步检查持有的引用。");
+        //    }
+        //}
         void Output(string msg)
         {
             Application.UIThreadInvoke(() =>
@@ -106,56 +85,56 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             });
         }
 
-        private void LoadRun(out WeakReference weakReference)
-        {
-            string pluginPath = @"D:\VideoInfo\Debug\net7.0-windows\RuntimePlugin.dll";// D:\dev\AI.Labs\RuntimePlugin\bin\Debug\net7.0-windows\RuntimePlugin.dll";
+        //private void LoadRun(out WeakReference weakReference)
+        //{
+        //    string pluginPath = @"D:\VideoInfo\Debug\net7.0-windows\RuntimePlugin.dll";// D:\dev\AI.Labs\RuntimePlugin\bin\Debug\net7.0-windows\RuntimePlugin.dll";
 
-            try
-            {
-                var video = ViewCurrentObject;
-                var IPlugin = typeof(IPlugin);
-                var pluginLoadContext = new PluginLoadContext(pluginPath);
-                var assembly = pluginLoadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(pluginPath)));
+        //    try
+        //    {
+        //        var video = ViewCurrentObject;
+        //        var IPlugin = typeof(IPlugin);
+        //        var pluginLoadContext = new PluginLoadContext(pluginPath);
+        //        var assembly = pluginLoadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(pluginPath)));
 
-                var pluginType = assembly.GetTypes().FirstOrDefault(t => IPlugin.IsAssignableFrom(t));
+        //        var pluginType = assembly.GetTypes().FirstOrDefault(t => IPlugin.IsAssignableFrom(t));
 
-                if (pluginType == null)
-                {
-                    Output("插件没有实现IPlugin接口或是抽象的!");
-                }
+        //        if (pluginType == null)
+        //        {
+        //            Output("插件没有实现IPlugin接口或是抽象的!");
+        //        }
 
-                var pluginInstance = (IPlugin<VideoInfo>)Activator.CreateInstance(pluginType);
-                // 传入所需的参数
-                try
-                {
-                    pluginInstance.Invoke(this.ViewCurrentObject, this);
-                    Output("插件执行完成,等待卸载!");
-                }
-                catch (Exception ex)
-                {
-                    Output("执行报错:");
-                    Output(ex.Message);
-                }
-                finally
-                {
-                    pluginInstance.Dispose();
-                    pluginInstance = null;
-                }
+        //        var pluginInstance = (IPlugin<VideoInfo>)Activator.CreateInstance(pluginType);
+        //        // 传入所需的参数
+        //        try
+        //        {
+        //            pluginInstance.Invoke(this.ViewCurrentObject, this);
+        //            Output("插件执行完成,等待卸载!");
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Output("执行报错:");
+        //            Output(ex.Message);
+        //        }
+        //        finally
+        //        {
+        //            pluginInstance.Dispose();
+        //            pluginInstance = null;
+        //        }
 
 
-                weakReference = new WeakReference(pluginLoadContext, true);
+        //        weakReference = new WeakReference(pluginLoadContext, true);
 
-                pluginLoadContext.Unload();
-                pluginLoadContext = null;
+        //        pluginLoadContext.Unload();
+        //        pluginLoadContext = null;
 
-            }
-            catch (Exception ex)
-            {
-                // 处理加载插件或执行时的异常
-                //Console.WriteLine($"An error occurred: {ex.Message}");
-                throw ex;
-            }
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // 处理加载插件或执行时的异常
+        //        //Console.WriteLine($"An error occurred: {ex.Message}");
+        //        throw ex;
+        //    }
+        //}
 
 
 

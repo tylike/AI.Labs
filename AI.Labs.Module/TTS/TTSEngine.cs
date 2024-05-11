@@ -6,7 +6,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Speech.Synthesis;
 using AI.Labs.Module.BusinessObjects.TTS;
 using AI.Labs.Module.BusinessObjects.ChatInfo;
 using EdgeTTSSharp;
@@ -42,19 +41,19 @@ public static class TTSEngine
         }
         // 创建SpeechSynthesizer实例
         // 设置朗读的语音
-        synthesizer.SelectVoiceByHints(VoiceGender.Female, VoiceAge.Adult);
+        //synthesizer.SelectVoiceByHints(VoiceGender.Female, VoiceAge.Adult);
 
         //var ms = new MemoryStream();
         //synthesizer.SetOutputToWaveStream(ms);
-        synthesizer.SetOutputToDefaultAudioDevice();
+        //synthesizer.SetOutputToDefaultAudioDevice();
     }
-    static SpeechSynthesizer synthesizer = new SpeechSynthesizer();
+    //static SpeechSynthesizer synthesizer = new SpeechSynthesizer();
 
     public static async Task ReadText(string text, string voice = null, bool useSAPI = false)
     {
         if (useSAPI)
         {
-            synthesizer.SpeakAsync(text);
+            //synthesizer.SpeakAsync(text);
             //sapi中没有支持音色人声
         }
         else
@@ -175,23 +174,23 @@ public static class TTSEngine
 
 
 
-    public static byte[] GetWaveWithSystem(string text)
-    {
+    //public static byte[] GetWaveWithSystem(string text)
+    //{
 
-        // 创建SpeechSynthesizer实例
-        SpeechSynthesizer synthesizer = new SpeechSynthesizer();
+    //    // 创建SpeechSynthesizer实例
+    //    SpeechSynthesizer synthesizer = new SpeechSynthesizer();
 
-        // 设置朗读的语音
-        synthesizer.SelectVoiceByHints(VoiceGender.Female, VoiceAge.Adult);
-        var ms = new MemoryStream();
-        synthesizer.SetOutputToWaveStream(ms);
-        // 朗读文本
-        synthesizer.Speak(text);
-        ms.Flush();
-        // 关闭SpeechSynthesizer实例
-        synthesizer.Dispose();
-        return ms.ToArray();
-    }
+    //    // 设置朗读的语音
+    //    synthesizer.SelectVoiceByHints(VoiceGender.Female, VoiceAge.Adult);
+    //    var ms = new MemoryStream();
+    //    synthesizer.SetOutputToWaveStream(ms);
+    //    // 朗读文本
+    //    synthesizer.Speak(text);
+    //    ms.Flush();
+    //    // 关闭SpeechSynthesizer实例
+    //    synthesizer.Dispose();
+    //    return ms.ToArray();
+    //}
 
     /// <summary>
     /// 输入文字、声音角色名称，返回音频文件(mp3)的二进制数据

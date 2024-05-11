@@ -55,6 +55,10 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             var saveENSr = new SimpleAction(this, "4.3保存系统SRT到文件", null);
             saveENSr.Execute += SaveENSr_Execute;
 
+
+            var splitEnWav = new SimpleAction(this, "4.4按SRT拆原音频", null);
+            splitEnWav.Execute += SplitEnWav_Execute;
+
             var translateSubtitles = new SimpleAction(this, "TranslateSubtitles", null);
             translateSubtitles.Caption = "5.翻译字幕";
             translateSubtitles.Execute += TranslateSubtitles_Execute;
@@ -107,6 +111,12 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             updateFFmpeg.Execute += UpdateFFmpeg_Execute;
         }
 
+        private void SplitEnWav_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var times = this.ViewCurrentObject.Subtitles.Take(ViewCurrentObject.Subtitles.Count - 1).Select(t => t.EndTime.TotalSeconds).ToArray();
+            FFmpegHelper.SplitFile(ViewCurrentObject.AudioFile, times, Path.Combine(ViewCurrentObject.ProjectPath, "EnAudioClip", "audio%5d.wav"));
+        }
+
         private void GetChapters_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
             CreateChapters(TimeSpan.Parse(ViewCurrentObject.Duration));
@@ -117,7 +127,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             await TranslateResultToVideo();
         }
 
-        private async  void OneKeyTranslate_Execute(object sender, SimpleActionExecuteEventArgs e)
+        private async void OneKeyTranslate_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
             await OneKeyTranslate();
         }
@@ -204,7 +214,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
         }
 
-        public async static Task CreateVideoProduct(IObjectSpace objectSpace, VideoInfo video,int? forceDuration = null)
+        public async static Task CreateVideoProduct(IObjectSpace objectSpace, VideoInfo video, int? forceDuration = null)
         {
             var vi = video;
             vi.CnAudioSolution.FixSubtitleTimes();
@@ -243,7 +253,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
             var file = vi.VideoFileCn;
 
-            var testScript = new FilterComplexScript(objectSpace,vi);
+            var testScript = new FilterComplexScript(objectSpace, vi);
             testScript.OutputFileName = file;
             testScript.ForceDuration = forceDuration;
 
@@ -300,7 +310,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             testScript.AddSubtitle(new VideoSubtitleOption { SrtFileName = srt.EnSRT, FontSize = 10, PrimaryColor = Color.Yellow.ToFFmpegColorString(), OutlineColor = Color.Black.ToFFmpegColorString(), Outline = 1, MarginV = 20 });
 
             testScript.DrawCurrentTime();
-            
+
             testScript.CalcChapterBoxs();
 
             testScript.DrawChaptersText();
@@ -898,7 +908,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 throw new UserFriendlyException("请选择模型!");
             }
             var subtitles = ViewCurrentObject.Subtitles.OrderBy(t => t.Index).ToArray();
-            var tasks = new List<Task<(AudioBookTextAudioItem Item,int Duration,string FileName)>>();
+            var tasks = new List<Task<(AudioBookTextAudioItem Item, int Duration, string FileName)>>();
             foreach (SubtitleItem item in subtitles)
             {
                 Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:开始翻译");
@@ -924,7 +934,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             t.SaveSRTToFile(SrtLanguage.中文);
 
             //全完成了:
-            
+
 
             ObjectSpace.CommitChanges();
         }

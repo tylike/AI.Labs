@@ -1,6 +1,5 @@
 ﻿using NAudio.Wave;
 using System.Text.Json;
-using SoundTouch.Net.NAudioSupport;
 using NAudio.Wave.SampleProviders;
 using Xabe.FFmpeg;
 using DevExpress.XtraRichEdit.Layout.Engine;

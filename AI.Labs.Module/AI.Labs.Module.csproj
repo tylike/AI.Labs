@@ -11,35 +11,40 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Compile Remove="BusinessObjects\Helper\FFmpeg\**" />
-	  <EmbeddedResource Remove="BusinessObjects\Helper\FFmpeg\**" />
-	  <None Remove="BusinessObjects\Helper\FFmpeg\**" />
+		<Compile Remove="BusinessObjects\Helper\FFmpeg\**" />
+		<EmbeddedResource Remove="BusinessObjects\Helper\FFmpeg\**" />
+		<None Remove="BusinessObjects\Helper\FFmpeg\**" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Compile Remove="BusinessObjects\KnowledgeBase\BusinessKnowledgeBaseViewController.cs" />
-	  <Compile Remove="BusinessObjects\Sales\BookViewController.cs" />
-	  <Compile Remove="BusinessObjects\Sales\ChatGemini.cs" />
-	  <Compile Remove="BusinessObjects\Sales\ProductViewController.cs" />
-	  <Compile Remove="BusinessObjects\SK.cs" />
-	  <Compile Remove="BusinessObjects\SRT\NSubtitleItem.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\AudioClip.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\AudioSource.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\ClipBase.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\DrawTextOptions.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\FFmpegProgram.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\MediaClip.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\MediaSource.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\SelectMediaCommand.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\Statement.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\V3\VideoScript.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\VideoClip.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\VideoScriptProject.cs" />
-	  <Compile Remove="BusinessObjects\VideoScriptAST\VideoSource.cs" />
-	  <Compile Remove="BusinessObjects\VideoTranslate\MediaClipViewController.cs" />
-	  <Compile Remove="BusinessObjects\VideoTranslate\TextCompare.cs" />
-	  <Compile Remove="BusinessObjects\VideoTranslate\TranslateTask.cs" />
-	  <Compile Remove="BusinessObjects\VideoTranslate\TranslateTaskViewController.cs" />
-	  <Compile Remove="Class1.cs" />
+		<Compile Remove="BusinessObjects\BingChat.cs" />
+		<Compile Remove="BusinessObjects\KnowledgeBase\BusinessKnowledgeBaseViewController.cs" />
+		<Compile Remove="BusinessObjects\KnowledgeBase\WordProcesser.cs" />
+		<Compile Remove="BusinessObjects\Sales\BookViewController.cs" />
+		<Compile Remove="BusinessObjects\Sales\ChatGemini.cs" />
+		<Compile Remove="BusinessObjects\Sales\ProductViewController.cs" />
+		<Compile Remove="BusinessObjects\SemanticKernelOpenAI.cs" />
+		<Compile Remove="BusinessObjects\SK.cs" />
+		<Compile Remove="BusinessObjects\SRT\NSubtitleItem.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\AudioClip.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\AudioSource.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\ClipBase.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\DrawTextOptions.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\FFmpegProgram.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\MediaClip.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\MediaSource.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\SelectMediaCommand.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\Statement.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\V3\VideoScript.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\VideoClip.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\VideoScriptProject.cs" />
+		<Compile Remove="BusinessObjects\VideoScriptAST\VideoSource.cs" />
+		<Compile Remove="BusinessObjects\VideoTranslate\MediaClipViewController.cs" />
+		<Compile Remove="BusinessObjects\VideoTranslate\TextCompare.cs" />
+		<Compile Remove="BusinessObjects\VideoTranslate\TranslateTask.cs" />
+		<Compile Remove="BusinessObjects\VideoTranslate\TranslateTaskViewController.cs" />
+		<Compile Remove="Class1.cs" />
+		<Compile Remove="Controllers\LLMServerController.cs" />
+		<Compile Remove="Controllers\SemanticKernelMemory.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="Model.DesignedDiffs.Localization.zh-CN.xafml" />
@@ -47,24 +52,27 @@
 		<None Remove="Model.DesignedDiffs.xafml" />
 	</ItemGroup>
 	<ItemGroup>
-	  <EmbeddedResource Include="Model.DesignedDiffs.Localization.zh-CN.xafml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </EmbeddedResource>
+		<EmbeddedResource Include="Model.DesignedDiffs.Localization.zh-CN.xafml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</EmbeddedResource>
 	</ItemGroup>
 	<ItemGroup>
-	  <EmbeddedResource Include="Model.DesignedDiffs.Localization.zh-Hans.xafml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </EmbeddedResource>
+		<EmbeddedResource Include="Model.DesignedDiffs.Localization.zh-Hans.xafml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</EmbeddedResource>
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="Model.DesignedDiffs.xafml" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="org.k2fsa.sherpa.onnx" Version="*" />
+
 		<PackageReference Include="Betalgo.OpenAI" Version="7.4.3" />
-		<PackageReference Include="BingChat" Version="0.8.0" />
+		<PackageReference Include="Betalgo.OpenAI.Utilities" Version="7.0.4" />
+
 		<PackageReference Include="DevExpress.ExpressApp" Version="23.1.4" />
 		<PackageReference Include="DevExpress.ExpressApp.CloneObject.Xpo" Version="23.1.4" />
-		<PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="23.1.4" />
+		<!--<PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="23.1.4" />-->
 		<PackageReference Include="DevExpress.ExpressApp.ConditionalAppearance" Version="23.1.4" />
 		<PackageReference Include="DevExpress.ExpressApp.Dashboards" Version="23.1.4" />
 		<PackageReference Include="DevExpress.ExpressApp.Notifications" Version="23.1.4" />
@@ -78,86 +86,87 @@
 		<PackageReference Include="DevExpress.ExpressApp.Xpo" Version="23.1.4" />
 		<PackageReference Include="DevExpress.Persistent.Base" Version="23.1.4" />
 		<PackageReference Include="DevExpress.Persistent.BaseImpl.Xpo" Version="23.1.4" />
-		<PackageReference Include="DiffPlex" Version="1.7.2" />
-		<PackageReference Include="FFMpegCore" Version="5.1.0" />
-		<PackageReference Include="LLamaSharp.kernel-memory" Version="0.9.1" />
-		<PackageReference Include="LLamaSharp.semantic-kernel" Version="0.9.1" />
-		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.9.2" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.9.2" />
+
+		<!--<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.4.0" />-->
+
 		<PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.34.0" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.16.3" />
-		<PackageReference Include="Microsoft.SemanticKernel" Version="1.0.1" />
-		<PackageReference Include="Microsoft.SemanticKernel.Abstractions" Version="1.0.1" />
-		<PackageReference Include="Microsoft.SemanticKernel.Connectors.Sqlite" Version="1.0.1-alpha" />
-		<PackageReference Include="Microsoft.SemanticKernel.Plugins.Memory" Version="1.0.1-alpha" />
-		<PackageReference Include="NAudio" Version="2.2.1" />
-		<PackageReference Include="Betalgo.OpenAI.Utilities" Version="7.0.4" />
+
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="SoundTouch.Net.NAudioSupport.Core" Version="2.3.2" />
-		<PackageReference Include="Stanford.NLP.CoreNLP" Version="4.5.0" />
+
 		<PackageReference Include="System.Numerics.Tensors" Version="8.0.0" />
-		<PackageReference Include="System.Speech" Version="8.0.0" />
 
-		<PackageReference Include="LLamaSharp" Version="0.9.1" />
-		<PackageReference Include="LLamaSharp.Backend.Cuda11" Version="0.9.1" />
-
+		<PackageReference Include="NAudio" Version="2.2.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
 		<PackageReference Include="Xabe.FFmpeg" Version="5.2.6" />
-
+		<PackageReference Include="YoutubeExplode" Version="6.3.13" />
 		<PackageReference Include="Xabe.FFmpeg.Downloader" Version="5.2.6" />
+		<PackageReference Include="FFMpegCore" Version="5.1.0" />
+
+		<!--<PackageReference Include="DiffPlex" Version="1.7.2" />-->
+		<!--<PackageReference Include="LLamaSharp.kernel-memory" Version="0.9.1" />
+		<PackageReference Include="LLamaSharp.semantic-kernel" Version="0.9.1" />-->
+		<!--<PackageReference Include="Microsoft.SemanticKernel" Version="1.0.1" />
+		<PackageReference Include="Microsoft.SemanticKernel.Abstractions" Version="1.0.1" />
+		<PackageReference Include="Microsoft.SemanticKernel.Connectors.Sqlite" Version="1.0.1-alpha" />
+		<PackageReference Include="Microsoft.SemanticKernel.Plugins.Memory" Version="1.0.1-alpha" />-->
+		<!--<PackageReference Include="SoundTouch.Net.NAudioSupport.Core" Version="2.3.2" />
+		<PackageReference Include="Stanford.NLP.CoreNLP" Version="4.5.0" />-->
+		<!--<PackageReference Include="System.Speech" Version="8.0.0" />-->
+
+		<!--<PackageReference Include="LLamaSharp" Version="0.9.1" />
+		<PackageReference Include="LLamaSharp.Backend.Cuda11" Version="0.9.1" />-->
 		<!--<PackageReference Include="Microsoft.KernelMemory.Core" Version="0.12.231123.1-preview" />
 		<PackageReference Include="Microsoft.SemanticKernel" Version="1.0.0-beta8" />-->
-		<PackageReference Include="YoutubeExplode" Version="6.3.13" />
 
 
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Edge_tts_sharp\Edge_tts_sharp.csproj" />
-	  <ProjectReference Include="..\IPlugin\IPlugin.csproj" />
-	  <ProjectReference Include="..\STT\STT.csproj" />
+		<ProjectReference Include="..\Edge_tts_sharp\Edge_tts_sharp.csproj" />
+		<ProjectReference Include="..\STT\STT.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <None Update="UnusableNodes.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
-	  <None Update="UnusableNodes1.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
-	  <None Update="UnusableNodes11.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
-	  <None Update="UnusableNodes13.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
-	  <None Update="UnusableNodes15.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
-	  <None Update="UnusableNodes17.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
-	  <None Update="UnusableNodes1_zh-Hans.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
-	  <None Update="UnusableNodes2.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
-	  <None Update="UnusableNodes4.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
-	  <None Update="UnusableNodes6.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
-	  <None Update="UnusableNodes8.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
-	  <None Update="UnusableNodes9.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
-	  <None Update="UnusableNodes_zh-Hans.xml">
-	    <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
-	  </None>
+		<None Update="UnusableNodes.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes1.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes11.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes13.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes15.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes17.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes1_zh-Hans.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes2.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes4.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes6.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes8.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes9.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
+		<None Update="UnusableNodes_zh-Hans.xml">
+			<DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+		</None>
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="BusinessObjects\VideoScriptAST\V3\" />
+		<Folder Include="BusinessObjects\VideoScriptAST\V3\" />
 	</ItemGroup>
 </Project>
