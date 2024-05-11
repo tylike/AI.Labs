@@ -65,6 +65,8 @@
 		<EmbeddedResource Include="Model.DesignedDiffs.xafml" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="org.k2fsa.sherpa.onnx" Version="*" />
+
 		<PackageReference Include="Betalgo.OpenAI" Version="7.4.3" />
 		<PackageReference Include="Betalgo.OpenAI.Utilities" Version="7.0.4" />
 
