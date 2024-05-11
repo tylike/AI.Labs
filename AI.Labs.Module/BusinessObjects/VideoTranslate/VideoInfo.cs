@@ -525,11 +525,12 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         public override void AfterConstruction()
         {
             base.AfterConstruction();
-            TranslateTaskPrompt = @"用白话文，诙谐幽默的语言，请将英文字成为中文,专用的名词不需要翻译,如Transformers,Llama,Lang,LlamaIndex等";
+            TranslateTaskPrompt = @"用白话文将英文字翻译为中文,专用的名词不需要翻译,如Transformers,Llama,Lang,LlamaIndex等
+不要啰嗦,接地气,调侃式的文风";
             //AddSymbolPrompt = @"将以下内容加上标点符号,保持原有格式，保留换行，不要合并多条，不要移动单词位置，一段字幕没有表达完整时末尾加上省略号，不要输出除字幕以外的解释，结果是纯文本格式:";
             //FixSubtitleBatchCount = 30;
             //Environment.SpecialFolder
-
+            //STTPrompt = "";
 
             JianYingProjectFile = GetDefaultJianYingProjectPath();
             Model = Session.Query<AIModel>().FirstOrDefault(t => t.IsDefault);
