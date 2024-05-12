@@ -75,8 +75,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             if (this.VoiceSolution != null)
             {
                 await this.VoiceSolution.Read(TryReadingText);
-            }
-            
+            }            
         }
 
     }

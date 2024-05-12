@@ -9,6 +9,7 @@ using AI.Labs.Module.BusinessObjects.AudioBooks;
 //using SubtitlesParser.Classes.Parsers;
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 {
+
     [XafDisplayName("字幕")]
     [XafDefaultProperty(nameof(Index))]
     public class SubtitleItem : SimpleXPObject,ISRT //,IClip
@@ -17,8 +18,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         {
 
         }
-
-
 
         public AudioBookTextAudioItem AudioItem
         {
@@ -105,6 +104,14 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             get { return (int)(EndTime - StartTime).TotalMilliseconds; }
         }
 
+        [XafDisplayName("英文音频")]
+        [ModelDefault("RowCount", "0")]
+        public string EnAudioFile
+        {
+            get { return GetPropertyValue<string>(nameof(EnAudioFile)); }
+            set { SetPropertyValue(nameof(EnAudioFile), value); }
+        }
+
         [XafDisplayName("文本.V2")]
         [Size(-1)]
         public string Lines
@@ -149,14 +156,18 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         string ISRT.Text { get => PlainText; set => PlainText = value; }
 
+        public AudioBookRole CnVoiceRole
+        {
+            get { return GetPropertyValue<AudioBookRole>(nameof(CnVoiceRole)); }
+            set { SetPropertyValue(nameof(CnVoiceRole), value); }
+        }
+
 
         public AudioBookTextAudioItem Audio
         {
             get { return GetPropertyValue<AudioBookTextAudioItem>(nameof(Audio)); }
             set { SetPropertyValue(nameof(Audio), value); }
         }
-
-
     }
 
 }

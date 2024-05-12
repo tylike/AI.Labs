@@ -17,6 +17,7 @@ using System.Security.Cryptography;
 using AI.Labs.Module.BusinessObjects.Helper;
 using System.Text;
 using Xabe.FFmpeg;
+using AI.Labs.Module.BusinessObjects.TTS;
 //using SubtitlesParser.Classes.Parsers;
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 {
@@ -57,6 +58,29 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         {
 
         }
+
+        public AudioBook GetCnAudioSolution()
+        {
+            if (!IsLoading)
+            {
+                if(this.CnAudioSolution == null)
+                {
+                    
+                    var audioSolution = new AudioBook(Session);
+                    audioSolution.VideoInfo = this;
+                    audioSolution.Content = ContentCn;
+                    audioSolution.Name = Title;
+
+                    audioSolution.OutputPath = Path.Combine(ProjectPath, $"Audio");
+                    audioSolution.CheckOutputPath();
+                    this.CnAudioSolution = audioSolution;
+                }
+                
+                return this.CnAudioSolution;
+            }
+            throw new Exception("加载时不要调用此方法!");
+        }
+        
 
         #region 基本信息
         [Size(-1)]
@@ -388,7 +412,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             get { return GetPropertyValue<int>(nameof(Height)); }
             set { SetPropertyValue(nameof(Height), value); }
         }
-                
         public async Task GetVideoScreenSize()
         {
             if (!string.IsNullOrEmpty(VideoFile) && File.Exists(VideoFile))
@@ -474,21 +497,18 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             return (cnSrtFile.FileName, enSrtFile.FileName);
         }
         #endregion
-
         [XafDisplayName("语言模型")]
         public AIModel Model
         {
             get { return GetPropertyValue<AIModel>(nameof(Model)); }
             set { SetPropertyValue(nameof(Model), value); }
         }
-
         [XafDisplayName("语音识别")]
         public STTModel STTModel
         {
             get { return GetPropertyValue<STTModel>(nameof(STTModel)); }
             set { SetPropertyValue(nameof(STTModel), value); }
         }
-
         [XafDisplayName("识别提示")]
         [ToolTip("用于从语音中识别字幕时的提示词")]
         [Size(-1)]
@@ -500,23 +520,17 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
             set { SetPropertyValue(nameof(STTPrompt), value); }
         }
-
         [XafDisplayName("强制时长")]
         public int ForceDuration
         {
             get { return GetPropertyValue<int>(nameof(ForceDuration)); }
             set { SetPropertyValue(nameof(ForceDuration), value); }
         }
-
-
-
         public bool TinyDiarize
         {
             get { return GetPropertyValue<bool>(nameof(TinyDiarize)); }
             set { SetPropertyValue(nameof(TinyDiarize), value); }
         }
-
-
         string GetDefaultJianYingProjectPath()
         {
             var path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -535,6 +549,9 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             JianYingProjectFile = GetDefaultJianYingProjectPath();
             Model = Session.Query<AIModel>().FirstOrDefault(t => t.IsDefault);
             CreateScriptObject();
+
+            //创建空白方案
+            var audio = GetCnAudioSolution();
         }
         protected override void OnLoaded()
         {
