@@ -285,10 +285,10 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 {
                     if (string.IsNullOrEmpty(item.CnTitle))
                     {
-                        await AIHelper.Ask("超级精简的将英文翻译为中文", item.Title, t =>
+                        await AIHelper.Ask(item.Title, t =>
                         {
                             item.CnTitle += t.Content;
-                        }, vi.Model);
+                        }, aiModel: vi.Model, systemPrompt: "超级精简的将英文翻译为中文");
                     }
                 }
 
@@ -692,15 +692,16 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 systemPrompt += $"# 参考上下文:\n{contexts}";
             }
 
-            await AIHelper.Ask(systemPrompt, "# 内容:\n" + text,
+            await AIHelper.Ask("# 内容:\n" + text,
                 cm =>
                 {
                     item.Lines += cm.Content;
                     controller.Application.UIThreadDoEvents();
                 },
-                t.Model,
+                aiModel: t.Model,
                 streamOut: true,
-                n_ctx: 1024
+                n_ctx: 1024,
+                systemPrompt: systemPrompt
                 );
             os.CommitChanges();
         }
@@ -885,20 +886,20 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             {
                 throw new UserFriendlyException("请选择模型!");
             }
-            await AIHelper.Ask(prompt, text,
+            await AIHelper.Ask(text,
                     cm =>
                     {
                         action(cm);
                         Application.UIThreadDoEvents();
                     },
-
-                    t.Model, streamOut: true
+                    aiModel: t.Model,
+                    streamOut: true,
+                    systemPrompt: prompt
                     );
         }
 
         private async void TranslateSubtitles_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-
             await TranslateSrtToChinese();
         }
 
@@ -1042,7 +1043,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             }
             var contexts = string.Join("\n", subtitles.Where(t => t.Index > item.Index - 10 && t.Index < item.Index + 10).Take(20).Select(t => t.Lines));
 
-            await AIHelper.Ask($"你精通英文到中文的翻译,将下面要翻译的句子翻译成中文,直接给出翻译结果,不要其他说明或解释.参考上下文:\n{contexts}", GetWithIgnoreText(text, t),
+            await AIHelper.Ask(GetWithIgnoreText(text, t),
                 cm =>
                 {
                     if (isV1)
@@ -1055,9 +1056,10 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                     }
                     controller.Application.UIThreadDoEvents();
                 },
-                t.Model,
+                aiModel: t.Model,
                 streamOut: true,
-                temperature: 0.1f
+                temperature: 0.1f,
+                systemPrompt: $"你精通英文到中文的翻译,将下面要翻译的句子翻译成中文,直接给出翻译结果,不要其他说明或解释.参考上下文:\n{contexts}"
                 );
             item.CnText = item.CnText.Replace("[PAD151643]", "").Replace("[PAD151645]", "");
             objectSpace.CommitChanges();

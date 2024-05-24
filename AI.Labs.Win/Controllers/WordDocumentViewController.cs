@@ -95,7 +95,7 @@ namespace AI.Labs.Win.Controllers
             {
                 throw new UserFriendlyException("错误,按钮不是一个快捷可执行问AI类型!");
             }
-            await AIHelper.Ask(aiModel, role, userMessage, processAction, streamOut: true);
+            await AIHelper.Ask(userMessage, processAction, aiModel: aiModel, role: role, streamOut: true);
         }
 
     }

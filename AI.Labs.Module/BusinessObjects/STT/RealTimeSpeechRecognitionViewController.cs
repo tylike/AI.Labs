@@ -2,8 +2,8 @@
 using DevExpress.ExpressApp.Actions;
 using DevExpress.ExpressApp;
 using System.Diagnostics;
-
 using TranscribeCS;
+
 
 namespace AI.Labs.Module.BusinessObjects.STT
 {
@@ -13,7 +13,7 @@ namespace AI.Labs.Module.BusinessObjects.STT
         {
             var startRealTimeSpeechRecognition = new SimpleAction(this, "StartRealTimeSpeechRecognition", null);
             startRealTimeSpeechRecognition.Execute += StartRealTimeSpeechRecognition_Execute;
-            
+
             var action = new SimpleAction(this, "Start AzureMicrophone", null);
             action.Execute += StartAzureMicrophone_Execute;
         }

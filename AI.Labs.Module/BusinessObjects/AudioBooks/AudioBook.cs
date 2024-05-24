@@ -111,7 +111,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         /// <param name="items"></param>
         /// <param name="reGenerate">对于一个段落,如果已经生成了,是否强制生新生成</param>
         /// <exception cref="UserFriendlyException"></exception>
-        public async static Task GenerateAudioBook(IEnumerable<AudioBookTextAudioItem> items,bool reGenerate)
+        public async static Task GenerateAudioBook(IEnumerable<AudioBookTextAudioItem> items, bool reGenerate)
         {
             if (!items.Any())
             {
@@ -129,7 +129,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                     item.Duration = rst.Item2;
                     item.OutputFileName = rst.FileName;
                 }
-                if(item.Duration == -1)
+                if (item.Duration == -1)
                 {
                     item.Duration = (int)FFmpegHelper.GetDuration(item.OutputFileName).Value;
                 }
@@ -378,7 +378,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         public async Task CreateAudioBook(bool reGenerate)
         {
             var path = CheckOutputPath();
-            await GenerateAudioBook(this.AudioItems,reGenerate);
+            await GenerateAudioBook(this.AudioItems, reGenerate);
             //Mp3FileUtils.Combine(this.AudioItems.Select(t => t.OutputFileName).ToArray(), Path.Combine(path, "audiobook.mp3"));
             Debug.WriteLine("处理完成!");
             await Task.CompletedTask;
@@ -404,7 +404,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                 item.Subtitle.FixedStartTime = pre?.Subtitle.FixedEndTime ?? TimeSpan.Zero;
                 item.Subtitle.FixedEndTime = item.Subtitle.FixedStartTime.AddMilliseconds(Math.Max(item.Duration, item.Subtitle.Duration));
                 pre = item;
-            }           
+            }
         }
 
 
@@ -569,13 +569,14 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             ViewCurrentObject.SSML = "";
 
             await AIHelper.Ask(
-                ViewCurrentObject.SSMLPrompt, ViewCurrentObject.Content,
+                ViewCurrentObject.Content,
                 t =>
                 {
                     this.ViewCurrentObject.SSML = t.Content;
                 },
-                ViewCurrentObject.AIModel,
-                ViewCurrentObject.SSMLStream
+                aiModel: ViewCurrentObject.AIModel,
+                streamOut: ViewCurrentObject.SSMLStream,
+                systemPrompt: ViewCurrentObject.SSMLPrompt
                 );
 
             //var sw = Stopwatch.StartNew();

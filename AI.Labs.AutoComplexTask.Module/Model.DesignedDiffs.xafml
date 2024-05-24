@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" ?>
+<Application Title="AI.Labs.AutoComplexTask">
+  <Options>
+    <LayoutManagerOptions RequiredFieldMark="*" />
+  </Options>
+  <Views>
+  </Views>
+</Application>

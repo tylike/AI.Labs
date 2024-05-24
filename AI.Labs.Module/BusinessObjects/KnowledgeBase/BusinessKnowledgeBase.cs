@@ -219,7 +219,7 @@ namespace AI.Labs.Module.BusinessObjects.KnowledgeBase
             //QuestionKeywordList = rst.Select(t=>t.ToLower()).ToArray(); //QuestionKeywords.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim().ToLower()).Distinct().ToArray();
         }
 
-        private async Task<StringBuilder> GetKeywordsFromAI(XafApplication app,AIModel model)
+        private async Task<StringBuilder> GetKeywordsFromAI(XafApplication app, AIModel model)
         {
             var systemPrompt =
                 $@"#要求:根据用户提供的文字内容,提取出所有名词,包含但不限于人名、地名、物品、等所有.不要说明,逗号分隔多个词
@@ -239,7 +239,6 @@ A:合作,营销策略
             //item.Title = "";
             Debug.WriteLine("输出:");
             await AIHelper.Ask(
-                systemPrompt,
                 processContent,
                 t =>
                 {
@@ -248,7 +247,9 @@ A:合作,营销策略
                     QuestionKeywords = rst.ToString();
                     app.UIThreadDoEvents();
 
-                },model
+                },
+                aiModel: model,
+                systemPrompt: systemPrompt
                 );
             Debug.WriteLine("\t输出完成!");
             #endregion
@@ -304,10 +305,10 @@ A:合作,营销策略
             set { SetPropertyValue(nameof(KnowledgeBaseItem), value); }
         }
 
-        public IEnumerable<string> KnowledgeKeywords 
+        public IEnumerable<string> KnowledgeKeywords
         {
             get => //WordProcesser.GetWords(KnowledgeBaseItem.Text).Select(t=>t.Trim().ToLower()).Distinct();
-                KnowledgeBaseItem.Keyword.Split(",", StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim().ToLower()).Distinct(); 
+                KnowledgeBaseItem.Keyword.Split(",", StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim().ToLower()).Distinct();
         }
 
 
