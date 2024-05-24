@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Your XAF application</title>
+    <style>
+        body {
+            background: #fff;
+            color: #505050;
+            font: 12px 'Segoe UI', tahoma, arial, helvetica, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+
+        #header {
+            background: #efefef;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: normal;
+            margin: 0;
+            padding: 0 30px;
+            line-height: 50px;
+        }
+
+        p {
+            font-size: 20px;
+            color: #fff;
+            background: #ff6a00;
+            padding: 0 30px;
+            line-height: 50px;
+        }
+
+        #main {
+            padding: 5px 15px;
+        }
+
+        .section {
+            width: 18%;
+            float: left;
+            min-width : 200px;
+            margin: 10px 0 0 15px;
+        }
+
+        .section h2 {
+            font-size: 13px;
+            text-transform: uppercase;
+            margin: 0;
+            border-bottom: 1px solid silver;
+            padding-bottom: 12px;
+            margin-bottom: 8px;
+        }
+
+        .section.first {
+            margin-left: 0;
+            margin-right : 14px;
+            width: 10%;
+            min-width : 330px;
+        }
+
+        .section.first h2 {
+            font-size: 14px;
+            text-transform: none;
+            margin-bottom: 2px;
+            border: none;
+        }
+
+        .section.first li {
+            border-top: 1px solid silver;
+            padding: 8px 0;
+        }
+
+        .section.last {
+            margin-right: 0;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            line-height: 18px;
+        }
+
+        li {
+            padding: 6px 0;
+        }
+
+        a {
+            color: #267cb2;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <p>Congratulations! You've created a project</p>
+    </div>
+    <div id="main" style="width:100%">
+        <table style="width:100%">
+        <tr>
+        <td style="width:330px; vertical-align:top">
+        <div class="section first">
+            <h2>The XAF Solution Wizard has successfully generated the solution according to your settings.</h2>
+            <ul>
+                <li>The <b>AI.Labs.AutoComplexTask.Module</b> project keeps your platform-agnostic code.
+                Add persistent objects code to the <b>Business Objects</b> folder of this project and XAF will automatically create a UI to create, read, update and delete these persistent objects.</li>
+                <li>The <b>AI.Labs.AutoComplexTask.Win</b> project is a startup project for the desktop application.</li>
+                <li>To specify the database used by your application, modify the ConnectionString attribute in the configuration file located in the startup project.</li>
+            </ul>
+        </div>
+        </td>
+        <td style="vertical-align:top">
+        <div class="section">
+            <h2>1. Design Data Model</h2>
+            <ul>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112847">Ways to Add a Business Class</a></li>
+    
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/113586">Define the Logical Data Model and Relationships</a></li>
+  
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/113525">Display Member of a Business Class</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/113014">Data Types Supported by Built-in Editors</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/117395">PropertyChanged Event in Business Classes</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112600">Business Model Design with XPO</a></li>
+
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112788">Supply Initial Data</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112701">Data Annotations in Data Model</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/113583">Customize Business Class Metadata Dynamically</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/116516">Non-Persistent Objects</a></li>
+            </ul>
+        </div>
+        <div class="section">
+            <h2>2. Customize UI Structure</h2>
+            <ul>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112569">Application Solution Components</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/113445">Application Personalization</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112579">Application UI Model</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112607">UI Element Overview</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112748">UI Customization</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112843">Design-Time Features</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/113298">Localization</a></li>
+            </ul>
+        </div>
+        <div class="section" style="min-width : 220px">
+            <h2>3. Implement Custom Behavior</h2>
+            <ul>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/113708">Data Manipulation and Business Logic</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112623">Controllers and Actions</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112803">Ways to Show a View</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112740">Extend Functionality</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/120092">Access UI Elements and Their Controls</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/113610">Using a Custom Control that is not Integrated by Default</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112572">Debugging and Error Handling</a></li>
+            </ul>
+        </div>
+        <div class="section">
+            <h2>4. Test and Deploy</h2>
+            <ul>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112572">Unit and Functional Testing</a></li>
+                <li><a href="https://www.devexpress.com/kb=T148978">Measure and Improve Performance</a></li>
+                <li><a href="https://nuget.devexpress.com">Optimize CI/CD Processes with NuGet</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/113033">Redistribution and Deployment</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/113231">Deployment Tutorial</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/113238">Deployment Troubleshooting</a></li>
+            </ul>
+        </div>
+        <div class="section">
+            <h2>5. Get Support and Learn</h2>
+            <ul>
+                <li><a href="https://www.devexpress.com/sc">Search the KB, Examples and Support Tickets</a></li>
+                <li><a href="https://www.devexpress.com/go/XAF_Community_Consulting_Training.aspx">XAF Community, Consulting and Training</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/113054">Frequently Asked Questions (FAQ)</a></li>
+                <li><a href="https://docs.devexpress.com/eXpressAppFramework/112682/">Task-Based Help By Categories</a></li>
+                <li><a href="https://community.devexpress.com/blogs/xaf/">Development Blog</a></li>
+                <li><a href="https://www.devexpress.com/go/XAF_Roadmap.aspx">Roadmap</a></li>
+            </ul>
+        </div>
+        </td>
+        </tr>
+        </table>
+    </div>
+    <div id="footer">
+        <ul><li>If you have questions or need assistance, our <a href="https://www.devexpress.com/Support/Center/">best-in-class support service</a> is ready to help you.</li></ul>
+    </div>
+</body>
+</html>

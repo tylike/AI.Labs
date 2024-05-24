@@ -22,17 +22,18 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
             {
                 var items = e.SelectedObjects.OfType<BatchChat>().ToList();
                 List<Action> actions = new List<Action>();
-                var rst =Parallel.ForEach(items, async item =>
+                var rst = Parallel.ForEach(items, async item =>
                 {
                     var c = item;
                     var msg = "";
                     var start = DateTime.Now;
-                    await AIHelper.Ask("回答用户问题:", item.问题, p =>
+                    await AIHelper.Ask(item.问题, p =>
                     {
                         msg += p.Content;
-                        Debug.WriteLine(c.Oid+":"+p.Content);  
+                        Debug.WriteLine(c.Oid + ":" + p.Content);
                     },
-                    ViewCurrentObject.Model
+                    aiModel: ViewCurrentObject.Model,
+                    systemPrompt: "回答用户问题:"
                     );
                     var end = DateTime.Now;
                     actions.Add(() =>
@@ -40,7 +41,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                         c.回答 = msg;
                         c.首次响应时间 = start;
                         c.完成响应时间 = end;
-                    });                    
+                    });
                 });
 
                 foreach (var item in actions)
@@ -91,7 +92,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
 
         public string Temp { get; set; }
 
-        [ModelDefault("DisplayFormat","{0:HH:mm:ss.fff}")]
+        [ModelDefault("DisplayFormat", "{0:HH:mm:ss.fff}")]
         public DateTime 发送时间
         {
             get { return GetPropertyValue<DateTime>(nameof(发送时间)); }

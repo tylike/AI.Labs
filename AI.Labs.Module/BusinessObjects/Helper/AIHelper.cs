@@ -15,7 +15,7 @@ namespace AI.Labs.Module.BusinessObjects
     [SupportedOSPlatform("windows")]
     public static class AIHelper
     {
-
+        public static IObjectSpace ObjectSpace { get; set; }
         //public static string LocalGetTextFromAudio(string fileName)
         //{//-p 8 -t 16
         //    var cmd = @"D:\ai.stt\main.exe";
@@ -106,6 +106,7 @@ namespace AI.Labs.Module.BusinessObjects
         //        return (Text: error, true);
         //    }
         //}
+
         public static bool localServerStarted = false;
         public static Process LlmServerProcess;
         public static object flag = new object();
@@ -235,87 +236,139 @@ namespace AI.Labs.Module.BusinessObjects
         //    return completionResult.GetAIResponse();
         //}
 
-        public async static Task Ask(AIModel aiModel, PredefinedRole role, string userMessage, Action<ChatMessage> processResult,
+        public static OpenAIService DefaultAIService
+        {
+            get
+            {
+                var def = ObjectSpace.GetObjectsQuery<AIModel>().FirstOrDefault(t => t.IsDefault);
+                if (def == null)
+                {
+                    throw new UserFriendlyException("没有设置默认的AIModel");
+                }
+
+                return new OpenAIService(new OpenAiOptions()
+                {
+                    BaseDomain = def.ApiUrlBase,
+                    ApiKey = def.ApiKey,
+                    DefaultModelId = "qwen"
+                });
+            }
+        }
+
+
+        public async static Task Ask(
+            string userMessage,
+            Action<ChatMessage> processResult,
             bool streamOut = true,
             float temperature = 0.7f,
-            int n_ctx = 512
+            int n_ctx = 512,
+            AIModel aiModel = null,
+            PredefinedRole role = null,
+            string systemPrompt = null,
+            SynchronizationContext uiContext = null
             )
         {
-            var openAiService = CreateOpenAIService(aiModel, n_ctx);
+            ArgumentNullException.ThrowIfNull(userMessage, nameof(userMessage));
+            ArgumentNullException.ThrowIfNull(processResult, nameof(processResult));
 
+            var openAiService = aiModel != null ?
+                CreateOpenAIService(aiModel, n_ctx) :
+                DefaultAIService
+                ;
+            var modelName = aiModel?.Name ?? "qwen";
             #region 组织request
             var request = new ChatCompletionCreateRequest
             {
                 Messages = new List<ChatMessage>(),
-                Model = aiModel.Name,
+                Model = modelName,
                 Temperature = temperature
             };
 
-            foreach (var item in role.Prompts)
+            if (!string.IsNullOrEmpty(systemPrompt))
             {
-                var msg = item.Message;
-                request.Messages.Add(new ChatMessage(item.ChatRole.ToString(), msg));
+                request.Messages.Add(ChatMessage.FromSystem(systemPrompt));
             }
-            if (!string.IsNullOrEmpty(userMessage))
-                request.Messages.Add(ChatMessage.FromUser(userMessage));
-            #endregion
 
-            await AskCore(processResult, streamOut, openAiService, request);
-        }
-
-
-        public async static Task Ask(string systemPrompt, string userMessage, Action<ChatMessage> processResult, AIModel aiModel,
-            bool streamOut = true,
-            float temperature = 0.7f,
-            int n_ctx = 512
-            )
-        {
-            await AskCore(systemPrompt, userMessage, processResult, aiModel, streamOut, temperature, n_ctx);
-        }
-
-        /// <summary>
-        /// 新版本，别的考虑作废
-        /// </summary>
-        /// <param name="systemPrompt"></param>
-        /// <param name="userMessage"></param>
-        /// <param name="processResult"></param>
-        /// <param name="streamOut"></param>
-        /// <param name="url"></param>
-        /// <param name="api_key"></param>
-        /// <param name="modelName"></param>
-        /// <returns></returns>
-        async static Task AskCore(string systemPrompt, string userMessage,
-            Action<ChatMessage> processResult,
-            AIModel model,
-            bool streamOut,
-            float temperature,
-            int n_ctx = 512
-            )
-        {
-            var openAiService = CreateOpenAIService(model, n_ctx);
-
-            #region 组织request
-            var request = new ChatCompletionCreateRequest
+            if (role != null)
             {
-                Messages = new List<ChatMessage>() {
-                    ChatMessage.FromSystem(systemPrompt),
-                },
-                Temperature = temperature,
-                //MaxTokens = -1,
-                //TopP = 0.95f,
-                //K
-                Model = model.Name,
+                foreach (var item in role.Prompts)
+                {
+                    var msg = item.Message;
+                    request.Messages.Add(new ChatMessage(item.ChatRole.ToString(), msg));
+                }
+            }
 
-            };
             if (!string.IsNullOrEmpty(userMessage))
                 request.Messages.Add(ChatMessage.FromUser(userMessage));
             #endregion
-            await AskCore(processResult, streamOut, openAiService, request);
+
+            await AskCore(processResult, streamOut, openAiService, request, uiContext);
         }
 
 
+        //public async static Task Ask(
+        //    string systemPrompt, string userMessage,
+        //    Action<ChatMessage> processResult,
+        //    AIModel aiModel,
+        //    bool streamOut = true,
+        //    float temperature = 0.7f,
+        //    int n_ctx = 512
+        //    )
+        //{
+        //    await AskCore(systemPrompt, userMessage, processResult, aiModel, streamOut, temperature, n_ctx);
+        //}
 
-        private static async Task AskCore(Action<ChatMessage> processResult, bool streamOut, OpenAIService openAiService, ChatCompletionCreateRequest request)
+        ///// <summary>
+        ///// 新版本，别的考虑作废
+        ///// </summary>
+        ///// <param name="systemPrompt"></param>
+        ///// <param name="userMessage"></param>
+        ///// <param name="processResult"></param>
+        ///// <param name="streamOut"></param>
+        ///// <param name="url"></param>
+        ///// <param name="api_key"></param>
+        ///// <param name="modelName"></param>
+        ///// <returns></returns>
+        //async static Task AskCore(
+        //    string systemPrompt, 
+        //    string userMessage,
+        //    Action<ChatMessage> processResult,
+        //    AIModel model,
+        //    bool streamOut,
+        //    float temperature,
+        //    int n_ctx = 512
+        //    )
+        //{
+        //    var openAiService = CreateOpenAIService(model, n_ctx);
+
+        //    #region 组织request
+        //    var request = new ChatCompletionCreateRequest
+        //    {
+        //        Messages = new List<ChatMessage>() {
+        //            ChatMessage.FromSystem(systemPrompt),
+        //        },
+        //        Temperature = temperature,
+        //        //MaxTokens = -1,
+        //        //TopP = 0.95f,
+        //        //K
+        //        Model = model.Name,
+
+        //    };
+        //    if (!string.IsNullOrEmpty(userMessage))
+        //        request.Messages.Add(ChatMessage.FromUser(userMessage));
+        //    #endregion
+        //    await AskCore(processResult, streamOut, openAiService, request);
+        //}
+
+
+
+        private static async Task AskCore(
+            Action<ChatMessage> processResult,
+            bool streamOut,
+            OpenAIService openAiService,
+            ChatCompletionCreateRequest request,
+            SynchronizationContext uiContext = null
+            )
         {
             if (Debugger.IsAttached)
             {
@@ -335,7 +388,7 @@ namespace AI.Labs.Module.BusinessObjects
                     {
                         if (x.Successful)
                         {
-                            processResult(x.Choices.FirstOrDefault().Message);
+                            RunInUiThread(x);
                         }
                         else
                         {
@@ -347,7 +400,19 @@ namespace AI.Labs.Module.BusinessObjects
             else
             {
                 var completionResult = await openAiService.ChatCompletion.CreateCompletion(request);
-                processResult(completionResult.Choices.FirstOrDefault().Message);
+                RunInUiThread(completionResult);
+            }
+
+            void RunInUiThread(ChatCompletionCreateResponse x)
+            {
+                if (uiContext != null)
+                {
+                    uiContext.Post(s => { processResult(x.Choices.FirstOrDefault().Message); }, null);
+                }
+                else
+                {
+                    processResult(x.Choices.FirstOrDefault().Message);
+                }
             }
         }
 

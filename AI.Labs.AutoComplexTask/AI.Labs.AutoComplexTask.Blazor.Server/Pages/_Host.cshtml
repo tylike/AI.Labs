@@ -1,0 +1,57 @@
+﻿@page "/"
+@namespace AI.Labs.AutoComplexTask.Blazor.Server
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using DevExpress.ExpressApp.Blazor.Components
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- meta name="theme-color" content="#000000" -->
+    <title>AI.Labs.AutoComplexTask</title>
+    <base href="~/" />
+    <component type="typeof(BootstrapThemeLink)" render-mode="Static" />
+</head>
+<body>
+    @{
+        string userAgent = Request.Headers["User-Agent"];
+        bool isIE = userAgent.Contains("MSIE") || userAgent.Contains("Trident");
+    }
+    @if(isIE) {
+        <link href="css/site.css" rel="stylesheet" />
+        <div class="d-flex flex-column justify-content-center align-items-center h-100">
+            <div class="d-flex">
+                <img class="mt-2 mr-4" src="_content/DevExpress.ExpressApp.Blazor/images/Sad.svg" width="60" height="60" />
+                <div>
+                    <div class="h1">Internet Explorer is not supported.</div>
+                    <p style="font-size: 1rem; opacity: 0.75;" class="m-0">AI.Labs.AutoComplexTask cannot be loaded in Internet Explorer.<br>Please use a different browser.</p>
+                </div>
+            </div>
+        </div>
+    }
+    else {
+        <component type="typeof(SplashScreen)" render-mode="Static" param-Caption='"AI.Labs.AutoComplexTask"' param-ImagePath='"images/SplashScreen.svg"' />
+
+        <link href="_content/DevExpress.ExpressApp.Blazor/styles.css" rel="stylesheet" />
+        <link href="css/site.css" rel="stylesheet" />
+        // Uncomment this link to enable CSS isolation. For more information, refer to the following topic: https://learn.microsoft.com/en-us/aspnet/core/blazor/components/css-isolation
+        //<link href="AI.Labs.AutoComplexTask.Blazor.Server.styles.css" rel="stylesheet">
+        <script src="_content/DevExpress.ExpressApp.Blazor/scripts.js"></script>
+
+        <app class="d-none">
+            <component type="typeof(App)" render-mode="Server" />
+        </app>
+        
+        <component type="typeof(AlertsHandler)" render-mode="Server" />
+
+        <div id="blazor-error-ui">
+            <component type="typeof(BlazorError)" render-mode="Static" />
+        </div>
+
+        <script src="_framework/blazor.server.js"></script>
+    }
+</body>
+</html>

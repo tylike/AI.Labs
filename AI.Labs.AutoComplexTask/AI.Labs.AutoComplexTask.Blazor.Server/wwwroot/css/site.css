@@ -1,0 +1,31 @@
+html, body {
+    height: 100%;
+}
+
+app {
+    display: block;
+    height: 100%;
+}
+
+.header-logo {
+    flex-shrink: 0;
+    background-color: currentColor;
+    -webkit-mask: url('../images/Logo.svg');
+    mask: url('../images/Logo.svg');
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    width: 180px;
+    height: 24px;
+}
+
+#blazor-error-ui {
+    background: inherit;
+    bottom: 0;
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 100001;
+}

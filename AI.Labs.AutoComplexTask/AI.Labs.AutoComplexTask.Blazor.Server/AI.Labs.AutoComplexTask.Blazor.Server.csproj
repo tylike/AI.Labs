@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
+    <Deterministic>false</Deterministic>
+    <AssemblyVersion>1.0.*</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Configurations>Debug;Release;EasyTest</Configurations>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Model.xafml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Model.xafml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DevExpress.ExpressApp.Blazor" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.Office.Blazor" Version="23.1.4" />
+    <PackageReference Include="DevExpress.ExpressApp.Validation.Blazor" Version="23.1.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AI.Labs.AutoComplexTask.Module\AI.Labs.AutoComplexTask.Module.csproj" />
+  </ItemGroup>
+</Project>

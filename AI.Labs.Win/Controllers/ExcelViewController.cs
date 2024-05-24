@@ -22,7 +22,7 @@ namespace AI.Labs.Win.Controllers
             var role = (PredefinedRole)(action.Tag);
             var selectedCellFormula = editor.SpreadsheetControl.SelectedCell.Formula;
             var selectedCellText = editor.SpreadsheetControl.SelectedCell.Value.TextValue;
-            
+
             var userPrompt = "";
             //如果有消息模板,则使用消息模板,否则可能在role中有自定义的指令,说明需要消息模板
             if (!string.IsNullOrEmpty(role.ShortcutMessageTemplate))
@@ -47,7 +47,7 @@ namespace AI.Labs.Win.Controllers
 
             if (role.OutputTo == 0)
             {
-                await AIHelper.Ask(ViewCurrentObject.AIModel,role,userPrompt,t =>
+                await AIHelper.Ask(userPrompt, t =>
                 {
                     var x = (t.Content + "").Trim();
                     try
@@ -58,20 +58,24 @@ namespace AI.Labs.Win.Controllers
                     {
                         editor.SpreadsheetControl.SelectedCell.SetValueFromText(x);
                     }
-                }, streamOut: false);
-                Application.ShowViewStrategy.ShowMessage(action.Caption +":执行完成了!输出结果在您选中的单元格。");
+                },
+                streamOut: false,
+                aiModel: ViewCurrentObject.AIModel,
+                role: role
+                );
+                Application.ShowViewStrategy.ShowMessage(action.Caption + ":执行完成了!输出结果在您选中的单元格。");
             }
             else if (role.OutputTo == 1)
             {
                 var word = View.GetItems<RichTextPropertyEditor>().First();
                 var doc = word.RichEditControl.Document;
                 doc.AppendText("\n------------------------------------------------------------------------------\n");
-                
-                await AIHelper.Ask(ViewCurrentObject.AIModel, role, userPrompt,
+
+                await AIHelper.Ask(userPrompt,
                 t =>
                 {
                     doc.AppendText(t.Content);
-                }, streamOut: true);
+                }, aiModel: ViewCurrentObject.AIModel, role: role, streamOut: true);
 
                 doc.AppendText("\n------------------------------------------------------------------------------");
 
@@ -79,8 +83,8 @@ namespace AI.Labs.Win.Controllers
             }
             else
             {
-                Application.ShowViewStrategy.ShowMessage("输出位置设置错误,目前只支持0:到sheet中的目标单元格,1:到excel界面的文字输出窗口",InformationType.Error);
-            }           
+                Application.ShowViewStrategy.ShowMessage("输出位置设置错误,目前只支持0:到sheet中的目标单元格,1:到excel界面的文字输出窗口", InformationType.Error);
+            }
 
             //await AskAI((SimpleAction)sender, txt, ViewCurrentObject.AIModel, t =>
             //{
@@ -101,7 +105,7 @@ namespace AI.Labs.Win.Controllers
             base.OnActivated();
             editor = View.GetItems<SpreadsheetPropertyEditor>().First();
             editor.ControlCreated += Editor_ControlCreated;
-            
+
         }
 
         private void Editor_ControlCreated(object sender, EventArgs e)

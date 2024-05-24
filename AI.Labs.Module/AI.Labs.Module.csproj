@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<CheckEolTargetFramework>false</CheckEolTargetFramework>
 		<Deterministic>false</Deterministic>
 		<AssemblyVersion>1.0.0.1</AssemblyVersion>
@@ -8,6 +8,7 @@
 		<Configurations>Debug;Release;EasyTest;NewDebug</Configurations>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Platforms>AnyCPU;x64</Platforms>
+		<PlatformTarget>AnyCPU</PlatformTarget>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
@@ -67,8 +68,8 @@
 	<ItemGroup>
 		<PackageReference Include="org.k2fsa.sherpa.onnx" Version="*" />
 
-		<PackageReference Include="Betalgo.OpenAI" Version="7.4.3" />
-		<PackageReference Include="Betalgo.OpenAI.Utilities" Version="7.0.4" />
+		<PackageReference Include="Betalgo.OpenAI" Version="8.2.2" />
+		<PackageReference Include="Betalgo.OpenAI.Utilities" Version="8.0.1" />
 
 		<PackageReference Include="DevExpress.ExpressApp" Version="23.1.4" />
 		<PackageReference Include="DevExpress.ExpressApp.CloneObject.Xpo" Version="23.1.4" />
@@ -99,7 +100,7 @@
 		<PackageReference Include="NAudio" Version="2.2.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
 		<PackageReference Include="Xabe.FFmpeg" Version="5.2.6" />
-		<PackageReference Include="YoutubeExplode" Version="6.3.13" />
+		<PackageReference Include="YoutubeExplode" Version="6.3.16" />
 		<PackageReference Include="Xabe.FFmpeg.Downloader" Version="5.2.6" />
 		<PackageReference Include="FFMpegCore" Version="5.1.0" />
 
