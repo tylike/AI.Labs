@@ -550,8 +550,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             Model = Session.Query<AIModel>().FirstOrDefault(t => t.IsDefault);
             CreateScriptObject();
 
-            //创建空白方案
-            var audio = GetCnAudioSolution();
+
         }
         protected override void OnLoaded()
         {

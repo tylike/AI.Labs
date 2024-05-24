@@ -274,6 +274,30 @@ namespace AI.Labs.Module.BusinessObjects
         }
 
         /// <summary>
+        /// 使用一个相同的系统提示,提出多个问题
+        /// 按顺序执行
+        /// </summary>
+        /// <param name="systemPrompt"></param>
+        /// <param name="userMessage"></param>
+        /// <param name="processResult"></param>
+        /// <param name="aiModel"></param>
+        /// <param name="streamOut"></param>
+        /// <param name="temperature"></param>
+        /// <param name="n_ctx"></param>
+        /// <returns></returns>
+        public async static Task AskBatch(string systemPrompt, string[] userMessage, Action<ChatMessage> processResult, AIModel aiModel,
+            bool streamOut = true,
+            float temperature = 0.7f,
+            int n_ctx = 512
+        )
+        {
+            foreach (var item in userMessage)
+            {
+                await AskCore(systemPrompt, item, processResult, aiModel, streamOut, temperature, n_ctx);
+            }
+        }
+
+        /// <summary>
         /// 新版本，别的考虑作废
         /// </summary>
         /// <param name="systemPrompt"></param>

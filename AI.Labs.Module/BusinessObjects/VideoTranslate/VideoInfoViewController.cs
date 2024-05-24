@@ -20,6 +20,8 @@ using DevExpress.ExpressApp.Xpo;
 using AI.Labs.Module.BusinessObjects.STT;
 using System.Drawing;
 using DevExpress.ExpressApp.Editors;
+using DevExpress.Pdf.Native.BouncyCastle.Utilities;
+using DevExpress.Xpo;
 //using SubtitlesParser.Classes.Parsers;
 
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
@@ -59,6 +61,9 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             var splitEnWav = new SimpleAction(this, "4.4按SRT拆原音频", null);
             splitEnWav.Execute += SplitEnWav_Execute;
+
+            var parseSpeaker = new SimpleAction(this, "4.5解析说话人", null);
+            parseSpeaker.Execute += ParseSpeaker_Execute;
 
             var translateSubtitles = new SimpleAction(this, "TranslateSubtitles", null);
             translateSubtitles.Caption = "5.翻译字幕";
@@ -112,6 +117,21 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             updateFFmpeg.Execute += UpdateFFmpeg_Execute;
         }
 
+        private async void ParseSpeaker_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var subtitles = ViewCurrentObject.Subtitles;
+            var files = subtitles.Select(t => t.EnAudioFile).ToArray();
+            var speakers = SpeakerIdentificationHelper.GetSpeakers(files, 0.5);
+
+            foreach (var x in subtitles.Select((t, i) => new { t, i }))
+            {
+                x.t.EnAudioFile = files[x.i];
+                var role = await ViewCurrentObject.CnAudioSolution.CreateOrFindAudioRole("角色" + speakers[x.i]);
+                x.t.CnVoiceRole = role;
+            }
+            ObjectSpace.CommitChanges();
+        }
+
         private void SplitEnWav_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
             SplitEnAudio();
@@ -125,25 +145,25 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         {
             //1.使用ffmpeghelper,将音频转换为单声道
 
-            var mono = $"{ViewCurrentObject.AudioFile}.mono.wav";
-            FFmpegHelper.ExecuteFFmpegCommand($"-i \"{ViewCurrentObject.AudioFile}\" -ac 1 -y \"{mono}\"");
-            var subtitles = this.ViewCurrentObject.Subtitles.OrderBy(t => t.Index).ToArray();
-            var times = subtitles.Take(ViewCurrentObject.Subtitles.Count - 1).Select(t => t.EndTime.TotalSeconds).ToArray();
-            var files = FFmpegHelper.SplitFile(mono, times, Path.Combine(ViewCurrentObject.ProjectPath, "EnAudioClip", "%4d.wav"));
+            //var mono = $"{ViewCurrentObject.AudioFile}.mono.wav";
+            //FFmpegHelper.ExecuteFFmpegCommand($"-i \"{ViewCurrentObject.AudioFile}\" -ac 1 -y \"{mono}\"");
+            //var subtitles = this.ViewCurrentObject.Subtitles.OrderBy(t => t.Index).ToArray();
+            //var times = subtitles.Take(ViewCurrentObject.Subtitles.Count - 1).Select(t => t.EndTime.TotalSeconds).ToArray();
+            //var files = FFmpegHelper.SplitFile(mono, times, Path.Combine(ViewCurrentObject.ProjectPath, "EnAudioClip", "%4d.wav"));
 
-            if (files.Length != subtitles.Length)
-            {
-                throw new UserFriendlyException("拆分音频文件数量不正确");
-            }
+            //if (files.Length != subtitles.Length)
+            //{
+            //    throw new UserFriendlyException("拆分音频文件数量不正确");
+            //}
 
-            var speakers = SpeakerIdentificationHelper.Parse(files);
+            //var speakers = SpeakerIdentificationHelper.Parse(files);
 
-            foreach (var x in subtitles.Select((t, i) => new { t, i }))
-            {
-                x.t.EnAudioFile = files[x.i];
-                var role =await ViewCurrentObject.CnAudioSolution.CreateOrFindAudioRole("角色" + speakers[x.i]);
-                x.t.CnVoiceRole = role;
-            }
+            //foreach (var x in subtitles.Select((t, i) => new { t, i }))
+            //{
+            //    x.t.EnAudioFile = files[x.i];
+            //    var role = await ViewCurrentObject.CnAudioSolution.CreateOrFindAudioRole("角色" + speakers[x.i]);
+            //    x.t.CnVoiceRole = role;
+            //}
             ObjectSpace.CommitChanges();
         }
 
@@ -345,6 +365,13 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             testScript.DrawChaptersText();
 
+            //var opt = new TextOption(testScript.Session) { FontColor = Color.White, HasBorder = true, BorderColor = Color.Black, FontSize = 24 };
+
+            //foreach (var item in video.Subtitles)
+            //{
+            //    testScript.DrawText(10,50,item.Index.ToString()+":"+item.CnVoiceRole.Name,item.FixedStartTime, item.FixedEndTime,opt);
+            //}
+
             testScript.Export();
 
             Console.WriteLine($"时长:{FFmpegHelper.GetDuration(file)}");
@@ -473,6 +500,8 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             if (string.IsNullOrEmpty(ViewCurrentObject.ProjectPath))
             {
                 ViewCurrentObject.ProjectPath = Path.Combine(@"d:\VideoInfo", this.ViewCurrentObject.Oid.ToString());
+                //创建空白方案
+                var audio = ViewCurrentObject.GetCnAudioSolution();
             }
 
             if (!Directory.Exists(ViewCurrentObject.ProjectPath))
@@ -595,7 +624,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             var prompt = "";// ViewCurrentObject.STTPrompt ? "每段尽量长" : "每句尽量长";
             if (!string.IsNullOrEmpty(ViewCurrentObject.STTPrompt))
             {
-                prompt = $"--prompt \"{ViewCurrentObject.STTPrompt.Replace("\"", "'").Replace("\n", "")}\"";
+                prompt = $" -l auto  --prompt \"{ViewCurrentObject.STTPrompt.Replace("\"", "'").Replace("\n", "")}\"";
             }
             var model = "f:\\ai.stt\\whisper-cpp-ggml-medium-v3.bin";
             if (ViewCurrentObject.STTModel != null)
@@ -943,8 +972,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             foreach (SubtitleItem item in subtitles)
             {
                 Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:开始翻译");
-
-
                 await TranslateSubtitle(t, subtitles, item, this, ObjectSpace, true);
                 Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:翻译完成:{item.Index},生成音频");
                 tasks.Add(AudioBookTextAudioItem.GenerateAudioFile(false, item.AudioItem));

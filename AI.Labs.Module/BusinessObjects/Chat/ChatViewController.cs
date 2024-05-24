@@ -365,7 +365,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                                     var msg = item.Choices.FirstOrDefault()?.Message.Content;
                                     if (!string.IsNullOrEmpty(msg))
                                     {
-                                        replyChatItem.EnglishMessage += msg;
+                                        replyChatItem.Message += msg;
                                         Application.UIThreadDoEvents();
                                     }
                                 }
