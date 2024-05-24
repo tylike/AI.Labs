@@ -33,20 +33,19 @@ public class SpeakerIdentificationHelper
 
         return embedding;
     }
-    public static void Parse(string[] args)
+    public static int[] Parse(string[] files)
     {
         var config = new SpeakerEmbeddingExtractorConfig();
-        config.Model = "d:/model/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx";
+        config.Model = "d:/model/3dspeaker_speech_campplus_sv_en_voxceleb_16k.onnx";
         config.Debug = 1;
         var extractor = new SpeakerEmbeddingExtractor(config);
 
         var manager = new SpeakerEmbeddingManager(extractor.Dim);
-
-        var files = Directory.GetFiles("D:\\VideoInfo\\8\\EnAudioClip", "*.wav");
-
+        //var files = Directory.GetFiles("D:\\VideoInfo\\8\\EnAudioClip", "*.wav");
         var threshold = 0.6f;
-
+        var rst = new int[files.Length];
         int i = 0;
+        int index = 0;
         foreach (var file in files)
         {
             float[] embedding = ComputeEmbedding(extractor, file);
@@ -57,10 +56,12 @@ public class SpeakerIdentificationHelper
                 manager.Add(name, embedding);
                 i++;
             }
-
+            rst[index] = i;
+            index++;
             Console.WriteLine("{0}: {1}", file, name);
         }
 
+        return rst;
         //string[] spk1Files = files;
 
         //float[][] spk1Vec = new float[spk1Files.Length][];

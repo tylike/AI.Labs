@@ -301,7 +301,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
 
         public string DisplayMessage
         {
-            get => Message + "\n" + EnglishMessage;
+            get => Message ;
         }
 
 

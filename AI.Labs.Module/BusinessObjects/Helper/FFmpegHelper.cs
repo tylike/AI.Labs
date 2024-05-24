@@ -882,7 +882,7 @@ namespace AI.Labs.Module.BusinessObjects
             //ffprobe -select_streams v:0 -show_frames -show_entries frame=pict_type,best_effort_timestamp_time -of csv input.mp4 | grep -n I
             return FFProbe($"-select_streams v:0 -show_frames -show_entries frame=pict_type,best_effort_timestamp_time -of csv {inputFile} ");
         }
-        public static void SplitFile(string inputFile, double[] times, string outputFile)
+        public static string[] SplitFile(string inputFile, double[] times, string outputFile)
         {
             //ffmpeg -i input.mp4 -f segment -segment_times 10.500,22.712,35.145,48.376 -c copy output_%03d.mp4
             //ffmpeg -i input.wav -vn -acodec copy -f segment -segment_times 0,10,20,30 -reset_timestamps 1 output_%d.wav
@@ -891,7 +891,10 @@ namespace AI.Labs.Module.BusinessObjects
             {
                 Directory.CreateDirectory(dir);
             }
+
+            Directory.GetFiles(dir).ToList().ForEach(File.Delete);
             ExecuteFFmpegCommand(inputFiles: $"-i {inputFile}", outputOptions: $"-vn -acodec copy -f segment -segment_times {times.Select(t => t.ToFFmpegString()).Join(",")} -ac 1 -y", outputFiles: outputFile);
+            return Directory.GetFiles(dir);
         }
     }
 }

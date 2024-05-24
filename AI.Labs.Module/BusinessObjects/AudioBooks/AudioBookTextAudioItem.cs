@@ -224,6 +224,10 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
 
         private VoiceSolution GetFinalSolution()
         {
+            var sln = Subtitle?.CnVoiceRole?.VoiceSolution;
+            if (sln != null)
+                return sln;
+
             var vs = this.Solution ?? this.AudioRole?.VoiceSolution;
             if (vs == null)
             {

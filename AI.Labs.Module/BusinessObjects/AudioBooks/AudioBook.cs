@@ -10,6 +10,7 @@ using NAudio.Wave;
 using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Actions;
 using System.Xml;
+using AI.Labs.Module.BusinessObjects.VideoTranslate;
 
 namespace AI.Labs.Module.BusinessObjects.AudioBooks
 {
@@ -209,6 +210,15 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         {
         }
 
+
+        public VideoInfo VideoInfo
+        {
+            get { return GetPropertyValue<VideoInfo>(nameof(VideoInfo)); }
+            set { SetPropertyValue(nameof(VideoInfo), value); }
+        }
+
+
+
         /// <summary>
         /// 用于解析说话人的AI模型
         /// </summary>
@@ -351,6 +361,9 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             {
                 find = new AudioBookRole(Session);
                 find.Name = roleName;
+                var voices = Session.Query<VoiceSolution>().Where(t => t.Engine == VoiceEngine.EdgeTTS && t.Locale.StartsWith("zh-cn")).ToArray();
+                var rnd = new Random();
+                find.VoiceSolution = voices[rnd.Next(voices.Length)];
                 Roles.Add(find);
             }
             await Task.CompletedTask;

@@ -19,6 +19,7 @@ using AI.Labs.Module.BusinessObjects.FilterComplexScripts;
 using DevExpress.ExpressApp.Xpo;
 using AI.Labs.Module.BusinessObjects.STT;
 using System.Drawing;
+using DevExpress.ExpressApp.Editors;
 //using SubtitlesParser.Classes.Parsers;
 
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
@@ -113,8 +114,37 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private void SplitEnWav_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            var times = this.ViewCurrentObject.Subtitles.Take(ViewCurrentObject.Subtitles.Count - 1).Select(t => t.EndTime.TotalSeconds).ToArray();
-            FFmpegHelper.SplitFile(ViewCurrentObject.AudioFile, times, Path.Combine(ViewCurrentObject.ProjectPath, "EnAudioClip", "audio%5d.wav"));
+            SplitEnAudio();
+
+        }
+        /// <summary>
+        /// 使用字幕将wav分成多份并识别出说话人
+        /// </summary>
+        /// <exception cref="UserFriendlyException"></exception>
+        private async void SplitEnAudio()
+        {
+            //1.使用ffmpeghelper,将音频转换为单声道
+
+            var mono = $"{ViewCurrentObject.AudioFile}.mono.wav";
+            FFmpegHelper.ExecuteFFmpegCommand($"-i \"{ViewCurrentObject.AudioFile}\" -ac 1 -y \"{mono}\"");
+            var subtitles = this.ViewCurrentObject.Subtitles.OrderBy(t => t.Index).ToArray();
+            var times = subtitles.Take(ViewCurrentObject.Subtitles.Count - 1).Select(t => t.EndTime.TotalSeconds).ToArray();
+            var files = FFmpegHelper.SplitFile(mono, times, Path.Combine(ViewCurrentObject.ProjectPath, "EnAudioClip", "%4d.wav"));
+
+            if (files.Length != subtitles.Length)
+            {
+                throw new UserFriendlyException("拆分音频文件数量不正确");
+            }
+
+            var speakers = SpeakerIdentificationHelper.Parse(files);
+
+            foreach (var x in subtitles.Select((t, i) => new { t, i }))
+            {
+                x.t.EnAudioFile = files[x.i];
+                var role =await ViewCurrentObject.CnAudioSolution.CreateOrFindAudioRole("角色" + speakers[x.i]);
+                x.t.CnVoiceRole = role;
+            }
+            ObjectSpace.CommitChanges();
         }
 
         private void GetChapters_Execute(object sender, SimpleActionExecuteEventArgs e)
@@ -544,7 +574,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         private void GetSrt_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
             GetSrtJsonFromAudio();
-
         }
 
         private void GetSrtJsonFromAudio()
@@ -595,6 +624,8 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             LoadSrt();
             #endregion
             ViewCurrentObject.SaveSRTToFile(SrtLanguage.英文);
+
+            SplitEnAudio();
         }
 
         private async void FixSrt_Execute(object sender, SimpleActionExecuteEventArgs e)
@@ -1025,25 +1056,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private async Task CreateAudioSolution()
         {
-            var audioSolution = ViewCurrentObject.CnAudioSolution ?? ObjectSpace.CreateObject<AudioBook>();
-
-            audioSolution.Content = ViewCurrentObject.ContentCn;
-            audioSolution.Name = ViewCurrentObject.Title;
-
-            audioSolution.OutputPath = Path.Combine(ViewCurrentObject.ProjectPath, $"Audio");
-            audioSolution.CheckOutputPath();
-
-#warning 没有考虑好，这里是不是应该删除原有的音频方案。在一键执行时，不该删除，在点击按钮时，可能要删除，因为如果字幕重新翻译了，音频方案也要重新生成。
-            //if (audioSolution.AudioItems.Count > 0)
-            //{
-            //    ObjectSpace.Delete(audioSolution.AudioItems);
-            //}
-
-            var def = await audioSolution.CreateOrFindAudioRole("default");
-            def.TryReadingText = "这里可以输入一些试听内容!";
-
-            if (def.VoiceSolution == null)
-                def.VoiceSolution = ObjectSpace.GetObjectsQuery<VoiceSolution>().FirstOrDefault(t => t.ShortName == "zh-CN-YunjianNeural");
+            var audioSolution = ViewCurrentObject.GetCnAudioSolution();
 #warning 这里与是否删除了音频项目有关，已经有的情况下没有创建新的。
             if (audioSolution.AudioItems.Count <= 0)
             {
@@ -1052,13 +1065,11 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                     var n = ObjectSpace.CreateObject<AudioBookTextAudioItem>();
                     n.Subtitle = item;
                     item.Audio = n;
-                    n.AudioRole = def;
+                    n.AudioRole = item.CnVoiceRole;
                     audioSolution.AudioItems.Add(n);
                     item.AudioItem = n;
                 }
             }
-            ViewCurrentObject.CnAudioSolution = audioSolution;
-
             ObjectSpace.CommitChanges();
         }
 
