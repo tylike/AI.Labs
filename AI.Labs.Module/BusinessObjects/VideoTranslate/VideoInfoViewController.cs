@@ -12,16 +12,11 @@ using AI.Labs.Module.BusinessObjects.AudioBooks;
 using Newtonsoft.Json;
 using System.Globalization;
 using OpenAI.ObjectModels.RequestModels;
-using AI.Labs.Module.BusinessObjects.TTS;
 using Xabe.FFmpeg.Downloader;
 using AI.Labs.Module.BusinessObjects.Helper;
 using AI.Labs.Module.BusinessObjects.FilterComplexScripts;
-using DevExpress.ExpressApp.Xpo;
 using AI.Labs.Module.BusinessObjects.STT;
 using System.Drawing;
-using DevExpress.ExpressApp.Editors;
-using DevExpress.Pdf.Native.BouncyCastle.Utilities;
-using DevExpress.Xpo;
 //using SubtitlesParser.Classes.Parsers;
 
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
@@ -607,10 +602,12 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private void GetSrtJsonFromAudio()
         {
+            #region 防止显存不够用,将语言模型停止
             if (AIHelper.LlmServerProcess != null)
             {
                 AIHelper.LlmServerProcess.Kill();
             }
+            #endregion
 
             #region 1.生成字幕文件
             var pi = new ProcessStartInfo();
@@ -636,8 +633,13 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             {
                 tdrz = "-tdrz";
             }
+            var aet = "";
+            if (ViewCurrentObject.AudioEndTime != 0)
+            {
+                aet = $"-d {ViewCurrentObject.AudioEndTime * 1000}";
+            }
 
-            pi.Arguments = $@" -m {model} {tdrz} -of {outputFile} {parseSpreaker} -osrt -ojf -otxt {ViewCurrentObject.AudioFile} {prompt}";
+            pi.Arguments = $@" -m {model} {tdrz} -of {outputFile} {parseSpreaker} {aet} -osrt -ojf -otxt {ViewCurrentObject.AudioFile} {prompt}";
 
             pi.UseShellExecute = false;
             var inf = Process.Start(pi);
@@ -776,8 +778,17 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             //ObjectSpace.CommitChanges(); 
             #endregion
 
-            var jsonFile = JsonConvert.DeserializeObject<JsonSubtitleFile>(File.ReadAllText(video.VideoJsonSRT));
-            var tokens = jsonFile.transcription.SelectMany(t => t.tokens).ToList();
+            var jsonFile = JsonConvert.DeserializeObject<JsonSubtitleFile>(File.ReadAllText(video.VideoJsonSRT, Encoding.GetEncoding(65001)));
+            var allTokens =
+                string.Join(
+                    "",
+                    jsonFile.transcription.SelectMany(t => t.tokens).Select(t => t.text)
+                );
+
+            var tokens = jsonFile
+                .transcription
+                .SelectMany(t => t.tokens.Where(t => !(t.text.StartsWith("[") && t.timestamps.from == t.timestamps.to)))
+                .ToList();
             RemoveDynamicTokens(tokens, new[] { " [", "music", "]" });
 
             var rst = new List<List<Token>>();

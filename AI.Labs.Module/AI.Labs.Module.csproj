@@ -95,6 +95,8 @@
 
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 
+
+
 		<PackageReference Include="System.Numerics.Tensors" Version="8.0.0" />
 
 		<PackageReference Include="NAudio" Version="2.2.1" />
@@ -124,6 +126,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Edge_tts_sharp\Edge_tts_sharp.csproj" />
+		<ProjectReference Include="..\Pinyin4net\Pinyin4net.csproj" />
 		<ProjectReference Include="..\STT\STT.csproj" />
 	</ItemGroup>
 	<ItemGroup>

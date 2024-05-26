@@ -12,6 +12,12 @@ namespace AI.Labs.Module
 
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
+
+        public ISRT Before { get; set; }
+        public ISRT Next { get; set; }
+
+        public TimeSpan BeforeGap { get; set; }
+
         public string Text { get; set; }
     }
 
@@ -24,6 +30,16 @@ namespace AI.Labs.Module
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
         public string Text { get; set; }
+        public string Memo { get; set; }
+        public SRT Before { get; set; }
+        public SRT Next { get; set; }
+        
+        /// <summary>
+        /// 与上一段的间隔时间
+        /// </summary>
+        public TimeSpan BeforeGap { get; set; }
+        ISRT ISRT.Before { get => Before; set => Before = (SRT)value; }
+        ISRT ISRT.Next { get => Next; set => Next = (SRT)value; }
     }
 
     public class SRTFile
@@ -36,6 +52,11 @@ namespace AI.Labs.Module
         {
             Texts.AddRange(new SRTParser().ParseStream<SRT>(new FileStream(FileName, FileMode.Open), Encoding.UTF8, true, () => new SRT()));
         }
+        public void LoadFromText(string text)
+        {
+            Texts.AddRange(new SRTParser().ParseString(text, Encoding.UTF8, true, () => new SRT()).OfType<SRT>());
+        }
+
         public void Save()
         {
             // 移除所有内容为空的字幕项

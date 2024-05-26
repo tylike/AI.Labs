@@ -245,13 +245,13 @@ namespace AI.Labs.Module.BusinessObjects
                 {
                     throw new UserFriendlyException("没有设置默认的AIModel");
                 }
-
-                return new OpenAIService(new OpenAiOptions()
-                {
-                    BaseDomain = def.ApiUrlBase,
-                    ApiKey = def.ApiKey,
-                    DefaultModelId = "qwen"
-                });
+                return CreateOpenAIService(def, 2048);
+                //return new OpenAIService(new OpenAiOptions()
+                //{
+                //    BaseDomain = def.ApiUrlBase,
+                //    ApiKey = def.ApiKey,
+                //    DefaultModelId = "qwen"
+                //});
             }
         }
 

@@ -760,6 +760,24 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 t.VideoChineseSRT = fileName;
             }
         }
+
+        [XafDisplayName("识别开始时间")]
+        [ToolTip("在识别音频时的开始时间（秒）")]
+        public int AudioStartTime
+        {
+            get { return GetPropertyValue<int>(nameof(AudioStartTime)); }
+            set { SetPropertyValue(nameof(AudioStartTime), value); }
+        }
+
+
+        [XafDisplayName("识别结束时间")]
+        [ToolTip("在识别音频时的结束时间（秒）")]
+        public int AudioEndTime
+        {
+            get { return GetPropertyValue<int>(nameof(AudioEndTime)); }
+            set { SetPropertyValue(nameof(AudioEndTime), value); }
+        }
+
     }
 
     public class Log : XPObject

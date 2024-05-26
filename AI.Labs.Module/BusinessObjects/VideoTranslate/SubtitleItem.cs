@@ -12,7 +12,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
     [XafDisplayName("字幕")]
     [XafDefaultProperty(nameof(Index))]
-    public class SubtitleItem : SimpleXPObject,ISRT //,IClip
+    public class SubtitleItem : SimpleXPObject, ISRT //,IClip
     {
         public SubtitleItem(Session s) : base(s)
         {
@@ -49,7 +49,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             get { return GetPropertyValue<int>(nameof(Index)); }
             set { SetPropertyValue(nameof(Index), value); }
         }
-        
+
         [XafDisplayName("开始时间")]
         [ModelDefault("DisplayFormat", "{0:HH:mm:ss.fff}")]
         [ToolTip("指在原视频中的开始显示时间")]
@@ -71,7 +71,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         public TimeSpan FixedStartTime
         {
             get { return GetPropertyValue<TimeSpan>(nameof(FixedStartTime)); }
-            set 
+            set
             {
                 if (!IsLoading)
                 {
@@ -80,7 +80,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
                     }
                 }
-                SetPropertyValue(nameof(FixedStartTime), value); 
+                SetPropertyValue(nameof(FixedStartTime), value);
             }
         }
 
@@ -168,6 +168,32 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             get { return GetPropertyValue<AudioBookTextAudioItem>(nameof(Audio)); }
             set { SetPropertyValue(nameof(Audio), value); }
         }
+
+
+        public SubtitleItem Before
+        {
+            get { return GetPropertyValue<SubtitleItem>(nameof(Before)); }
+            set { SetPropertyValue(nameof(Before), value); }
+        }
+
+        public SubtitleItem Next
+        {
+            get { return GetPropertyValue<SubtitleItem>(nameof(Next)); }
+            set { SetPropertyValue(nameof(Next), value); }
+        }
+        /// <summary>
+        /// 与上一段的间隔时间
+        /// 应该用正确的英文是?
+        /// 答:
+        /// </summary>
+        public TimeSpan BeforeGap
+        {
+            get { return GetPropertyValue<TimeSpan>(nameof(BeforeGap)); }
+            set { SetPropertyValue(nameof(BeforeGap), value); }
+        }
+
+        ISRT ISRT.Before { get => Before; set => Before = (SubtitleItem)value; }
+        ISRT ISRT.Next { get => Next; set => Next = (SubtitleItem)value; }
     }
 
 }

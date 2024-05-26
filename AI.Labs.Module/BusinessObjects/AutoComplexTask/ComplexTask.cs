@@ -8,8 +8,8 @@ using OpenAI.Tokenizer.GPT3;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
@@ -79,9 +79,64 @@ namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
         }
 
         [Action]
+        public void ParseSRT()
+        {
+            //var srt = new SRTFile();
+            //srt.LoadFromText(TaskMemo);
+            //将所有时间不连续的字幕合并
+
+            //按照中间间隔时间分段
+            //List<SRT> paragraphs = SplitByStopTime(srt);
+            //Debug.WriteLine($"分为了几段:{paragraphs.Count}");
+            //按照上限token数分段，并保证结尾的一定是句号，即：完整的句子
+            //List<SRT> paragraphs2 = SplitByTokenCount(srt.Texts);
+            //var spliter = new SententTextSplitter();
+            //var ps = TaskMemo.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            //var newParagraphs =SententTextSplitter.SegmentText(TaskMemo, 1000);
+
+        }
+        
+
+        private static List<SRT> SplitByStopTime(SRTFile srt)
+        {
+            var paragraphs = new List<SRT>();
+            SRT lastNew = null;
+            SRT preSource = null;
+            foreach (var item in srt.Texts)
+            {
+                //如果上一个字幕的结束时间不等于当前字幕的开始时间,则合并
+                if (preSource != null && item.StartTime != preSource.EndTime)
+                {
+                    lastNew.EndTime = preSource.EndTime;
+                    lastNew.BeforeGap = item.StartTime - preSource.EndTime;
+                    lastNew = null;
+                }
+
+                if (lastNew == null)
+                {
+                    lastNew = new SRT();
+                    paragraphs.Add(lastNew);
+                    lastNew.Index = paragraphs.Count;
+                    lastNew.StartTime = item.StartTime;
+                    lastNew.Text = item.Text;
+                }
+                else
+                {
+                    lastNew.Text += Environment.NewLine + item.Text;
+                }
+                preSource = item;
+            }
+            lastNew.EndTime = preSource.EndTime;
+            return paragraphs;
+        }
+
+        [Action]
         public void SplitItems()
         {
-            var ps = TaskMemo.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            //var ps = TaskMemo.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var psLines = TaskMemo.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var ps = SentenceTextSplitter.SegmentText(TaskMemo, 1000);
+
             int i = 0;
             foreach (var item in ps)
             {
@@ -92,6 +147,7 @@ namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
                     {
                         Title = i.ToString("000"),
                         TaskMemo = item,
+
                     };
                     Items.Add(task);
                 }
@@ -152,7 +208,7 @@ namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
             }
 
             var uiContext = SynchronizationContext.Current;
-            await AIHelper.Ask(Response, t =>
+            await AIHelper.Ask(TaskMemo, t =>
             {
                 SummaryResponse += t.Content;
             },
@@ -170,4 +226,5 @@ namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
 
 
     }
+
 }
