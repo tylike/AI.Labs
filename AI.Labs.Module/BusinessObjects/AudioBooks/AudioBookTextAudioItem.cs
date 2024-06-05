@@ -12,7 +12,6 @@ using DevExpress.ExpressApp.SystemModule;
 using WebSocketSharp;
 using DevExpress.ExpressApp.Model;
 using AI.Labs.Module.BusinessObjects.VideoTranslate;
-using Xabe.FFmpeg;
 
 namespace AI.Labs.Module.BusinessObjects.AudioBooks
 {
@@ -242,13 +241,13 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         /// </summary>
         /// <param name="reGenerate"></param>
         //[Action(Caption = "生成音频")]
-        public static async Task<(AudioBookTextAudioItem Item, int Duration,string FileName)> GenerateAudioFile(bool reGenerate,AudioBookTextAudioItem item)
+        public static async Task<(AudioBookTextAudioItem Item, int Duration, string FileName)> GenerateAudioFile(bool reGenerate, AudioBookTextAudioItem item)
         {
             #region 是否需要重新生成
             bool exist = !string.IsNullOrEmpty(item.OutputFileName) && File.Exists(item.OutputFileName);
             if (!reGenerate && exist)
             {
-                return (item, -1,item.OutputFileName);
+                return (item, -1, item.OutputFileName);
             }
 
             //重新生成,并且文件名不为空,并且文件存在,则删除
@@ -265,7 +264,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             }
 
             var vs = item.GetFinalSolution();
-            
+
             var p = Path.Combine(item.AudioBook.OutputPath, $"{item.Index}.mp3");
             Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:开始生成音频");
             await (await vs.Text2AudioData(item.Subtitle.CnText)).SaveAudioDataToFile(p);
@@ -279,7 +278,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             }
             item.OutputFileName = p;
             Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:完成变速" + item.OutputFileName);
-            return (item, audioDuration,p);
+            return (item, audioDuration, p);
         }
 
         #region 速度调整
@@ -308,7 +307,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             return (int)FFmpegHelper.GetDuration(OutputFileName).Value;
         }
 
-        public static (double 计划倍速, double 实际倍速, bool 调整成功) 计算调速(int Duration,int SubtitleDuration)
+        public static (double 计划倍速, double 实际倍速, bool 调整成功) 计算调速(int Duration, int SubtitleDuration)
         {
             if (Duration > SubtitleDuration)
             {
@@ -329,7 +328,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
                 return (计划倍速, 实际倍速, 调整成功);
             }
             return (0, 0, true);
-        } 
+        }
         #endregion
 
     }
@@ -363,7 +362,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             var play = new SimpleAction(this, "PlayAudioTextItem", null);
             play.Caption = "播放";
             play.Execute += Play_Execute;
-            var updateDuration =  new SimpleAction(this,"更新时长",null);
+            var updateDuration = new SimpleAction(this, "更新时长", null);
             updateDuration.Execute += UpdateDuration_Execute;
         }
 
@@ -387,11 +386,11 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
 
         private async void Generate_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            await AudioBook.GenerateAudioBook(e.SelectedObjects.OfType<AudioBookTextAudioItem>(),true);
+            await AudioBook.GenerateAudioBook(e.SelectedObjects.OfType<AudioBookTextAudioItem>(), true);
 
             //音频生成完成,修正字幕时间.
             var items = e.SelectedObjects.OfType<AudioBookTextAudioItem>();
-            
+
             AudioBook book = items.First().AudioBook;
             book.FixSubtitleTimes();
 

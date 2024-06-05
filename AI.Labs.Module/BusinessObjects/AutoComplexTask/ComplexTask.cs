@@ -44,7 +44,6 @@ namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
             set { SetPropertyValue(nameof(Response), value); }
         }
 
-
         public int TokenCount
         {
             get
@@ -95,7 +94,7 @@ namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
             //var newParagraphs =SententTextSplitter.SegmentText(TaskMemo, 1000);
 
         }
-        
+
 
         private static List<SRT> SplitByStopTime(SRTFile srt)
         {

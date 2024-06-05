@@ -12,7 +12,6 @@ using AI.Labs.Module.BusinessObjects.AudioBooks;
 using Newtonsoft.Json;
 using System.Globalization;
 using OpenAI.ObjectModels.RequestModels;
-using Xabe.FFmpeg.Downloader;
 using AI.Labs.Module.BusinessObjects.Helper;
 using AI.Labs.Module.BusinessObjects.FilterComplexScripts;
 using AI.Labs.Module.BusinessObjects.STT;
@@ -41,8 +40,8 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             var getSrt = new SimpleAction(this, "4.识别字幕", null);
             getSrt.Execute += GetSrt_Execute;
 
-            var fixSrt = new SimpleAction(this, "4.0修复字幕", null);
-            fixSrt.Execute += FixSrt_Execute;
+            //var fixSrt = new SimpleAction(this, "4.0修复字幕", null);
+            //fixSrt.Execute += FixSrt_Execute;
 
             var loadSrt = new SimpleAction(this, "4.1加载字幕", null);
             loadSrt.Execute += LoadSrt_Execute;
@@ -64,10 +63,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             translateSubtitles.Caption = "5.翻译字幕";
             translateSubtitles.Execute += TranslateSubtitles_Execute;
 
-            var translateSubtitlesV2 = new SimpleAction(this, "TranslateSubtitlesV2", null);
-            translateSubtitlesV2.Caption = "5.1翻译字幕V2";
-            translateSubtitlesV2.Execute += TranslateSubtitlesV2_Execute;
-
             var saveCNSRT = new SimpleAction(this, "5.2保存中文SRT", null);
             saveCNSRT.Execute += SaveCNSRT_Execute;
 
@@ -87,15 +82,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             var generateVideo = new SimpleAction(this, "10.生成视频", null);
             generateVideo.Execute += GenerateVideo_Execute;
-
-            var generateSrtParsePromptFromEnglishContent = new SimpleAction(this, "从英文内容中生成识别提示", "GenerateSTTPrompt");
-            generateSrtParsePromptFromEnglishContent.Execute += GenerateSrtParsePromptFromEnglishContent_Execute;
-
-            var generateSrtParsePromptFromChineseContent = new SimpleAction(this, "从中文内容中生成识别提示", "GenerateSTTPrompt");
-            generateSrtParsePromptFromChineseContent.Execute += GenerateSrtParsePromptFromChineseContent_Execute;
-
-            var batchTranslate = new SimpleAction(this, "5.3批量翻译", null);
-            batchTranslate.Execute += BatchTranslate_Execute;
 
             var oneKey = new SimpleAction(this, "11.一键生成", null);
             oneKey.Execute += OneKey_Execute;
@@ -132,6 +118,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             SplitEnAudio();
 
         }
+
         /// <summary>
         /// 使用字幕将wav分成多份并识别出说话人
         /// </summary>
@@ -188,11 +175,9 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             this.ViewCurrentObject.VideoScript.Output += $"{Environment.NewLine} {DateTime.Now.TimeOfDay} {message}";
         }
 
-
-
         private async void UpdateFFmpeg_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, @"d:\ffmpeg.gui\last");
+            //await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, @"d:\ffmpeg.gui\last");
         }
 
         private async void OneKey_Execute(object sender, SimpleActionExecuteEventArgs e)
@@ -226,13 +211,14 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             {
                 ViewCurrentObject.Model = ObjectSpace.GetObjectsQuery<AIModel>().FirstOrDefault(t => t.IsDefault);
             }
-            if (ViewCurrentObject.STTModel == null)
+
+            if (ViewCurrentObject.SubtitleTranscriptionAgent == null)
             {
-                ViewCurrentObject.STTModel = ObjectSpace.GetObjectsQuery<STTModel>().FirstOrDefault(t => t.IsDefault);
+                ViewCurrentObject.SubtitleTranscriptionAgent = ObjectSpace.GetObjectsQuery<SubtitleTranscriptionAgent>().FirstOrDefault(t => t.IsDefault);
             }
 
             ArgumentNullException.ThrowIfNull(ViewCurrentObject.Model);
-            ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel);
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.SubtitleTranscriptionAgent);
 
             准备();
             if (string.IsNullOrEmpty(ViewCurrentObject.VideoFile))
@@ -372,34 +358,9 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             Console.WriteLine($"时长:{FFmpegHelper.GetDuration(file)}");
         }
 
-        private async void BatchTranslate_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            var t = ViewCurrentObject;
-            if (t.Model == null)
-            {
-                throw new UserFriendlyException("请选择模型!");
-            }
-            var subtitles = ViewCurrentObject.Subtitles.OrderBy(t => t.Index).ToArray();
-
-            TranslateSubtitle(t, subtitles, subtitles[0], this, ObjectSpace, true);
-            TranslateSubtitle(t, subtitles, subtitles[1], this, ObjectSpace, true);
-            TranslateSubtitle(t, subtitles, subtitles[2], this, ObjectSpace, true);
-            TranslateSubtitle(t, subtitles, subtitles[3], this, ObjectSpace, true);
-            TranslateSubtitle(t, subtitles, subtitles[4], this, ObjectSpace, true);
-            TranslateSubtitle(t, subtitles, subtitles[5], this, ObjectSpace, true);
-            TranslateSubtitle(t, subtitles, subtitles[6], this, ObjectSpace, true);
-            TranslateSubtitle(t, subtitles, subtitles[7], this, ObjectSpace, true);
-            TranslateSubtitle(t, subtitles, subtitles[8], this, ObjectSpace, true);
-            TranslateSubtitle(t, subtitles, subtitles[9], this, ObjectSpace, true);
-
-
-            //SaveSRTToFile(t, SrtLanguage.中文);
-            ObjectSpace.CommitChanges();
-            await Task.CompletedTask;
-        }
         private async void GenerateVideo_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            CreateVideoProduct(this.ObjectSpace, this.ViewCurrentObject);
+            await CreateVideoProduct(this.ObjectSpace, this.ViewCurrentObject);
         }
 
         private void FixJianYingProSrtTime_Execute(object sender, SimpleActionExecuteEventArgs e)
@@ -424,15 +385,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                 );
         }
 
-        private void GenerateSrtParsePromptFromChineseContent_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            ViewCurrentObject.STTPrompt += ViewCurrentObject.ContentCn;
-        }
-
-        private void GenerateSrtParsePromptFromEnglishContent_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            ViewCurrentObject.STTPrompt += ViewCurrentObject.ContentEn;
-        }
         #endregion
 
         #region 1.获取视频信息
@@ -453,7 +405,9 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             var youtube = new YoutubeClient();
             // Get the video ID
             var videoId = VideoId.Parse(url);
+#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
             GetVideoInfo(youtube, videoId);
+#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
 
             // Get available streams and choose the best muxed (audio + video) stream
             var streamManifest = await youtube.Videos.Streams.GetManifestAsync(videoId);
@@ -610,23 +564,24 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             #endregion
 
             #region 1.生成字幕文件
-            var pi = new ProcessStartInfo();
-            ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel, "语音识别模型");
-            ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel?.ServerApplication, "语音识别模型启动程序");
-            ArgumentNullException.ThrowIfNull(ViewCurrentObject.STTModel.ModelFilePath, "语音识别模型文件");
 
-            pi.FileName = ViewCurrentObject.STTModel.ServerApplication;// $@"F:\ai.stt\whisper.cpp.cublax-11.8.0.x64\main.exe";
+            var pi = new ProcessStartInfo();
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.SubtitleTranscriptionAgent.Model, "语音识别模型");
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.SubtitleTranscriptionAgent.Model?.ServerApplication, "语音识别模型启动程序");
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.SubtitleTranscriptionAgent.Model.ModelFilePath, "语音识别模型文件");
+
+            pi.FileName = ViewCurrentObject.SubtitleTranscriptionAgent.Model.ServerApplication;// $@"F:\ai.stt\whisper.cpp.cublax-11.8.0.x64\main.exe";
             var outputFile = Path.Combine(ViewCurrentObject.ProjectPath, "en_subtitle");
             var parseSpreaker = ViewCurrentObject.ParseSpreaker ? "-di" : "";
             var prompt = "";// ViewCurrentObject.STTPrompt ? "每段尽量长" : "每句尽量长";
-            if (!string.IsNullOrEmpty(ViewCurrentObject.STTPrompt))
+            if (!string.IsNullOrEmpty(ViewCurrentObject.SubtitleTranscriptionAgent.Prompt))
             {
-                prompt = $" -l auto  --prompt \"{ViewCurrentObject.STTPrompt.Replace("\"", "'").Replace("\n", "")}\"";
+                prompt = $" -l auto  --prompt \"{ViewCurrentObject.SubtitleTranscriptionAgent.Prompt.Replace("\"", "'").Replace("\n", "")}\"";
             }
             var model = "f:\\ai.stt\\whisper-cpp-ggml-medium-v3.bin";
-            if (ViewCurrentObject.STTModel != null)
+            if (ViewCurrentObject.SubtitleTranscriptionAgent.Model != null)
             {
-                model = ViewCurrentObject.STTModel.ModelFilePath;
+                model = ViewCurrentObject.SubtitleTranscriptionAgent.Model.ModelFilePath;
             }
             var tdrz = "";
             if (ViewCurrentObject.TinyDiarize)
@@ -659,54 +614,54 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             SplitEnAudio();
         }
 
-        private async void FixSrt_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            var t = ViewCurrentObject;
-            if (t.Model == null)
-            {
-                throw new UserFriendlyException("请选择模型!");
-            }
-            var subtitles = ViewCurrentObject.Subtitles.OrderBy(t => t.Index).ToArray();
-            foreach (SubtitleItem item in subtitles)
-            {
-                await FixV1EnglishSRT(t, subtitles, item, this, ObjectSpace);
-            }
-            //保存翻译结果
-            ObjectSpace.CommitChanges();
-        }
+        //private async void FixSrt_Execute(object sender, SimpleActionExecuteEventArgs e)
+        //{
+        //    var t = ViewCurrentObject;
+        //    if (t.Model == null)
+        //    {
+        //        throw new UserFriendlyException("请选择模型!");
+        //    }
+        //    var subtitles = ViewCurrentObject.Subtitles.OrderBy(t => t.Index).ToArray();
+        //    foreach (SubtitleItem item in subtitles)
+        //    {
+        //        await FixV1EnglishSRT(t, subtitles, item, this, ObjectSpace);
+        //    }
+        //    //保存翻译结果
+        //    ObjectSpace.CommitChanges();
+        //}
 
-        public static async Task FixV1EnglishSRT(VideoInfo t, SubtitleItem[] subtitles, SubtitleItem item, ViewController controller, IObjectSpace os)
-        {
-            var text = item.PlainText; //string.Join("\n\n", item.PlainText);
-            item.Lines = "";
-            var contextItems = subtitles.Where(t => t.Index > item.Index - 10 && t.Index < item.Index + 10).Take(20);
-            var contexts = string.Join("\n", contextItems.Select(t => t.PlainText));
+        //public static async Task FixV1EnglishSRT(VideoInfo t, SubtitleItem[] subtitles, SubtitleItem item, ViewController controller, IObjectSpace os)
+        //{
+        //    var text = item.PlainText; //string.Join("\n\n", item.PlainText);
+        //    item.Lines = "";
+        //    var contextItems = subtitles.Where(t => t.Index > item.Index - 10 && t.Index < item.Index + 10).Take(20);
+        //    var contexts = string.Join("\n", contextItems.Select(t => t.PlainText));
 
-            var systemPrompt = $"重新组织文字内容,去除掉不必要的So,Now,等不必要语气词,保持句意完整并做精简缩写.";
+        //    var systemPrompt = $"重新组织文字内容,去除掉不必要的So,Now,等不必要语气词,保持句意完整并做精简缩写.";
 
-            if (!string.IsNullOrEmpty(t.FixSRTPrompt))
-            {
-                systemPrompt = t.FixSRTPrompt;
-            }
+        //    if (!string.IsNullOrEmpty(t.FixSRTPrompt))
+        //    {
+        //        systemPrompt = t.FixSRTPrompt;
+        //    }
 
-            if (t.FixSRTIncludeContext)
-            {
-                systemPrompt += $"# 参考上下文:\n{contexts}";
-            }
+        //    if (t.FixSRTIncludeContext)
+        //    {
+        //        systemPrompt += $"# 参考上下文:\n{contexts}";
+        //    }
 
-            await AIHelper.Ask("# 内容:\n" + text,
-                cm =>
-                {
-                    item.Lines += cm.Content;
-                    controller.Application.UIThreadDoEvents();
-                },
-                aiModel: t.Model,
-                streamOut: true,
-                n_ctx: 1024,
-                systemPrompt: systemPrompt
-                );
-            os.CommitChanges();
-        }
+        //    await AIHelper.Ask("# 内容:\n" + text,
+        //        cm =>
+        //        {
+        //            item.Lines += cm.Content;
+        //            controller.Application.UIThreadDoEvents();
+        //        },
+        //        aiModel: t.Model,
+        //        streamOut: true,
+        //        n_ctx: 1024,
+        //        systemPrompt: systemPrompt
+        //        );
+        //    os.CommitChanges();
+        //}
 
         private void LoadSrt_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
@@ -979,12 +934,14 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             {
                 throw new UserFriendlyException("请选择模型!");
             }
+
             var subtitles = ViewCurrentObject.Subtitles.OrderBy(t => t.Index).ToArray();
             var tasks = new List<Task<(AudioBookTextAudioItem Item, int Duration, string FileName)>>();
+            var ui = SynchronizationContext.Current;
             foreach (SubtitleItem item in subtitles)
             {
                 Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:开始翻译");
-                await TranslateSubtitle(t, subtitles, item, this, ObjectSpace, true);
+                await TranslateSubtitle(t, subtitles, item, this, ObjectSpace, true, ui);
                 Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:翻译完成:{item.Index},生成音频");
                 tasks.Add(AudioBookTextAudioItem.GenerateAudioFile(false, item.AudioItem));
                 Debug.WriteLine($"***{DateTime.Now:mm:ss.fff}-{item.Index}:生成音频任务已提交！");
@@ -1009,39 +966,41 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             ObjectSpace.CommitChanges();
         }
 
-        private async void TranslateSubtitlesV2_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            var t = ViewCurrentObject;
-            if (t.Model == null)
-            {
-                throw new UserFriendlyException("请选择模型!");
-            }
-            var subtitles = ViewCurrentObject.Subtitles.OrderBy(t => t.Index).ToArray();
-            foreach (SubtitleItem item in subtitles)
-            {
-                await TranslateSubtitle(t, subtitles, item, this, ObjectSpace, false);
-            }
-            //保存翻译结果
-            var fileName = Path.Combine(t.ProjectPath, $"{t.Oid}.cn.srt");
-            SRTHelper.SaveToSrtFile(t.Subtitles, fileName, SrtLanguage.中文, false);
-            t.VideoChineseSRT = fileName;
-            ObjectSpace.CommitChanges();
-        }
 
         static string GetWithIgnoreText(string text, VideoInfo video)
         {
+            //要翻译的内容
             var sb = new StringBuilder($"# 要翻译的句子:\n{text}");
+            //忽略内容
             if (!string.IsNullOrEmpty(video.TranslateIgnoreWords))
             {
                 sb.Append($"\n\n# 重要的!!!以下专有名词列表中的词不需要翻译：\n{video.TranslateIgnoreWords}");
             }
-            if (!string.IsNullOrEmpty(video.TranslateTaskPrompt))
+            //用户提示
+            if (!string.IsNullOrEmpty(video.TranslateAgent.UserPrompt))
             {
-                sb.Append($"\n\n{video.TranslateTaskPrompt}");
+                sb.Append($"\n\n{video.TranslateAgent.UserPrompt}");
             }
+
             return sb.ToString();
         }
-        public static async Task TranslateSubtitle(VideoInfo t, SubtitleItem[] subtitles, SubtitleItem item, ViewController controller, IObjectSpace objectSpace, bool isV1)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text">模板文字</param>
+        /// <param name="contexts">上下文文字</param>
+        /// <param name="englishText">英文，要翻译的</param>
+        /// <param name="ignore">忽略的</param>
+        /// <returns></returns>
+        static string ReplaceParameters(string promptTemplate, string contexts, string englishText, string ignore)
+        {
+            promptTemplate = promptTemplate.Replace("{contexts}", contexts);
+            promptTemplate = promptTemplate.Replace("{text}", englishText);
+            promptTemplate = promptTemplate.Replace("{ignore}", ignore);
+            return promptTemplate;
+        }
+
+        public static async Task TranslateSubtitle(VideoInfo t, SubtitleItem[] subtitles, SubtitleItem item, ViewController controller, IObjectSpace objectSpace, bool isV1, SynchronizationContext uiContext)
         {
             var text = isV1 ? item.PlainText : item.Lines; //string.Join("\n\n", item.PlainText);
             if (isV1)
@@ -1052,9 +1011,24 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             {
                 item.CnTextV2 = "";
             }
-            var contexts = string.Join("\n", subtitles.Where(t => t.Index > item.Index - 10 && t.Index < item.Index + 10).Take(20).Select(t => t.Lines));
 
-            await AIHelper.Ask(GetWithIgnoreText(text, t),
+            var ctxCount = t.TranslateAgent.ContextCount;
+            var contexts = "";
+            if(ctxCount > 0)
+            {
+                contexts = string.Join("\n", subtitles.Where(t => t.Index > item.Index - ctxCount && t.Index < item.Index + ctxCount).Select(t => t.Lines));
+            }
+
+            //contexts = string.Join("\n", subtitles.Where(t => t.Index > item.Index - 10 && t.Index < item.Index + 10).Take(20).Select(t => t.Lines));
+
+            //如果systemPrompt中有{ignore}则替换为忽略的词，但也有可能，提示中有，而translateIgnoreWords为空,暂时没有考虑。
+
+            var systemPrompt = ReplaceParameters(t.TranslateAgent.SystemPrompt, contexts, text, t.TranslateIgnoreWords);
+
+            var userPrompt = ReplaceParameters(t.TranslateAgent.UserPrompt, contexts, text, t.TranslateIgnoreWords);
+            item.Translating = true;
+
+            await AIHelper.Ask(userPrompt,
                 cm =>
                 {
                     if (isV1)
@@ -1065,13 +1039,17 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                     {
                         item.CnTextV2 += cm.Content;
                     }
-                    controller.Application.UIThreadDoEvents();
+                    //controller.Application.UIThreadDoEvents();
                 },
-                aiModel: t.Model,
+                aiModel: t.TranslateAgent.Model,
                 streamOut: true,
-                temperature: 0.1f,
-                systemPrompt: $"你精通英文到中文的翻译,将下面要翻译的句子翻译成中文,直接给出翻译结果,不要其他说明或解释.参考上下文:\n{contexts}"
+                temperature: (float)t.TranslateAgent.Temperature,
+                systemPrompt: systemPrompt,
+                uiContext: uiContext
                 );
+
+            item.Translating = false;
+
             item.CnText = item.CnText.Replace("[PAD151643]", "").Replace("[PAD151645]", "");
             objectSpace.CommitChanges();
         }

@@ -1,6 +1,5 @@
 ﻿using AI.Labs.Module.BusinessObjects.VideoTranslate;
 using DevExpress.Spreadsheet;
-using FFMpegCore.Enums;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Security.Policy;

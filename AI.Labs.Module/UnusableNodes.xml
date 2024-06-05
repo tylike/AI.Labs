@@ -1,10 +1,114 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Application>
+  <BOModel Id="BOModel">
+    <Class Name="AI.Labs.Module.BusinessObjects.VideoTranslate.NSubtitleItem">
+      <OwnMembers Id="OwnMembers">
+        <Member Name="End" EditMaskType="DateTime" EditMask="hh:mm:ss,fff" DisplayFormat="{0:hh\:mm\:ss\,fff}" />
+        <Member Name="Start" EditMaskType="DateTime" EditMask="hh:mm:ss,fff" DisplayFormat="{0:hh\:mm\:ss\,fff}" />
+      </OwnMembers>
+    </Class>
+  </BOModel>
   <Views Id="Views">
-    <ListView Id="VideoInfo_Subtitles_ListView">
-      <Columns Id="Columns">
-        <ColumnInfo Id="TranslateTask" Width="184" Index="4" />
-      </Columns>
-    </ListView>
+    <DetailView Id="NSubtitleItem_DetailView">
+      <Items Id="Items">
+        <PropertyEditor Id="SourceItemOids" RowCount="0" />
+      </Items>
+      <Layout Id="Layout">
+        <LayoutGroup Id="Main">
+          <LayoutGroup Id="SimpleEditors">
+            <LayoutGroup Id="R1" Index="2" Direction="Horizontal">
+              <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" />
+              <LayoutItem Id="Task" ViewItem="Task" ShowCaption="" Index="1" />
+              <LayoutItem Id="Index" ViewItem="Index" ShowCaption="" Index="2" />
+              <LayoutItem Id="Start" ViewItem="Start" ShowCaption="" Index="3" />
+              <LayoutItem Id="End" ViewItem="End" ShowCaption="" Index="4" />
+              <LayoutItem Id="Second" ViewItem="Second" ShowCaption="" Index="5" />
+            </LayoutGroup>
+            <LayoutGroup Id="R2" Index="3" Direction="Horizontal">
+              <LayoutItem Id="SourceItemOids" Index="0" ViewItem="SourceItemOids" ShowCaption="" SizeConstraintsType="Custom" MaxSize="0, 35" RelativeSize="84" />
+              <LayoutItem Id="时间重合警告" ViewItem="时间重合警告" ShowCaption="" Index="1" RelativeSize="16" />
+            </LayoutGroup>
+            <LayoutGroup Id="NSubtitleItem" Removed="True">
+              <LayoutGroup Id="NSubtitleItem_col1">
+                <LayoutItem Id="时间重合警告" Removed="True" />
+                <LayoutItem Id="Index" Removed="True" />
+                <LayoutItem Id="Task" Removed="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="NSubtitleItem_col2">
+                <LayoutItem Id="End" Removed="True" />
+                <LayoutItem Id="Second" Removed="True" />
+                <LayoutItem Id="Start" Removed="True" />
+              </LayoutGroup>
+            </LayoutGroup>
+            <LayoutGroup Id="R3" Direction="Horizontal">
+              <LayoutItem Id="EnglishText" Index="0" ViewItem="EnglishText" ShowCaption="" SizeConstraintsType="Custom" MaxSize="0, 80" />
+              <LayoutItem Id="ChineseText" Index="1" ViewItem="ChineseText" SizeConstraintsType="Custom" MaxSize="0, 80" ShowCaption="" />
+            </LayoutGroup>
+            <LayoutGroup Id="XPObject" Removed="True">
+              <LayoutItem Id="Oid" Removed="True" />
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutGroup Id="SizeableEditors">
+            <LayoutItem Id="ChineseText" MaxSize="0, 80" SizeConstraintsType="Custom" Removed="True" />
+            <LayoutItem Id="EnglishText" MaxSize="0, 80" SizeConstraintsType="Custom" Removed="True" />
+            <LayoutItem Id="SourceItemOids" SizeConstraintsType="Custom" MaxSize="0, 35" Removed="True" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <DetailView Id="TranslateTask_DetailView">
+      <Layout Id="Layout">
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <TabbedGroup Id="Tabs" Index="0" RelativeSize="100">
+            <LayoutGroup Id="SimpleEditors" Index="0" ShowCaption="False">
+              <LayoutGroup Id="TranslateTask" Index="0" ShowCaption="False">
+                <LayoutItem Id="Video" ViewItem="Video" ShowCaption="" Index="0" />
+                <LayoutItem Id="Index" ViewItem="Index" ShowCaption="" Index="1" />
+                <LayoutItem Id="Title" ViewItem="Title" ShowCaption="" Index="2" />
+                <LayoutItem Id="标点正确率" ViewItem="标点正确率" ShowCaption="" Index="3" />
+              </LayoutGroup>
+              <LayoutGroup Id="SimpleXPObject" Index="1" ShowCaption="False">
+                <LayoutItem Id="Createor" ViewItem="Createor" ShowCaption="" Index="0" />
+                <LayoutItem Id="CreateTime" ViewItem="CreateTime" ShowCaption="" Index="1" />
+                <LayoutItem Id="LastUpdator" ViewItem="LastUpdator" ShowCaption="" Index="2" />
+                <LayoutItem Id="LastUpdateTime" ViewItem="LastUpdateTime" ShowCaption="" Index="3" />
+              </LayoutGroup>
+              <LayoutGroup Id="XPObject" Index="2" ShowCaption="False">
+                <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" />
+              </LayoutGroup>
+            </LayoutGroup>
+            <LayoutGroup Id="SubtitleItems_Group" Index="0" Direction="Vertical" ShowCaption="True" RelativeSize="100">
+              <LayoutItem Id="SubtitleItems" ViewItem="SubtitleItems" ShowCaption="" Index="0" RelativeSize="100" />
+            </LayoutGroup>
+            <LayoutGroup Id="Diff" ShowCaption="True" Index="1" RelativeSize="100">
+              <LayoutItem Id="SourceAndSymbolDiff" Index="0" RelativeSize="100" ViewItem="SourceAndSymbolDiffText" />
+            </LayoutGroup>
+            <LayoutGroup Id="SizeableEditors" Index="1" ShowCaption="False">
+              <LayoutItem Id="Text" ViewItem="Text" ShowCaption="" Index="0" />
+              <LayoutItem Id="Source" ViewItem="Source" ShowCaption="" Index="1" />
+              <LayoutItem Id="Result" ViewItem="Result" ShowCaption="" Index="2" />
+            </LayoutGroup>
+            <LayoutGroup Id="Info" ShowCaption="True" Direction="Vertical" Index="2" RelativeSize="100">
+              <LayoutGroup Id="@b734ed47-7127-4692-9339-ea53ab5bd418" ShowCaption="False" Index="2" RelativeSize="95.77329490874159">
+                <LayoutItem Id="标点正确率" ViewItem="标点正确率" Index="0" RelativeSize="3.8424591738712777" />
+                <LayoutItem Id="Result" ViewItem="Result" Index="1" RelativeSize="0.38424591738712777" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </TabbedGroup>
+          <LayoutGroup Id="SimpleEditors" Removed="True" />
+          <LayoutGroup Id="SizeableEditors" Removed="True" />
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
   </Views>
+  <ActionDesign Id="ActionDesign">
+    <Actions Id="Actions">
+      <Action Id="初始列表" Index="1" />
+      <Action Id="创建Azure声音" Index="2" />
+      <Action Id="AudioBook.PlayAudioBook" ImageName="Action_SimpleAction" Index="10" PaintStyle="CaptionAndImage" />
+      <Action Id="BingChat.Chat" Index="13" />
+      <Action Id="StartLLMServer" ImageName="BO_Security_Permission_Action" Caption="启动模型" ToolTip="启动大语言模型" />
+      <Action Id="StopLLMServer" ImageName="Action_Debug_Stop" Caption="停止模型" ToolTip="停止大模型运行" />
+    </Actions>
+  </ActionDesign>
 </Application>

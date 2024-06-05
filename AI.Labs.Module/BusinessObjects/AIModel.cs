@@ -139,5 +139,6 @@ namespace AI.Labs.Module.BusinessObjects
     {
         OpenAILike,
         LlamaCPPLocalServer,
+        QWenOnline
     }
 }

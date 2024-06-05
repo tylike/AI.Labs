@@ -7,7 +7,6 @@ using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Editors;
 using System.Windows.Forms;
 using System.Drawing;
-using DevExpress.Persistent.Validation;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -16,38 +15,11 @@ using AI.Labs.Module.BusinessObjects.STT;
 using System.Security.Cryptography;
 using AI.Labs.Module.BusinessObjects.Helper;
 using System.Text;
-using Xabe.FFmpeg;
 using AI.Labs.Module.BusinessObjects.TTS;
+using DevExpress.Persistent.Validation;
 //using SubtitlesParser.Classes.Parsers;
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 {
-
-    public class YoutubeChannel : SimpleXPObject
-    {
-        public YoutubeChannel(Session s) : base(s)
-        {
-
-        }
-        [RuleRequiredField]
-        public string ChannelID
-        {
-            get { return GetPropertyValue<string>(nameof(ChannelID)); }
-            set { SetPropertyValue(nameof(ChannelID), value); }
-        }
-
-        public string ChannelName
-        {
-            get { return GetPropertyValue<string>(nameof(ChannelName)); }
-            set { SetPropertyValue(nameof(ChannelName), value); }
-        }
-        [RuleRequiredField]
-        [Size(-1)]
-        public string ChannelUrl
-        {
-            get { return GetPropertyValue<string>(nameof(ChannelUrl)); }
-            set { SetPropertyValue(nameof(ChannelUrl), value); }
-        }
-    }
 
     [XafDisplayName("视频")]
     [NavigationItem("视频翻译")]
@@ -63,9 +35,9 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         {
             if (!IsLoading)
             {
-                if(this.CnAudioSolution == null)
+                if (this.CnAudioSolution == null)
                 {
-                    
+
                     var audioSolution = new AudioBook(Session);
                     audioSolution.VideoInfo = this;
                     audioSolution.Content = ContentCn;
@@ -75,12 +47,11 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
                     audioSolution.CheckOutputPath();
                     this.CnAudioSolution = audioSolution;
                 }
-                
+
                 return this.CnAudioSolution;
             }
             throw new Exception("加载时不要调用此方法!");
         }
-        
 
         #region 基本信息
         [Size(-1)]
@@ -377,23 +348,23 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         //} 
         #endregion
 
-        IMediaInfo info;
-        public async Task<IMediaInfo> GetMediaInfo()
-        {
-            if (info == null)
-            {
-                try
-                {
-                    //FFMpegCore.FFMpeg.
-                    info = await FFmpeg.GetMediaInfo(VideoFile);
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
-            return info;
-        }
+        //IMediaInfo info;
+        //public async Task<IMediaInfo> GetMediaInfo()
+        //{
+        //    if (info == null)
+        //    {
+        //        try
+        //        {
+        //            //FFMpegCore.FFMpeg.
+        //            info = await FFmpeg.GetMediaInfo(VideoFile);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            throw ex;
+        //        }
+        //    }
+        //    return info;
+        //}
 
         public int Width
         {
@@ -416,10 +387,11 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         {
             if (!string.IsNullOrEmpty(VideoFile) && File.Exists(VideoFile))
             {
+#warning 没有去真正计算视频的大小
                 if (Width == 0)
-                    this.Width = (await GetMediaInfo()).VideoStreams.First().Width;
+                    this.Width = 1280;// (await GetMediaInfo()).VideoStreams.First().Width;
                 if (Height == 0)
-                    this.Height = (await GetMediaInfo()).VideoStreams.First().Height;
+                    this.Height = 720;// (await GetMediaInfo()).VideoStreams.First().Height;
             }
         }
 
@@ -497,35 +469,49 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             return (cnSrtFile.FileName, enSrtFile.FileName);
         }
         #endregion
+
         [XafDisplayName("语言模型")]
         public AIModel Model
         {
             get { return GetPropertyValue<AIModel>(nameof(Model)); }
             set { SetPropertyValue(nameof(Model), value); }
         }
-        [XafDisplayName("语音识别")]
-        public STTModel STTModel
+
+        //[XafDisplayName("语音识别")]
+        //public STTModel STTModel
+        //{
+        //    get { return GetPropertyValue<STTModel>(nameof(STTModel)); }
+        //    set { SetPropertyValue(nameof(STTModel), value); }
+        //}
+
+        //[XafDisplayName("识别提示")]
+        //[ToolTip("用于从语音中识别字幕时的提示词")]
+        //[Size(-1)]
+        //public string STTPrompt
+        //{
+        //    get
+        //    {
+        //        return GetPropertyValue<string>(nameof(STTPrompt)) ?? "按语义填加标点符号,尽量每个完整句子为一段";
+        //    }
+        //    set { SetPropertyValue(nameof(STTPrompt), value); }
+        //}
+
+        [XafDisplayName("转录设置")]
+        public SubtitleTranscriptionAgent SubtitleTranscriptionAgent
         {
-            get { return GetPropertyValue<STTModel>(nameof(STTModel)); }
-            set { SetPropertyValue(nameof(STTModel), value); }
+            get { return GetPropertyValue<SubtitleTranscriptionAgent>(nameof(SubtitleTranscriptionAgent)); }
+            set { SetPropertyValue(nameof(SubtitleTranscriptionAgent), value); }
         }
-        [XafDisplayName("识别提示")]
-        [ToolTip("用于从语音中识别字幕时的提示词")]
-        [Size(-1)]
-        public string STTPrompt
-        {
-            get
-            {
-                return GetPropertyValue<string>(nameof(STTPrompt)) ?? "按语义填加标点符号,尽量每个完整句子为一段";
-            }
-            set { SetPropertyValue(nameof(STTPrompt), value); }
-        }
+
+
+
         [XafDisplayName("强制时长")]
         public int ForceDuration
         {
             get { return GetPropertyValue<int>(nameof(ForceDuration)); }
             set { SetPropertyValue(nameof(ForceDuration), value); }
         }
+
         public bool TinyDiarize
         {
             get { return GetPropertyValue<bool>(nameof(TinyDiarize)); }
@@ -539,8 +525,8 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         public override void AfterConstruction()
         {
             base.AfterConstruction();
-            TranslateTaskPrompt = @"用白话文将英文字翻译为中文,专用的名词不需要翻译,如Transformers,Llama,Lang,LlamaIndex等
-不要啰嗦,接地气,调侃式的文风";
+            //TranslateTaskPrompt = @"用口语化的风格将英文字翻译为中文,专用的名词不需要翻译,如Transformers,Llama,Lang,LlamaIndex等
+            //不要啰嗦,接地气,调侃式的文风";
             //AddSymbolPrompt = @"将以下内容加上标点符号,保持原有格式，保留换行，不要合并多条，不要移动单词位置，一段字幕没有表达完整时末尾加上省略号，不要输出除字幕以外的解释，结果是纯文本格式:";
             //FixSubtitleBatchCount = 30;
             //Environment.SpecialFolder
@@ -548,9 +534,9 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             JianYingProjectFile = GetDefaultJianYingProjectPath();
             Model = Session.Query<AIModel>().FirstOrDefault(t => t.IsDefault);
+            TranslateAgent = Session.Query<TranslateAgent>().FirstOrDefault(t => t.IsDefault);
+            SubtitleTranscriptionAgent = Session.Query<SubtitleTranscriptionAgent>().FirstOrDefault(t => t.IsDefault);
             CreateScriptObject();
-
-
         }
         protected override void OnLoaded()
         {
@@ -575,13 +561,21 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             set { SetPropertyValue(nameof(TranslateIgnoreWords), value); }
         }
 
-        [XafDisplayName("翻译要求")]
-        [Size(-1)]
-        public string TranslateTaskPrompt
+        [XafDisplayName("翻译设置")]
+        public TranslateAgent TranslateAgent
         {
-            get { return GetPropertyValue<string>(nameof(TranslateTaskPrompt)); }
-            set { SetPropertyValue(nameof(TranslateTaskPrompt), value); }
+            get { return GetPropertyValue<TranslateAgent>(nameof(TranslateAgent)); }
+            set { SetPropertyValue(nameof(TranslateAgent), value); }
         }
+
+
+        //[XafDisplayName("翻译要求")]
+        //[Size(-1)]
+        //public string TranslateTaskPrompt
+        //{
+        //    get { return GetPropertyValue<string>(nameof(TranslateTaskPrompt)); }
+        //    set { SetPropertyValue(nameof(TranslateTaskPrompt), value); }
+        //}
 
         //[XafDisplayName("标点要求")]
         //[Size(-1)]
@@ -699,8 +693,10 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         }
 
         #region 子级集合
-        [Association, DevExpress.Xpo.Aggregated]
+        [Association, DevExpress.Xpo.Aggregated, XafDisplayName("视频章节")]
         public XPCollection<Chapter> Chapters => GetCollection<Chapter>(nameof(Chapters));
+
+        [XafDisplayName("音频")]
         public XPCollection<AudioBookTextAudioItem> Audios
         {
             get => CnAudioSolution?.AudioItems;
@@ -862,6 +858,146 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         仅有视频,
         仅有音频,
         完整视频
+    }
+
+    [XafDefaultProperty(nameof(Name))]
+    [NavigationItem("视频翻译")]
+    [XafDisplayName("转录设置")]
+    public class SubtitleTranscriptionAgent : SimpleXPObject
+    {
+        public SubtitleTranscriptionAgent(Session s) : base(s)
+        {
+
+        }
+        public override void AfterConstruction()
+        {
+            base.AfterConstruction();
+            Model = Session.Query<STTModel>().FirstOrDefault(t => t.IsDefault);
+            Prompt = "按语义填加标点符号,尽量每个完整句子为一段,*** 注意正确的使用句号、逗号、感叹号、问号等标点符号。";
+        }
+
+        [XafDisplayName("名称")]
+        [RuleRequiredField]
+        public string Name
+        {
+            get { return GetPropertyValue<string>(nameof(Name)); }
+            set { SetPropertyValue(nameof(Name), value); }
+        }
+
+
+        [XafDisplayName("模型")]
+        [RuleRequiredField]
+        public STTModel Model
+        {
+            get { return GetPropertyValue<STTModel>(nameof(Model)); }
+            set { SetPropertyValue(nameof(Model), value); }
+        }
+
+        [XafDisplayName("要求提示")]
+        [RuleRequiredField]
+        [Size(-1)]
+        public string Prompt
+        {
+            get { return GetPropertyValue<string>(nameof(Prompt)); }
+            set { SetPropertyValue(nameof(Prompt), value); }
+        }
+
+        [XafDisplayName("默认")]
+        public bool IsDefault
+        {
+            get { return GetPropertyValue<bool>(nameof(IsDefault)); }
+            set { SetPropertyValue(nameof(IsDefault), value); }
+        }
+    }
+
+    [XafDefaultProperty(nameof(Name))]
+    [NavigationItem("视频翻译")]
+    [XafDisplayName("翻译设置")]
+    public class TranslateAgent : SimpleXPObject
+    {
+        public TranslateAgent(Session s) : base(s)
+        {
+
+        }
+        public override void AfterConstruction()
+        {
+            base.AfterConstruction();
+            UserPrompt = @"用口语化的风格将英文字翻译为中文,专用的名词不需要翻译,如Transformers,Llama,Lang,LlamaIndex等
+不要啰嗦,接地气,调侃式的文风";
+            this.ContextCount = 10;
+            //AddSymbolPrompt = @"将以下内容加上标点符号,保持原有格式，保留换行，不要合并多条，不要移动单词位置，一段字幕没有表达完整时末尾加上省略号，不要输出除字幕以外的解释，结果是纯文本格式:";
+            //FixSubtitleBatchCount = 30;
+            //Environment.SpecialFolder
+            //STTPrompt = "";
+            Model = Session.Query<AIModel>().FirstOrDefault(t => t.IsDefault);
+        }
+
+
+        [XafDisplayName("名称")]
+        public string Name
+        {
+            get { return GetPropertyValue<string>(nameof(Name)); }
+            set { SetPropertyValue(nameof(Name), value); }
+        }
+
+        public string 可用参数
+        =>
+             @"{contexts}:指相关的上下文
+{text}:指要翻译的文本
+{ignore}:指可以忽略的一些词
+            ";
+
+
+        [XafDisplayName("用户提示"), Size(-1)]
+        public string UserPrompt
+        {
+            get { return GetPropertyValue<string>(nameof(UserPrompt)); }
+            set { SetPropertyValue(nameof(UserPrompt), value); }
+        }
+        [XafDisplayName("系统提示"), Size(-1)]
+        public string SystemPrompt
+        {
+            get { return GetPropertyValue<string>(nameof(SystemPrompt)); }
+            set { SetPropertyValue(nameof(SystemPrompt), value); }
+        }
+
+        [XafDisplayName("语言模型")]
+        public AIModel Model
+        {
+            get { return GetPropertyValue<AIModel>(nameof(Model)); }
+            set { SetPropertyValue(nameof(Model), value); }
+        }
+
+        [XafDisplayName("温度")]
+        public decimal Temperature
+        {
+            get { return GetPropertyValue<decimal>(nameof(Temperature)); }
+            set { SetPropertyValue(nameof(Temperature), value); }
+        }
+
+        [XafDisplayName("参考数量")]
+        [ToolTip("如果有参数内容是分条传入的,使用几条")]
+        public int ContextCount
+        {
+            get { return GetPropertyValue<int>(nameof(ContextCount)); }
+            set { SetPropertyValue(nameof(ContextCount), value); }
+        }
+
+        [XafDisplayName("参考长度")]
+        [ToolTip("如果有参数内容是分条传入的,使用几个Token")]
+        public int ContextTokenCount
+        {
+            get { return GetPropertyValue<int>(nameof(ContextTokenCount)); }
+            set { SetPropertyValue(nameof(ContextTokenCount), value); }
+        }
+
+        [XafDisplayName("默认配置")]
+        public bool IsDefault
+        {
+            get { return GetPropertyValue<bool>(nameof(IsDefault)); }
+            set { SetPropertyValue(nameof(IsDefault), value); }
+        }
+
     }
 
 }

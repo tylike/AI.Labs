@@ -1,45 +1,49 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
 
-	  <!--以下是我们自己添加的-->
-	  <!--版本号，重要性不必多说-->
-	  <Version>1.0.2</Version>
-	  <!--添加该配置，在编译时进行打包-->
-	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <!--添加该配置才会生成注释文件，默认无注释-->
-	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
-	  <Title>Edge_tts_sharp</Title>
-	  <Authors>Entity-now</Authors>
-	  <Description>免费调用微软Edge浏览器文本转语音接口
-</Description>
-	  <PackageProjectUrl>https://github.com/Entity-Now/Edge_tts_sharp</PackageProjectUrl>
-	  <RepositoryUrl>https://github.com/Entity-Now/Edge_tts_sharp</RepositoryUrl>
-	  <PackageReadmeFile>README.md</PackageReadmeFile>
-  </PropertyGroup>
+		<!--以下是我们自己添加的-->
+		<!--版本号，重要性不必多说-->
+		<Version>1.0.2</Version>
+		<!--添加该配置，在编译时进行打包-->
+		<!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
+		<!--添加该配置才会生成注释文件，默认无注释-->
+		<!--<GenerateDocumentationFile>true</GenerateDocumentationFile>-->
+		<Title>Edge_tts_sharp</Title>
+		<Authors>Entity-now</Authors>
+		<Description>
+			免费调用微软Edge浏览器文本转语音接口
+		</Description>
+		<PackageProjectUrl>https://github.com/Entity-Now/Edge_tts_sharp</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Entity-Now/Edge_tts_sharp</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Source\VoiceList.json" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Source\VoiceList.json" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NAudio" Version="2.2.1" />
-    <PackageReference Include="System.Text.Json" Version="7.0.3" />
-    <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="NAudio" Version="2.2.1" />
+		<PackageReference Include="System.Text.Json" Version="7.0.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Source\VoiceList.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Source\VoiceList.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\WebSocketSharp\WebSocketSharp\WebSocketSharp.csproj" />
+	</ItemGroup>
 
 </Project>

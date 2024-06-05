@@ -16,6 +16,7 @@
 		</Content>
 	</ItemGroup>-->
 	<ItemGroup>
+		<ProjectReference Include="..\STT.Utils\STT.Utils.csproj" />
 		<ProjectReference Include="..\WhisperNet\WhisperNet.csproj" />
 	</ItemGroup>
 </Project>

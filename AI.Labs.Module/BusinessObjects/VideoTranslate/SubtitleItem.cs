@@ -6,12 +6,14 @@ using System.Drawing;
 using System.ComponentModel;
 using DevExpress.Persistent.Base;
 using AI.Labs.Module.BusinessObjects.AudioBooks;
+using DevExpress.ExpressApp.ConditionalAppearance;
 //using SubtitlesParser.Classes.Parsers;
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 {
 
     [XafDisplayName("字幕")]
     [XafDefaultProperty(nameof(Index))]
+    [Appearance("翻译中指示", BackColor = "DarkGreen", Criteria = nameof(Translating), FontColor = "White", TargetItems = "*")]
     public class SubtitleItem : SimpleXPObject, ISRT //,IClip
     {
         public SubtitleItem(Session s) : base(s)
@@ -119,6 +121,15 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             get { return GetPropertyValue<string>(nameof(Lines)); }
             set { SetPropertyValue(nameof(Lines), value); }
         }
+
+        [XafDisplayName("翻译中")]
+        public bool Translating
+        {
+            get { return GetPropertyValue<bool>(nameof(Translating)); }
+            set { SetPropertyValue(nameof(Translating), value); }
+        }
+
+
         string[] words;
         public string[] Words
         {

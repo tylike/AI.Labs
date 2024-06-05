@@ -12,6 +12,7 @@ using DevExpress.ExpressApp.Model;
 
 namespace AI.Labs.Module.BusinessObjects
 {
+
     [SupportedOSPlatform("windows")]
     public static class AIHelper
     {

@@ -1,7 +1,6 @@
 ﻿using NAudio.Wave;
 using System.Text.Json;
 using NAudio.Wave.SampleProviders;
-using Xabe.FFmpeg;
 using DevExpress.XtraRichEdit.Layout.Engine;
 
 namespace AI.Labs.Module.BusinessObjects
@@ -14,15 +13,15 @@ namespace AI.Labs.Module.BusinessObjects
     //}
     public class AudioHelper
     {
-        static AudioHelper()
-        {
-            FFmpeg.SetExecutablesPath(Path.GetDirectoryName(FFmpegHelper.ffmpegFile));
-        }
+        //static AudioHelper()
+        //{
+        //    FFmpeg.SetExecutablesPath(Path.GetDirectoryName(FFmpegHelper.ffmpegFile));
+        //}
 
-        public static async Task<IMediaInfo> GetAudioFileInfo(string filePath)
-        {
-            return await FFmpeg.GetMediaInfo(filePath);            
-        }
+        //public static async Task<IMediaInfo> GetAudioFileInfo(string filePath)
+        //{
+        //    return await FFmpeg.GetMediaInfo(filePath);            
+        //}
 
         #region 移除静音
         // 移除MP3文件开头和结尾的静音部分

@@ -11,6 +11,7 @@ using AI.Labs.Module.BusinessObjects.STT;
 using System.Diagnostics;
 using AI.Labs.Module.BusinessObjects.KnowledgeBase;
 using AI.Labs.Module.BusinessObjects;
+using TranscribeCS;
 
 namespace AI.Labs.Win;
 
@@ -26,6 +27,10 @@ public class LabsWindowsFormsApplication : WinApplication
         UseOldTemplates = false;
         DatabaseVersionMismatch += LabsWindowsFormsApplication_DatabaseVersionMismatch;
         CustomizeLanguagesList += LabsWindowsFormsApplication_CustomizeLanguagesList;
+        STTService.CreateWhisperEngine = t =>
+        {
+            return new WhisperEngine(t.CurrentModel.ModelFilePath);
+        };
         //WordProcesser.Load();
     }
     private void LabsWindowsFormsApplication_CustomizeLanguagesList(object sender, CustomizeLanguagesListEventArgs e)

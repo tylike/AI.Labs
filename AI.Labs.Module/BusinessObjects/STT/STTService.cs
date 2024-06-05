@@ -52,13 +52,18 @@ namespace AI.Labs.Module.BusinessObjects.STT
             get { return GetPropertyValue<STTServiceState>(nameof(State)); }
             set { SetPropertyValue(nameof(State), value); }
         }
-        WhisperEngine _whisperEngine;
+
+        IWhisperEngine _whisperEngine;
+
         public void Log(string log, DateTime? time = null)
         {
             var l = new STTServiceLog(Session);
             l.Time = time ?? DateTime.Now;
             l.LogMessage = log;
         }
+
+        public static Func<STTService, IWhisperEngine> CreateWhisperEngine { get; set; }
+
         public string Start()
         {
             if (State == STTServiceState.Stopped)
@@ -66,8 +71,12 @@ namespace AI.Labs.Module.BusinessObjects.STT
 
                 if (_whisperEngine == null)
                 {
+                    if (CreateWhisperEngine == null)
+                    {
+                        throw new Exception("需要在主程序中设置如何创建Whisper Engine!");
+                    }
                     var sw = Stopwatch.StartNew();
-                    _whisperEngine = new WhisperEngine(this.CurrentModel.ModelFilePath);
+                    _whisperEngine = CreateWhisperEngine(this);
                     _whisperEngine.Setup();
                     State = STTServiceState.Running;
                     sw.Stop();

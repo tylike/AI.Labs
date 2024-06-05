@@ -1,14 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Application>
   <Views Id="Views">
-    <DetailView Id="AudioBook_DetailView">
+    <DetailView Id="VideoInfo_DetailView">
       <Layout Id="Layout">
         <LayoutGroup Id="Main">
           <TabbedGroup Id="Tabs">
-            <LayoutGroup Id="WordDocument" Removed="True" />
+            <LayoutGroup Id="设置">
+              <LayoutGroup Id="字幕翻译">
+                <LayoutItem Id="TranslateTaskPrompt" ViewItem="TranslateTaskPrompt" />
+              </LayoutGroup>
+              <LayoutGroup Id="语音识别文本">
+                <LayoutItem Id="STTPrompt" ViewItem="STTPrompt" />
+                <LayoutItem Id="STTModel" ViewItem="STTModel" />
+              </LayoutGroup>
+            </LayoutGroup>
           </TabbedGroup>
         </LayoutGroup>
       </Layout>
     </DetailView>
+    <ListView Id="VideoInfo_ListView">
+      <Columns Id="Columns">
+        <ColumnInfo Id="STTModel" Width="165" Index="-1" />
+      </Columns>
+    </ListView>
   </Views>
 </Application>

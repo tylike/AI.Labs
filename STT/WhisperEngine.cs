@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Whisper;
 
-public class WhisperEngine : IDisposable
+public class WhisperEngine : IDisposable, IWhisperEngine
 {
     CommandLineArgs args = new();
 
@@ -21,7 +21,7 @@ public class WhisperEngine : IDisposable
         model = Library.loadModel(ModelFile);
         context = model.createContext();
         sw.Stop();
-        Debug.WriteLine("加载模型耗时:"+sw.ElapsedMilliseconds);
+        Debug.WriteLine("加载模型耗时:" + sw.ElapsedMilliseconds);
 
         const eLoggerFlags loggerFlags = eLoggerFlags.None;// eLoggerFlags.UseStandardError | eLoggerFlags.SkipFormatMessage;
         Library.setLogSink(eLogLevel.Debug, loggerFlags);
@@ -50,10 +50,10 @@ public class WhisperEngine : IDisposable
 
         var sw = Stopwatch.StartNew();
         using iAudioReader reader = mf.loadAudioFileData(wavFileData); //mf.openAudioFile(audioFile);
-        
+
         context.runFull(reader, transcribe, null, prompt);
-        var rst = string.Join("\r\n",context.results().segments.ToArray().Select(t => t.text));
-        
+        var rst = string.Join("\r\n", context.results().segments.ToArray().Select(t => t.text));
+
         sw.Stop();
         Console.WriteLine("用时：" + sw.Elapsed);
 
@@ -71,7 +71,13 @@ public class WhisperEngine : IDisposable
     }
     CaptureThread captureThread;
     iAudioCapture captureDev;
-    public void StartRealTimeSpeechRecognition(CaptureDeviceId? captureDevice = null)
+
+    public void StartRealTimeSpeechRecognition()
+    {
+        StartRealTimeSpeechRecognition(null);
+    }
+
+    private void StartRealTimeSpeechRecognition(CaptureDeviceId? captureDevice = null)
     {
         try
         {
@@ -93,7 +99,7 @@ public class WhisperEngine : IDisposable
             //	throw new ApplicationException( $"Capture device index is out of range; the valid range is [ 0 .. {devices.Length - 1} ]" );
 
             sCaptureParams cp = new sCaptureParams(true);
-            
+
             cp.minDuration = 1;
             cp.maxDuration = 20;
 
@@ -243,10 +249,10 @@ public class WhisperEngine : IDisposable
         //Console.WriteLine("    Graphics Adapters:\n{0}", string.Join("\n", list));
     }
     public void Unload()
-    {        
+    {
         model.Dispose();
         model = null;
-        context = null;        
+        context = null;
     }
     public void Dispose()
     {

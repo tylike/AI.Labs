@@ -14,17 +14,17 @@ using Pinyin4net.Format;
 using DevExpress.Data.Helpers;
 using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Actions;
+using DevExpress.Pdf.Native;
 
 namespace AI.Labs.Module.BusinessObjects.ContentWriter
 {
     [NavigationItem("写作词库")]
     public class 批量任务 : SimpleXPObject
     {
-        public 批量任务(Session s):base(s)
+        public 批量任务(Session s) : base(s)
         {
-            
-        }
 
+        }
 
         public 任务 任务
         {
@@ -41,9 +41,9 @@ namespace AI.Labs.Module.BusinessObjects.ContentWriter
 
     [NavigationItem("写作词库")]
     [XafDefaultProperty(nameof(TaskName))]
-    public class 任务 :SimpleXPObject
+    public class 任务 : SimpleXPObject
     {
-        public 任务(Session s):base(s)
+        public 任务(Session s) : base(s)
         {
 
         }
@@ -53,6 +53,31 @@ namespace AI.Labs.Module.BusinessObjects.ContentWriter
         {
             get { return GetPropertyValue<string>(nameof(TaskName)); }
             set { SetPropertyValue(nameof(TaskName), value); }
+        }
+
+        public enum 输出位置
+        {
+            原记录,
+            新记录,
+            查找记录
+        }
+        [XafDisplayName("输出位置")]
+        public 输出位置 OutputLocation
+        {
+            get { return GetPropertyValue<输出位置>(nameof(OutputLocation)); }
+            set { SetPropertyValue(nameof(OutputLocation), value); }
+        }
+
+        public string 输出属性名称
+        {
+            get { return GetPropertyValue<string>(nameof(输出属性名称)); }
+            set { SetPropertyValue(nameof(输出属性名称), value); }
+        }
+
+        public bool 追加内容
+        {
+            get { return GetPropertyValue<bool>(nameof(追加内容)); }
+            set { SetPropertyValue(nameof(追加内容), value); }
         }
 
 
@@ -82,13 +107,73 @@ namespace AI.Labs.Module.BusinessObjects.ContentWriter
             TargetViewNesting = Nesting.Nested;
             var executeTask = new SimpleAction(this, "执行任务", null);
             executeTask.Execute += ExecuteTask_Execute;
+
+            var quickSetCategory = new SimpleAction(this, "快速分类", null);
+            quickSetCategory.Execute += QuickSetCategory_Execute;
         }
 
-        private void ExecuteTask_Execute(object sender, SimpleActionExecuteEventArgs e)
+        private void QuickSetCategory_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            //
+            var first = e.SelectedObjects.OfType<WordItem>().FirstOrDefault(t => t.分类 != null);
+            foreach (WordItem item in e.SelectedObjects)
+            {
+                if (item.分类 == null)
+                {
+                    item.分类 = first.分类;
+                }
+            }
+        }
+
+        private async void ExecuteTask_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var mtask = (Frame as NestedFrame).ViewItem.CurrentObject as 批量任务;
+            var p = mtask.任务.UserPrompt;
+
+            foreach (WordItem item in e.SelectedObjects)
+            {
+                if (mtask.任务.OutputLocation == 任务.输出位置.原记录)
+                {
+                    if (!mtask.任务.追加内容)
+                    {
+                        item.SetMemberValue(mtask.任务.输出属性名称, "");
+                    }
+                }
+
+                var userPrompt = p.Replace("{Words}", item.Words);
+
+                var rst = (string)item.GetMemberValue(mtask.任务.输出属性名称);
+
+                await AIHelper.Ask(userPrompt, p =>
+                {
+                    rst += p.Content;
+                    item.SetMemberValue(mtask.任务.输出属性名称, rst);
+                }, systemPrompt: mtask.任务.SystemPrompt);
+            }
         }
     }
+
+    [NavigationItem("写作词库")]
+    [XafDefaultProperty(nameof(分类名称))]
+    public class 写作方法分类 : SimpleXPObject
+    {
+        public 写作方法分类(Session s) : base(s)
+        {
+
+        }
+
+        public string 作用范围
+        {
+            get { return GetPropertyValue<string>(nameof(作用范围)); }
+            set { SetPropertyValue(nameof(作用范围), value); }
+        }
+
+        public string 分类名称
+        {
+            get { return GetPropertyValue<string>(nameof(分类名称)); }
+            set { SetPropertyValue(nameof(分类名称), value); }
+        }
+    }
+
 
     /// <summary>
     /// 词汇项目
@@ -99,6 +184,12 @@ namespace AI.Labs.Module.BusinessObjects.ContentWriter
         public WordItem(Session s) : base(s)
         {
 
+        }
+
+        public 写作方法分类 分类
+        {
+            get { return GetPropertyValue<写作方法分类>(nameof(分类)); }
+            set { SetPropertyValue(nameof(分类), value); }
         }
 
         [Association]
@@ -114,12 +205,25 @@ namespace AI.Labs.Module.BusinessObjects.ContentWriter
         /// 成语改编，谚语改编，俏皮话改编
         /// </summary>
         [XafDisplayName("词汇")]
+        [ToolTip("占位符:{Words}")]
         public string Words
         {
             get { return GetPropertyValue<string>(nameof(Words)); }
             set { SetPropertyValue(nameof(Words), value); }
         }
-
+        public int 长度
+        {
+            get
+            {
+                return ("" + Words).Length;
+            }
+        }
+        [Size(-1)]
+        public string 用法
+        {
+            get { return GetPropertyValue<string>(nameof(用法)); }
+            set { SetPropertyValue(nameof(用法), value); }
+        }
 
         public string 前言
         {
@@ -148,6 +252,15 @@ namespace AI.Labs.Module.BusinessObjects.ContentWriter
             set { SetPropertyValue(nameof(同义词), value); }
         }
 
+        [ToolTip("让AI用同样的方法,发挥写出的结果")]
+        [Size(-1)]
+        public string 发挥
+        {
+            get { return GetPropertyValue<string>(nameof(发挥)); }
+            set { SetPropertyValue(nameof(发挥), value); }
+        }
+
+
         protected override void OnSaving()
         {
             base.OnSaving();
@@ -170,7 +283,7 @@ namespace AI.Labs.Module.BusinessObjects.ContentWriter
             var lines = File.ReadAllLines("C:\\Users\\46035\\Desktop\\小约翰.txt");
             foreach (var item in lines)
             {
-                var n = new WordItem(Session);  
+                var n = new WordItem(Session);
                 n.Words = item;
             }
 
@@ -183,8 +296,8 @@ namespace AI.Labs.Module.BusinessObjects.ContentWriter
             await AIHelper.Ask("用一个词表达这句话:\n" + Words, p =>
             {
                 同义词 += p.Content;
-            }, 
-            systemPrompt:"你是一个实用助手,根据用户要求回答问题",
+            },
+            systemPrompt: "你是一个实用助手,根据用户要求回答问题",
             uiContext: SynchronizationContext.Current
             );
         }
