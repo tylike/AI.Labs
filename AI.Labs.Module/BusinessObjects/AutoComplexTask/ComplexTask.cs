@@ -3,6 +3,8 @@ using DevExpress.ExpressApp.Model;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.Base.General;
 using DevExpress.Xpo;
+using DevExpress.XtraReports.Native.Interaction;
+using DevExpress.XtraSpreadsheet.Model;
 using OpenAI.Managers;
 using OpenAI.Tokenizer.GPT3;
 using System;
@@ -14,7 +16,6 @@ using System.Threading.Tasks;
 
 namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
 {
-
     [NavigationItem("自动任务")]
     public class ComplexTask : SimpleXPObject, ITreeNode
     {

@@ -58,4 +58,7 @@ namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
             set { SetPropertyValue(nameof(SystemPrompt), value); }
         }
     }
+
+
+    
 }

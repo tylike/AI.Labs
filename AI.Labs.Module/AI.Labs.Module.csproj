@@ -68,7 +68,9 @@
 		<EmbeddedResource Include="Model.DesignedDiffs.xafml" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="AllInAI.Sharp.API" Version="1.2.1" />
+		<PackageReference Include="AutoGen" Version="0.0.14" />
+		<PackageReference Include="AutoGen.DotnetInteractive" Version="0.0.14" />
+		<PackageReference Include="AutoGen.OpenAI" Version="0.0.14" />
 		<PackageReference Include="org.k2fsa.sherpa.onnx" Version="*" />
 
 		<PackageReference Include="Betalgo.OpenAI" Version="8.2.2" />

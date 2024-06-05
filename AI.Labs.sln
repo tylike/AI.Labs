@@ -65,6 +65,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STT.Utils", "STT.Utils\STT.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebSocketSharp", "WebSocketSharp\WebSocketSharp\WebSocketSharp.csproj", "{FDBF4383-4425-4DE0-B250-BF7E0481B946}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AutoGen", "AutoGen", "{E5A6F504-2AFE-4C7D-BC31-0C453BA682F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
