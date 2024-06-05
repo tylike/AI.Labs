@@ -1,134 +1,19 @@
 ﻿using AutoGen;
 using AutoGen.Core;
 using AutoGen.DotnetInteractive;
-using AutoGen.LMStudio;
-using AutoGen.OpenAI;
-using Azure.AI.OpenAI;
-using Azure.Core.Pipeline;
-using DevExpress.XtraSpreadsheet.Model;
+using DevExpress.CodeParser;
+using DevExpress.ExpressApp.Utils;
 using System.Diagnostics;
+using System.Text;
 
 namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
 {
-    public class AgentHelper 
-    {
-        private readonly GPTAgent innerAgent;
-        public static string url = "https://na9yqj2l5a5r.share.zrok.io";
-        public static GPTAgent CreateAgent(            
-            Uri host = null,
-            string modelName = "",
-            string api_key = "",
-            string name = "helper",
-            string systemMessage = "You are a helpful AI assistant",
-            float temperature = 0.7f,
-            int maxTokens = 1024,
-            IEnumerable<FunctionDefinition>? functions = null,
-            IDictionary<string, Func<string, Task<string>>>? functionMap = null)
-        {
-            if (host == null)
-                host = new Uri(url);
 
-            var client = ConfigOpenAIClientForLMStudio(host,api_key);
-            return new GPTAgent(
-                name: name,
-                systemMessage: systemMessage,
-                openAIClient: client,
-                modelName: modelName, // model name doesn't matter for LM Studio
-                temperature: temperature,
-                maxTokens: maxTokens,
-                functions: functions,
-                functionMap: functionMap);
-        }
-
-        public string Name => innerAgent.Name;
-
-        public Task<IMessage> GenerateReplyAsync(
-            IEnumerable<IMessage> messages,
-            GenerateReplyOptions? options = null,
-            System.Threading.CancellationToken cancellationToken = default)
-        {
-            return innerAgent.GenerateReplyAsync(messages, options, cancellationToken);
-        }
-
-        private static OpenAIClient ConfigOpenAIClientForLMStudio(Uri host,string api_key)
-        {
-            // create uri from host and port
-            
-            var handler = new CustomHttpClientHandler(host);
-            var httpClient = new HttpClient(handler);
-            var option = new OpenAIClientOptions(OpenAIClientOptions.ServiceVersion.V2022_12_01)
-            {
-                Transport = new HttpClientTransport(httpClient),
-                
-            };
-            return new OpenAIClient(api_key, option);
-        }
-
-        private sealed class CustomHttpClientHandler : HttpClientHandler
-        {
-            private Uri _modelServiceUrl;
-
-            public CustomHttpClientHandler(Uri modelServiceUrl)
-            {
-                _modelServiceUrl = modelServiceUrl;
-            }
-
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-            {
-                // request.RequestUri = new Uri($"{_modelServiceUrl}{request.RequestUri.PathAndQuery}");
-                var uriBuilder = new UriBuilder(_modelServiceUrl);
-                uriBuilder.Path = request.RequestUri.PathAndQuery;
-                request.RequestUri = uriBuilder.Uri;
-                return base.SendAsync(request, cancellationToken);
-            }
-        }
-    }
-
-    internal static class LLMConfiguration
-    {
-        public static OpenAIConfig GetQWen()
-        {
-            var openAIKey = "";// Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? throw new Exception("Please set OPENAI_API_KEY environment variable.");
-            var modelId = "gpt-3.5-turbo";
-            
-            return new OpenAIConfig(openAIKey, modelId);
-        }
-
-        //public static OpenAIConfig GetOpenAIGPT3_5_Turbo()
-        //{
-        //    var openAIKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? throw new Exception("Please set OPENAI_API_KEY environment variable.");
-        //    var modelId = "gpt-3.5-turbo";
-        //    return new OpenAIConfig(openAIKey, modelId);
-        //}
-
-        //public static OpenAIConfig GetOpenAIGPT4()
-        //{
-        //    var openAIKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? throw new Exception("Please set OPENAI_API_KEY environment variable.");
-        //    var modelId = "gpt-4";
-
-        //    return new OpenAIConfig(openAIKey, modelId);
-        //}
-
-        //public static AzureOpenAIConfig GetAzureOpenAIGPT3_5_Turbo(string deployName = "gpt-35-turbo-16k")
-        //{
-        //    var azureOpenAIKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? throw new Exception("Please set AZURE_OPENAI_API_KEY environment variable.");
-        //    var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? throw new Exception("Please set AZURE_OPENAI_ENDPOINT environment variable.");
-
-        //    return new AzureOpenAIConfig(endpoint, deployName, azureOpenAIKey);
-        //}
-
-        //public static AzureOpenAIConfig GetAzureOpenAIGPT4(string deployName = "gpt-4")
-        //{
-        //    var azureOpenAIKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? throw new Exception("Please set AZURE_OPENAI_API_KEY environment variable.");
-        //    var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? throw new Exception("Please set AZURE_OPENAI_ENDPOINT environment variable.");
-
-        //    return new AzureOpenAIConfig(endpoint, deployName, azureOpenAIKey);
-        //}
-    }
     public class AITask
     {
         public static async Task RunAsync()
         {
+            #region 环境准备
             //var instance = new Example04_Dynamic_GroupChat_Coding_Task();
 
             // setup dotnet interactive
@@ -143,146 +28,248 @@ namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
             if (File.Exists(result))
                 File.Delete(result);
 
-
             await service.StartAsync(workDir, default);
+
+            #endregion
+
+
             //var llm = new LLMConfig()
-            //var gptConfig = LLMConfiguration.GetAzureOpenAIGPT3_5_Turbo();
+            var gptConfig = new OpenAILikeConfig(new Uri("https://na9yqj2l5a5r.share.zrok.io"));
 
-            var helperAgent = AgentHelper.CreateAgent(                
-                name: "helper",
-                systemMessage: "You are a helpful AI assistant",
-                temperature: 0f                
-                );
+            #region 助手-暂时没发现有用
+            var helperAgent = AgentHelper.CreateAgent(
+        name: "helper",
+        systemMessage: "You are a helpful AI assistant",
+        temperature: 0f
+        );
+            #endregion
 
+            #region 组管理员
             var groupAdmin = AgentHelper.CreateAgent(
-                name: "groupAdmin",
-                systemMessage: "You are the admin of the group chat",
-                temperature: 0f
-                )
-                .RegisterPrintMessage();
+        name: "groupAdmin",
+        systemMessage: "You are the admin of the group chat",
+        temperature: 0f
+        )
+        .RegisterPrintMessage();
+            #endregion
 
+            #region 用户
             var userProxy = new UserProxyAgent(name: "user", defaultReply: GroupChatExtension.TERMINATE, humanInputMode: HumanInputMode.NEVER)
-                .RegisterPrintMessage();
+        .RegisterPrintMessage();
+            #endregion
 
+            #region 管理员
             // Create admin agent
+
+            #region old prompt
+            //You are a manager who takes coding problem from user and resolve problem by splitting them into small tasks and assign each task to the most appropriate agent.
+            //Here's available agents who you can assign task to:
+            //- coder: write dotnet code to resolve task
+            //-runner: run dotnet code from coder
+
+            //The workflow is as follows:
+            //-You take the coding problem from user
+            //-You break the problem into small tasks.For each tasks you first ask coder to write code to resolve the task. Once the code is written, you ask runner to run the code.
+            //- Once a small task is resolved, you summarize the completed steps and create the next step.
+            //-You repeat the above steps until the coding problem is resolved.
+            //你的返回内容必须是下列json之一,不要多余的说明.
+            //You can use the following json format to assign task to agents:
+            //```task
+            //{
+            //    "to": "{agent_name}",
+            //    "task": "{a short description of the task}",
+            //    "context": "{previous context from scratchpad}"
+            //}
+            //```
+
+            //If you need to ask user for extra information, you can use the following format:
+            //```ask
+            //{
+            //    "question": "{question}"
+            //}
+            //```
+
+            //Once the coding problem is resolved, summarize each steps and results and send the summary to the user using the following format:
+            //```summary
+            //{
+            //    "problem": "{coding problem}",
+            //    "steps": [
+            //        {
+            //        "step": "{step}",
+            //            "result": "{result}"
+            //        }
+            //    ]
+            //}
+            //```
+
+            //Your reply must contain one of[task | ask | summary] to indicate the type of your message. 
+            #endregion
+
             var admin = new AssistantAgent(
                 name: "admin",
                 systemMessage: """
-            You are a manager who takes coding problem from user and resolve problem by splitting them into small tasks and assign each task to the most appropriate agent.
-            Here's available agents who you can assign task to:
-            - coder: write dotnet code to resolve task
-            - runner: run dotnet code from coder
+            你是一位经理，负责从用户那里获取编程问题，并将问题分解成小任务，然后将每个任务分配给最合适的代理。
+            你的返回内容必须是下列json之一,不要多余的说明.
+            以下是你可以分配任务的可用代理：
 
-            The workflow is as follows:
-            - You take the coding problem from user
-            - You break the problem into small tasks. For each tasks you first ask coder to write code to resolve the task. Once the code is written, you ask runner to run the code.
-            - Once a small task is resolved, you summarize the completed steps and create the next step.
-            - You repeat the above steps until the coding problem is resolved.
+            coder：编写 .NET 代码来解决任务
+            runner：运行 coder 编写的 .NET 代码
 
-            You can use the following json format to assign task to agents:
+            工作流程如下：
+
+            你从用户那里获取编程问题
+            你将问题分解成小任务。对于每个任务，你首先要求 coder 编写代码来解决任务。代码编写完成后，你要求 runner 运行代码。
+            一旦一个小任务得到解决，你就总结已完成的步骤并创建下一步。
+            你重复上述步骤，直到编程问题得到解决。
+            你可以使用以下 JSON 格式将任务分配给代理：
             ```task
             {
                 "to": "{agent_name}",
-                "task": "{a short description of the task}",
-                "context": "{previous context from scratchpad}"
+                "task": "{任务的简短描述}",
+                "context": "{暂存器中的先前上下文}"
             }
             ```
-
-            If you need to ask user for extra information, you can use the following format:
+            如果你需要向用户询问更多信息，你可以使用以下格式：
             ```ask
             {
-                "question": "{question}"
+                "question": "{问题}"
             }
             ```
-
-            Once the coding problem is resolved, summarize each steps and results and send the summary to the user using the following format:
+            一旦编程问题得到解决，总结每个步骤和结果，并使用以下格式将摘要发送给用户：
             ```summary
             {
-                "problem": "{coding problem}",
+                "problem": "{编程问题}",
                 "steps": [
                     {
-                        "step": "{step}",
-                        "result": "{result}"
+                        "step": "{步骤}",
+                        "result": "{结果}"
                     }
                 ]
             }
             ```
-
-            Your reply must contain one of [task|ask|summary] to indicate the type of your message.
+            你的回复必须包含 [task|ask|summary] 中的一个，以指示你的消息类型。
             """,
                 llmConfig: new ConversableAgentConfig
                 {
                     Temperature = 0,
-                    ConfigList = [gptConfig],
+                    ConfigList = new ILLMConfig[] { gptConfig },
                 })
                 .RegisterPrintMessage();
+            #endregion
 
+            #region 码农
             // create coder agent
             // The coder agent is a composite agent that contains dotnet coder, code reviewer and nuget agent.
             // The dotnet coder write dotnet code to resolve the task.
             // The code reviewer review the code block from coder's reply.
             // The nuget agent install nuget packages if there's any.
-            var coderAgent = new GPTAgent(
+            // You act as dotnet coder, you write dotnet code to resolve task. Once you finish writing code, ask runner to run the code for you.
+
+            //Here're some rules to follow on writing dotnet code:
+            //- put code between ```csharp and ```
+            //- When creating http client, use `var httpClient = new HttpClient()`. Don't use `using var httpClient = new HttpClient()` because it will cause error when running the code.
+            //- Try to use `var` instead of explicit type.
+            //- Try avoid using external library, use .NET Core library instead.
+            //- Use top level statement to write code.
+            //- Always print out the result to console. Don't write code that doesn't print out anything.
+
+            //If you need to install nuget packages, put nuget packages in the following format:
+            //```nuget
+            //nuget_package_name
+            //```
+
+            //If your code is incorrect, Fix the error and send the code again.
+
+            //Here's some externel information
+            //- The link to mlnet repo is: https://github.com/dotnet/machinelearning. you don't need a token to use github pr api. Make sure to include a User-Agent header, otherwise github will reject it.
+            var coderAgent = AgentHelper.CreateAgent(
                 name: "coder",
-                systemMessage: @"You act as dotnet coder, you write dotnet code to resolve task. Once you finish writing code, ask runner to run the code for you.
+                systemMessage: @"
+你是一个 .NET 程序员的，根据提供的任务编写 .NET 代码。代码编写完成后，你会要求运行器帮你运行代码。
+以下是编写 .NET 代码时需要遵循的一些规则：
 
-Here're some rules to follow on writing dotnet code:
-- put code between ```csharp and ```
-- When creating http client, use `var httpClient = new HttpClient()`. Don't use `using var httpClient = new HttpClient()` because it will cause error when running the code.
-- Try to use `var` instead of explicit type.
-- Try avoid using external library, use .NET Core library instead.
-- Use top level statement to write code.
-- Always print out the result to console. Don't write code that doesn't print out anything.
+- 使用 ```csharp 和 ``` 包裹代码。
+- 创建 HTTP 客户端时，使用 `var httpClient = new HttpClient()`。不要使用 `using var httpClient = new HttpClient()`，因为这会在运行代码时导致错误。
+- 尽量使用 `var` 而不是显式类型。
+- 尽量避免使用外部库，而是使用 .NET Core 库。
+- 使用顶级语句编写代码。
+- 始终将结果打印到控制台。不要编写不打印任何内容的代码。
 
-If you need to install nuget packages, put nuget packages in the following format:
+如果需要安装 NuGet 包，请使用以下格式：
 ```nuget
 nuget_package_name
 ```
 
-If your code is incorrect, Fix the error and send the code again.
+如果代码不正确，请修复错误并重新发送代码。
 
-Here's some externel information
-- The link to mlnet repo is: https://github.com/dotnet/machinelearning. you don't need a token to use github pr api. Make sure to include a User-Agent header, otherwise github will reject it.
+以下是一些外部信息：
+- mlnet 存储库的链接为：https://github.com/dotnet/machinelearning。 你不需要令牌即可使用 GitHub API。 请确保包含 User-Agent 标头，否则 GitHub 将拒绝该请求。
 ",
-                config: gptConfig,
+                //config: gptConfig,
                 temperature: 0.4f)
                 .RegisterPrintMessage();
+            #endregion
 
+            #region 代码检查
             // code reviewer agent will review if code block from coder's reply satisfy the following conditions:
             // - There's only one code block
             // - The code block is csharp code block
             // - The code block is top level statement
             // - The code block is not using declaration
-            var codeReviewAgent = new GPTAgent(
+            // You are a code reviewer who reviews code from coder. You need to check if the code satisfy the following conditions:
+            //- The reply from coder contains at least one code block, e.g ```csharp and ```
+            //- There's only one code block and it's csharp code block
+            //- The code block is not inside a main function. a.k.a top level statement
+            //- The code block is not using declaration when creating http client
+
+            //You don't check the code style, only check if the code satisfy the above conditions.
+
+            //Put your comment between ```review and ```, if the code satisfies all conditions, put APPROVED in review.result field. Otherwise, put REJECTED along with comments. make sure your comment is clear and easy to understand.
+
+            //## Example 1 ##
+            //```review
+            //comment: The code satisfies all conditions.
+            //result: APPROVED
+            //```
+
+            //## Example 2 ##
+            //```review
+            //comment: The code is inside main function. Please rewrite the code in top level statement.
+            //result: REJECTED
+            //```
+
+            var codeReviewAgent = AgentHelper.CreateAgent(
                 name: "reviewer",
                 systemMessage: """
-            You are a code reviewer who reviews code from coder. You need to check if the code satisfy the following conditions:
-            - The reply from coder contains at least one code block, e.g ```csharp and ```
-            - There's only one code block and it's csharp code block
-            - The code block is not inside a main function. a.k.a top level statement
-            - The code block is not using declaration when creating http client
+            你是一名代码审查员，负责审查程序员提交的代码。你需要检查代码是否满足以下条件：
 
-            You don't check the code style, only check if the code satisfy the above conditions.
+            - 程序员的回复中包含至少一个代码块，例如 ```csharp 和 ```
+            - 只有一个代码块，并且它是 C# 代码块
+            - 代码块不在 main 函数内部，也称为顶级语句
+            - 代码块在创建 HTTP 客户端时未使用 using 声明
 
-            Put your comment between ```review and ```, if the code satisfies all conditions, put APPROVED in review.result field. Otherwise, put REJECTED along with comments. make sure your comment is clear and easy to understand.
-            
-            ## Example 1 ##
+            你不需要检查代码风格，只需检查代码是否满足上述条件。
+
+            请将你的评论放在 ```review 和 ``` 之间，如果代码满足所有条件，请在 review.result 字段中填写 APPROVED。 否则，填写 REJECTED 并附带评论。 确保你的评论清晰易懂。
+
+            ## 例 1 ##
             ```review
-            comment: The code satisfies all conditions.
+            comment: 代码满足所有条件。
             result: APPROVED
             ```
 
-            ## Example 2 ##
+            ## 例 2 ##
             ```review
-            comment: The code is inside main function. Please rewrite the code in top level statement.
+            comment: 代码位于 main 函数内部。请使用顶级语句重写代码。
             result: REJECTED
             ```
-
             """,
-                config: gptConfig,
+                //config: gptConfig,
                 temperature: 0f)
                 .RegisterPrintMessage();
+            #endregion
 
+            #region 运行测试
             // create runner agent
             // The runner agent will run the code block from coder's reply.
             // It runs dotnet code using dotnet interactive service hook.
@@ -297,18 +284,21 @@ Here's some externel information
                     return await agent.GenerateReplyAsync(new[] { mostRecentCoderMessage }, option, ct);
                 })
                 .RegisterPrintMessage();
+            #endregion
 
+            #region 流程
             var adminToCoderTransition = Transition.Create(admin, coderAgent, async (from, to, messages) =>
-            {
-                // the last message should be from admin
-                var lastMessage = messages.Last();
-                if (lastMessage.From != admin.Name)
-                {
-                    return false;
-                }
+    {
+        // the last message should be from admin
+        var lastMessage = messages.Last();
+        if (lastMessage.From != admin.Name)
+        {
+            return false;
+        }
 
-                return true;
-            });
+        return true;
+    });
+
             var coderToReviewerTransition = Transition.Create(coderAgent, codeReviewAgent);
             var adminToRunnerTransition = Transition.Create(admin, runner, async (from, to, messages) =>
             {
@@ -348,25 +338,29 @@ Here's some externel information
             var userToAdminTransition = Transition.Create(userProxy, admin);
 
             var workflow = new Graph(
-                [
-                    adminToCoderTransition,
+                new Transition[] {adminToCoderTransition,
                     coderToReviewerTransition,
                     reviewerToAdminTransition,
                     adminToRunnerTransition,
                     runnerToAdminTransition,
                     adminToUserTransition,
-                    userToAdminTransition,
-                ]);
+                    userToAdminTransition, });
+            #endregion
 
+            #region 群聊
             // create group chat
             var groupChat = new GroupChat(
                 admin: groupAdmin,
-                members: [admin, coderAgent, runner, codeReviewAgent, userProxy],
+                members: new IAgent[] { admin, coderAgent, runner, codeReviewAgent, userProxy },
                 workflow: workflow);
 
             // task 1: retrieve the most recent pr from mlnet and save it in result.txt
             var groupChatManager = new GroupChatManager(groupChat);
+            #endregion
+
+
             await userProxy.SendAsync(groupChatManager, "Retrieve the most recent pr from mlnet and save it in result.txt", maxRound: 30);
+
             Debug.Assert(File.Exists(result));//.Should().BeTrue();
 
             // task 2: calculate the 39th fibonacci number

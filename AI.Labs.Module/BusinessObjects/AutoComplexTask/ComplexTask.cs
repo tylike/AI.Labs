@@ -1,4 +1,6 @@
-﻿using DevExpress.ExpressApp.DC;
+﻿using DevExpress.ExpressApp;
+using DevExpress.ExpressApp.Actions;
+using DevExpress.ExpressApp.DC;
 using DevExpress.ExpressApp.Model;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.Base.General;
@@ -13,7 +15,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-
+using OpenAI.ObjectModels.RequestModels;
+using Newtonsoft.Json;
 namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
 {
     [NavigationItem("自动任务")]
@@ -22,6 +25,21 @@ namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
         public ComplexTask(Session s) : base(s)
         {
 
+        }
+
+        [XafDisplayName("最大轮次")]
+        public int MaxRound
+        {
+            get { return GetPropertyValue<int>(nameof(MaxRound)); }
+            set { SetPropertyValue(nameof(MaxRound), value); }
+        }
+
+
+        public List<ChatMessage> History { get; set; } = new List<ChatMessage>();
+
+        public List<ChatMessage> GetHistory()
+        {
+            return History;
         }
 
         [XafDisplayName("标题")]
@@ -224,7 +242,68 @@ namespace AI.Labs.Module.BusinessObjects.AutoComplexTask
             Session.Delete(Items);
         }
 
+        [Association, DevExpress.Xpo.Aggregated]
+        public XPCollection<Agent> Agents
+        {
+            get => GetCollection<Agent>(nameof(Agents));
+        }
+    }
+    public class JsonMessage
+    {
+        public string Content { get; set; }
+        public string Agent { get; set; }
+        public State State { get; set; }
+    }
 
+    public enum State
+    {
+        Processing,
+        Complete
+    }
+    public class ComplexTaskViewController : ObjectViewController<ObjectView, ComplexTask>
+    {
+        public ComplexTaskViewController()
+        {
+            var run = new SimpleAction(this, "Run", null);
+            run.Execute += Run_Execute;
+        }
+
+        private async void Run_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var currentRound = 0;
+            var maxRound = Math.Max(ViewCurrentObject.MaxRound, 1);
+            var nextSpeaker = ViewCurrentObject.Agents.First(t => t.Name == "admin");
+            ViewCurrentObject.History.Clear();
+            while (currentRound < maxRound)
+            {
+                var rst = await nextSpeaker.Send(ViewCurrentObject.TaskMemo);
+                //如果rst以```json开头，以```结束，则去掉。
+                if (rst.StartsWith("```json"))
+                {
+                    rst = rst.Substring(7, rst.Length - 7);
+                }
+                if (rst.EndsWith("```"))
+                {
+                    rst = rst.Substring(0, rst.Length - 3);
+                }
+
+                ViewCurrentObject.History.Add(ChatMessage.FromAssistant(rst, nextSpeaker.Name));
+
+                var json = JsonConvert.DeserializeObject<JsonMessage>(rst);
+                if (json.State == State.Complete)
+                {
+                    ViewCurrentObject.Response = json.Content;
+                    break;
+                }
+                else
+                {
+                    ViewCurrentObject.Response = json.Content;
+                    nextSpeaker = ViewCurrentObject.Agents.First(t => t.Name == json.Agent);
+                }
+                currentRound++;
+            }
+            //await AITask.RunAsync();
+        }
     }
 
 }

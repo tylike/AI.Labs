@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net7.0-windows8.0</TargetFramework>
+		<TargetFramework>net8.0-windows8.0</TargetFramework>
 		<CheckEolTargetFramework>false</CheckEolTargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ApplicationIcon>ExpressApp.ico</ApplicationIcon>
@@ -73,7 +73,7 @@
 		<PackageReference Include="DevExpress.Persistent.BaseImpl.Xpo" Version="23.1.4" />
 		<PackageReference Include="DevExpress.RichEdit.Export" Version="23.1.4" />
 		<PackageReference Include="DevExpress.Win.Design" Version="23.1.4" />
-		
+
 		<!--<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

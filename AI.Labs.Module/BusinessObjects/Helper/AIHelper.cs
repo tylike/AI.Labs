@@ -178,6 +178,7 @@ namespace AI.Labs.Module.BusinessObjects
                         {
                             BaseDomain = baseDomain,
                             ApiKey = string.IsNullOrEmpty(model.ApiKey) ? "1" : model.ApiKey
+
                             //"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"
                             //"sk-7A5enIMIVH4PtxML4TL0M6Khi1ty8INWpQfvR6gykqgfCY6z"
                         });
@@ -246,7 +247,7 @@ namespace AI.Labs.Module.BusinessObjects
                 {
                     throw new UserFriendlyException("没有设置默认的AIModel");
                 }
-                return CreateOpenAIService(def, 2048);
+                return CreateOpenAIService(def, 8192);
                 //return new OpenAIService(new OpenAiOptions()
                 //{
                 //    BaseDomain = def.ApiUrlBase,
@@ -262,7 +263,7 @@ namespace AI.Labs.Module.BusinessObjects
             Action<ChatMessage> processResult,
             bool streamOut = true,
             float temperature = 0.7f,
-            int n_ctx = 512,
+            int n_ctx = 2048,
             AIModel aiModel = null,
             PredefinedRole role = null,
             string systemPrompt = null,
@@ -282,7 +283,8 @@ namespace AI.Labs.Module.BusinessObjects
             {
                 Messages = new List<ChatMessage>(),
                 Model = modelName,
-                Temperature = temperature
+                Temperature = temperature,
+                MaxTokens = n_ctx
             };
 
             if (!string.IsNullOrEmpty(systemPrompt))
@@ -363,7 +365,7 @@ namespace AI.Labs.Module.BusinessObjects
 
 
 
-        private static async Task AskCore(
+        public static async Task AskCore(
             Action<ChatMessage> processResult,
             bool streamOut,
             OpenAIService openAiService,

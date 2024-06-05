@@ -15,21 +15,28 @@ using DevExpress.Xpo.DB;
 using AI.Labs.Module.BusinessObjects.VideoTranslate;
 using AI.Labs.Module.BusinessObjects;
 using System.IO;
+using AI.Labs.Module.BusinessObjects.AutoComplexTask;
 
 namespace AI.Labs.Win;
 
-static class Program {
-    private static bool ContainsArgument(string[] args, string argument) {
+static class Program
+{
+    private static bool ContainsArgument(string[] args, string argument)
+    {
         return args.Any(arg => arg.TrimStart('/').TrimStart('-').ToLower() == argument.ToLower());
     }
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    public static int Main(string[] args) {
+    public static int Main(string[] args)
+    {
+
+        //AITask.RunAsync().Wait();
 
 
-        if(ContainsArgument(args, "help") || ContainsArgument(args, "h")) {
+        if (ContainsArgument(args, "help") || ContainsArgument(args, "h"))
+        {
             Console.WriteLine("Updates the database when its version does not match the application's version.");
             Console.WriteLine();
             Console.WriteLine($"    {Assembly.GetExecutingAssembly().GetName().Name}.exe --updateDatabase [--forceUpdate --silent]");
@@ -49,8 +56,9 @@ static class Program {
         WindowsFormsSettings.LoadApplicationSettings();
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
-		DevExpress.Utils.ToolTipController.DefaultController.ToolTipType = DevExpress.Utils.ToolTipType.SuperTip;
-        if(Tracing.GetFileLocationFromSettings() == DevExpress.Persistent.Base.FileLocation.CurrentUserApplicationDataFolder) {
+        DevExpress.Utils.ToolTipController.DefaultController.ToolTipType = DevExpress.Utils.ToolTipType.SuperTip;
+        if (Tracing.GetFileLocationFromSettings() == DevExpress.Persistent.Base.FileLocation.CurrentUserApplicationDataFolder)
+        {
             Tracing.LocalUserAppDataPath = Application.LocalUserAppDataPath;
         }
         Tracing.Initialize();
@@ -69,18 +77,21 @@ static class Program {
         ArgumentNullException.ThrowIfNull(connectionString);
         var winApplication = ApplicationBuilder.BuildApplication(connectionString);
 
-        if (ContainsArgument(args, "updateDatabase")) {
+        if (ContainsArgument(args, "updateDatabase"))
+        {
             using var dbUpdater = new WinDBUpdater(() => winApplication);
             return dbUpdater.Update(
                 forceUpdate: ContainsArgument(args, "forceUpdate"),
                 silent: ContainsArgument(args, "silent"));
         }
 
-        try {
+        try
+        {
             winApplication.Setup();
             winApplication.Start();
         }
-        catch(Exception e) {
+        catch (Exception e)
+        {
             winApplication.StopSplash();
             winApplication.HandleException(e);
         }
