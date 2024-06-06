@@ -257,7 +257,6 @@ namespace AI.Labs.Module.BusinessObjects
             }
         }
 
-
         public async static Task Ask(
             string userMessage,
             Action<ChatMessage> processResult,

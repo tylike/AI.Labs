@@ -24,7 +24,6 @@
     <Class Name="AI.Labs.Module.BusinessObjects.DataBaseCommander" ImageName="Actions_Database" />
     <Class Name="AI.Labs.Module.BusinessObjects.KnowledgeBase.BusinessKnowledgeBase" ImageName="re-layout" />
     <Class Name="AI.Labs.Module.BusinessObjects.Sales.Product" ImageName="ProductOrderDetail-21" />
-    <Class Name="AI.Labs.Module.BusinessObjects.SpreadSheetDocument" ImageName="PrintSheetSelection" />
     <Class Name="AI.Labs.Module.BusinessObjects.STT.MeetingNotes" ImageName="Meeting" />
     <Class Name="AI.Labs.Module.BusinessObjects.TTS.ReadTextInfo" ImageName="TextAnnotation" />
     <Class Name="AI.Labs.Module.BusinessObjects.WordDocumentRecord" ImageName="ExportToDOCX" />
@@ -58,7 +57,6 @@
         <Items>
           <Item Id="AIModel_ListView" Removed="True" />
           <Item Id="Product_ListView" Removed="True" />
-          <Item Id="SpreadSheetDocument_ListView" Removed="True" />
           <Item Id="VoiceSolution_ListView" Removed="True" />
           <Item Id="WordDocumentRecord_ListView" Removed="True" />
         </Items>
@@ -432,18 +430,22 @@
     </ListView>
     <DetailView Id="SpreadSheetDocument_DetailView">
       <Layout>
-        <LayoutGroup Id="Main">
+        <LayoutItem Id="DocumentData_Copy" ViewItem="DocumentData" ShowCaption="False" Index="0" IsNewNode="True" />
+        <LayoutGroup Id="Main" Removed="True">
           <LayoutGroup Id="SimpleEditors" IsCollapsibleGroup="True" ShowCaption="True" Caption="信息">
-            <LayoutGroup Id="SpreadSheetDocument" Direction="Horizontal">
-              <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" IsNewNode="True" />
-            </LayoutGroup>
             <LayoutGroup Id="AIResponse" IsNewNode="True">
               <LayoutItem Id="AIResponse" ViewItem="AIResponse" ShowCaption="" Index="2" SizeConstraintsType="Custom" MaxSize="0, 300" MinSize="0, 300" CaptionLocation="Top" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="SpreadSheetDocument" Direction="Horizontal">
+              <LayoutItem Id="Oid" ViewItem="Oid" ShowCaption="" Index="0" IsNewNode="True" />
             </LayoutGroup>
             <LayoutGroup Id="XPObject" Removed="True">
               <LayoutItem Id="Oid" Removed="True" />
             </LayoutGroup>
           </LayoutGroup>
+          <TabbedGroup Id="Tabs">
+            <LayoutGroup Id="DocumentData" Removed="True" />
+          </TabbedGroup>
         </LayoutGroup>
       </Layout>
     </DetailView>

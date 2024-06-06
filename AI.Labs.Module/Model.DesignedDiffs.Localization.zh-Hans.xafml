@@ -94,12 +94,6 @@
         <Member Name="LastUpdator" Caption="修改人" />
       </OwnMembers>
     </Class>
-    <Class Name="AI.Labs.Module.BusinessObjects.SpreadSheetDocument" Caption="Excel集成">
-      <OwnMembers>
-        <Member Name="DocumentData" Caption="文档数据" />
-        <Member Name="Title" Caption="标题" />
-      </OwnMembers>
-    </Class>
     <Class Name="AI.Labs.Module.BusinessObjects.STT.AzureMicrophoneInput" Caption="微软实时语音识别" />
     <Class Name="AI.Labs.Module.BusinessObjects.STT.MeetingNotes" Caption="会议记录">
       <OwnMembers>

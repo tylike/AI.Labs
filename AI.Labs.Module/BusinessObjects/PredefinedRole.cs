@@ -8,6 +8,7 @@ using AI.Labs.Module.BusinessObjects.ChatInfo;
 
 namespace AI.Labs.Module.BusinessObjects
 {
+
     [XafDisplayName("虚拟员工")]
     [NavigationItem("设置")]
     public class PredefinedRole : XPObject

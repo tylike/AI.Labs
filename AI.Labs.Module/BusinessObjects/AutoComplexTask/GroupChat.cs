@@ -156,8 +156,8 @@ From {agentNames.First()}:
                 {
                     Temperature = 0,
                     MaxToken = 128,
-                    StopSequence = [":"],
-                    Functions = [],
+                    StopSequence = new[] { ":" },
+                    Functions = new FunctionContract[] { },
                 });
 
             var name = response?.GetContent() ?? throw new Exception("No name is returned.");

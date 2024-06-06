@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <BOModel Id="BOModel">
+    <Class Name="AI.Labs.Module.BusinessObjects.SpreadSheetDocument" Caption="Excel集成">
+      <OwnMembers Id="OwnMembers">
+        <Member Name="DocumentData" Caption="文档数据" />
+        <Member Name="Title" Caption="标题" />
+      </OwnMembers>
+    </Class>
+  </BOModel>
+</Application>

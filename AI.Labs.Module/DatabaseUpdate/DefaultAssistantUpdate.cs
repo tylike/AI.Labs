@@ -1,6 +1,7 @@
 ﻿using DevExpress.ExpressApp;
 using AI.Labs.Module.BusinessObjects;
 using AI.Labs.Module.BusinessObjects.ChatInfo;
+using AI.Labs.Module.BusinessObjects.AISpreadSheet;
 
 namespace AI.Labs.Module.DatabaseUpdate;
 

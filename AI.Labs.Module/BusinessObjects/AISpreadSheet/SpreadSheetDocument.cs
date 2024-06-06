@@ -2,15 +2,17 @@
 using DevExpress.Persistent.Base;
 using DevExpress.ExpressApp.DC;
 
-namespace AI.Labs.Module.BusinessObjects
+namespace AI.Labs.Module.BusinessObjects.AISpreadSheet
 {
-    [NavigationItem]
-    public class SpreadSheetDocument : XPObject,IAssistant
+    [XafDisplayName("文档")]
+    [NavigationItem("Excel")]
+    public class SpreadSheetDocument : XPObject, IAssistant
     {
-        public SpreadSheetDocument(Session s):base(s)
+        public SpreadSheetDocument(Session s) : base(s)
         {
-                
+
         }
+
         [XafDisplayName("标题")]
         public string Title
         {
