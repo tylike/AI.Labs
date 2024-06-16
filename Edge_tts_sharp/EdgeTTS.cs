@@ -118,7 +118,8 @@ namespace EdgeTTSSharp
                 else if (e.IsBinary)
                 {
                     var data = e.RawData;
-                    var requestId = Regex.Match(e.Data, @"X-RequestId:(?<requestId>.*?)\r\n").Groups["requestId"].Value;
+                    //之前这里不是注释的，应该是bug，会由于e.Data没有内容而报错，注释后即可。
+                    //var requestId = Regex.Match(e.Data, @"X-RequestId:(?<requestId>.*?)\r\n").Groups["requestId"].Value;
                     if (data[0] == 0x00 && data[1] == 0x67 && data[2] == 0x58)
                     {
                         // Last (empty) audio fragment. 空音频片段，代表音频发送结束

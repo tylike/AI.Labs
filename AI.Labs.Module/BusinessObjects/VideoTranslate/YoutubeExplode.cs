@@ -14,7 +14,7 @@ namespace YoutubeExplode.Demo.Cli;
 // For a more involved example - check out the WPF demo.
 public static class YE
 {
-    public static async Task<string> DownloadForUrl(string url, string outputPath, Action<double> progressBar,YoutubeVideoInfo info)
+    public static async Task<string> DownloadForUrl(string url, string outputPath, Action<double> progressBar, YoutubeVideoInfo info)
     {
         //Console.Title = "YoutubeExplode Demo";
 
@@ -26,7 +26,7 @@ public static class YE
 
         // Get available streams and choose the best muxed (audio + video) stream
         var streamManifest = await youtube.Videos.Streams.GetManifestAsync(videoId);
-        var streamInfos = streamManifest.Streams.Where(t=> t is AudioOnlyStreamInfo && t.Container == Container.Mp4);
+        var streamInfos = streamManifest.Streams.Where(t => t is AudioOnlyStreamInfo && t.Container == Container.Mp4);
         if (streamInfos is null)
         {
             // Available streams vary depending on the video and it's possible
@@ -57,38 +57,29 @@ public static class YE
         video.VideoFile = await Download(video.VideoURL, video.ProjectPath, t =>
         {
             video.DownloadProgress = t;
-        },video.Oid.ToString());
+        }, video.Oid.ToString());
 
         await video.GetVideoScreenSize();
 
     }
 
-    public static async Task<string> Download(string url, string outputPath,Action<double> progressBar,string mainFileName)
+    public static async Task<string> Download(string url, string outputPath, Action<double> progressBar, string mainFileName)
     {
-        //Console.Title = "YoutubeExplode Demo";
-
         var youtube = new YoutubeClient();
-
-        // Get the video ID
-        //Console.Write("Enter YouTube video ID or URL: ");
         var videoId = VideoId.Parse(url);
 
-        // Get available streams and choose the best muxed (audio + video) stream
         var streamManifest = await youtube.Videos.Streams.GetManifestAsync(videoId);
         var streamInfo = streamManifest.GetMuxedStreams().TryGetWithHighestVideoQuality();
+
         if (streamInfo is null)
         {
-            // Available streams vary depending on the video and it's possible
-            // there may not be any muxed streams at all.
-            // See the readme to learn how to handle adaptive streams.
-            Console.Error.WriteLine("This video has no muxed streams.");
+            Debug.WriteLine("This video has no muxed streams.");
             return string.Empty;
         }
-        mainFileName = mainFileName ?? videoId;
-        // Download the stream
-        var fileName = Path.Combine(outputPath, $"{mainFileName}.{streamInfo.Container.Name}");
 
-        Console.Write(
+        mainFileName = mainFileName ?? videoId;
+        var fileName = Path.Combine(outputPath, $"{mainFileName}.{streamInfo.Container.Name}");
+        Debug.WriteLine(
             $"Downloading stream: {streamInfo.VideoQuality.Label} / {streamInfo.Container.Name}... "
         );
 
@@ -96,9 +87,61 @@ public static class YE
             await youtube.Videos.Streams.DownloadAsync(streamInfo, fileName, progress);
 
         return fileName;
-        //Console.WriteLine("Done");
-        //Console.WriteLine($"Video saved to '{fileName}'");
+
     }
+    public static async Task<string> DownloadClosedCaption(string url, string outputPath, Action<double> progressBar, string mainFileName)
+    {
+        var youtube = new YoutubeClient();
+        var videoId = VideoId.Parse(url);
+
+        // ...
+        var trackManifest = await youtube.Videos.ClosedCaptions.GetManifestAsync(url);
+        if (!trackManifest.Tracks.Any())
+            return "";
+
+        // Find closed caption track in English
+        var trackInfo = trackManifest.GetByLanguage("en");
+        //最后，用于获取曲目的实际内容：Videos.ClosedCaptions.GetAsync(...)
+        // ...
+        var track = await youtube.Videos.ClosedCaptions.GetAsync(trackInfo);
+        // Get the caption displayed at 0:35
+        var caption = track.GetByTime(TimeSpan.FromSeconds(35));
+        var text = caption.Text; // "collection acts as the parent collection" 
+        //您还可以使用以下方式下载 SRT 文件格式的隐藏式字幕轨道：Videos.ClosedCaptions.DownloadAsync(...)
+        
+        var fileName = Path.Combine(outputPath, $"{mainFileName}.{trackInfo.Language}.srt");
+
+        await youtube.Videos.ClosedCaptions.DownloadAsync(trackInfo, fileName, progress: new ProgressReporter(progressBar));
+
+        return fileName;
+    }
+
+    public static async Task<string> DownloadAudio(string url, string outputPath, Action<double> progressBar, string mainFileName)
+    {
+        var youtube = new YoutubeClient();
+        var videoId = VideoId.Parse(url);
+
+        var streamManifest = await youtube.Videos.Streams.GetManifestAsync(videoId);
+        var streamInfo = streamManifest.GetAudioOnlyStreams().TryGetWithHighestBitrate();
+
+        if (streamInfo is null)
+        {
+            Debug.WriteLine("This video has no muxed streams.");
+            return string.Empty;
+        }
+
+        mainFileName = mainFileName ?? videoId;
+        var fileName = Path.Combine(outputPath, $"{mainFileName}.{streamInfo.Container.Name}");
+        Debug.WriteLine(
+            $"Downloading stream: {streamInfo.Bitrate} / {streamInfo.Container.Name}... "
+        );
+
+        using (var progress = new ProgressReporter(progressBar))
+            await youtube.Videos.Streams.DownloadAsync(streamInfo, fileName, progress);
+
+        return fileName;
+    }
+
 
     public static async Task<string> Download(IVideoStreamInfo streamInfo, string outputPath, string oid)
     {

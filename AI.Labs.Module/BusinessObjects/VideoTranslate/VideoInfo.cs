@@ -17,14 +17,47 @@ using AI.Labs.Module.BusinessObjects.Helper;
 using System.Text;
 using AI.Labs.Module.BusinessObjects.TTS;
 using DevExpress.Persistent.Validation;
+using YoutubeExplode.Demo.Cli;
 //using SubtitlesParser.Classes.Parsers;
 namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 {
 
     [XafDisplayName("视频")]
-    [NavigationItem("视频翻译")]
-    public class VideoInfo : SimpleXPObject
+    [NavigationItem("视频翻译")]    
+    public partial class VideoInfo : SimpleXPObject
     {
+        [Action(Caption ="下载字幕")]
+        public async void DownloadClosedCaption()
+        {
+            准备();
+            await YE.DownloadClosedCaption(this.VideoURL, this.ProjectPath, p => this.DownloadProgress = p, null);
+        }
+
+        public void 准备()
+        {
+            if (string.IsNullOrEmpty(ProjectPath))
+            {
+                ProjectPath = Path.Combine(@"d:\VideoInfo", Oid.ToString());
+                //创建空白方案
+                var audio = GetCnAudioSolution();
+            }
+
+            if (!Directory.Exists(ProjectPath))
+            {
+                Directory.CreateDirectory(ProjectPath);
+            }
+
+            EncodingProvider provider = CodePagesEncodingProvider.Instance;
+            Encoding.RegisterProvider(provider);
+        }
+
+        [Action(Caption ="下载音频")]
+        public async void DownloadAuduio()
+        {
+            准备();
+            await YE.DownloadAudio(this.VideoURL, this.ProjectPath, p => this.DownloadProgress = p, null);
+        }
+
 #warning 5.最终实现全部的自动化，可以自动下载一个频道的所有视频，然后自动翻译，自动上传到剪映
         public VideoInfo(Session s) : base(s)
         {
@@ -232,18 +265,18 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         #region 来源信息
         [XafDisplayName("作者")]
+        [Association]
         public YoutubeChannel Channel
         {
             get { return GetPropertyValue<YoutubeChannel>(nameof(Channel)); }
             set { SetPropertyValue(nameof(Channel), value); }
         }
 
-
-
         [XafDisplayName("时长")]
-        public string Duration
+        [Persistent("DurationTime")]
+        public TimeSpan Duration
         {
-            get { return GetPropertyValue<string>(nameof(Duration)); }
+            get { return GetPropertyValue<TimeSpan>(nameof(Duration)); }
             set { SetPropertyValue(nameof(Duration), value); }
         }
 
@@ -473,8 +506,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         [XafDisplayName("语言模型")]
         public AIModel Model
         {
-            get { return GetPropertyValue<AIModel>(nameof(Model)); }
-            set { SetPropertyValue(nameof(Model), value); }
+            get => TranslateAgent?.Model;
         }
 
         //[XafDisplayName("语音识别")]
@@ -502,8 +534,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             get { return GetPropertyValue<SubtitleTranscriptionAgent>(nameof(SubtitleTranscriptionAgent)); }
             set { SetPropertyValue(nameof(SubtitleTranscriptionAgent), value); }
         }
-
-
 
         [XafDisplayName("强制时长")]
         public int ForceDuration
@@ -533,7 +563,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             //STTPrompt = "";
 
             JianYingProjectFile = GetDefaultJianYingProjectPath();
-            Model = Session.Query<AIModel>().FirstOrDefault(t => t.IsDefault);
+            //Model = Session.Query<AIModel>().FirstOrDefault(t => t.IsDefault);
             TranslateAgent = Session.Query<TranslateAgent>().FirstOrDefault(t => t.IsDefault);
             SubtitleTranscriptionAgent = Session.Query<SubtitleTranscriptionAgent>().FirstOrDefault(t => t.IsDefault);
             CreateScriptObject();
@@ -805,6 +835,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             set { SetPropertyValue(nameof(Content), value); }
         }
     }
+
     public class YoutubeVideoInfo : SimpleXPObject
     {
         public YoutubeVideoInfo(Session s) : base(s)
@@ -934,12 +965,14 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
 
         [XafDisplayName("名称")]
+        [RuleRequiredField]
         public string Name
         {
             get { return GetPropertyValue<string>(nameof(Name)); }
             set { SetPropertyValue(nameof(Name), value); }
         }
 
+        [Size(-1)]
         public string 可用参数
         =>
              @"{contexts}:指相关的上下文
@@ -962,6 +995,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         }
 
         [XafDisplayName("语言模型")]
+        [RuleRequiredField]
         public AIModel Model
         {
             get { return GetPropertyValue<AIModel>(nameof(Model)); }

@@ -107,7 +107,7 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             foreach (var x in subtitles.Select((t, i) => new { t, i }))
             {
                 x.t.EnAudioFile = files[x.i];
-                var role = await ViewCurrentObject.CnAudioSolution.CreateOrFindAudioRole("角色" + speakers[x.i]);
+                var role = await ViewCurrentObject.CnAudioSolution.FindOrCreateAudioRole("角色" + speakers[x.i]);
                 x.t.CnVoiceRole = role;
             }
             ObjectSpace.CommitChanges();
@@ -151,13 +151,10 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         private void GetChapters_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            CreateChapters(TimeSpan.Parse(ViewCurrentObject.Duration));
+            ViewCurrentObject.CreateChapters();
         }
 
-        private async void TranslateToVideo_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            await TranslateResultToVideo();
-        }
+
 
         private async void OneKeyTranslate_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
@@ -180,11 +177,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             //await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, @"d:\ffmpeg.gui\last");
         }
 
-        private async void OneKey_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
-            await OneKeyTranslate();
-            await TranslateResultToVideo();
-        }
 
         private async Task TranslateResultToVideo()
         {
@@ -199,50 +191,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
             await CreateVideoProduct(this.ObjectSpace, ViewCurrentObject);
             //调用生成视频
-        }
-
-        private async Task OneKeyTranslate()
-        {
-            //var s = (ObjectSpace as XPObjectSpace).Session;
-            //s.ExecuteNonQuery($"update {nameof(VideoInfo)} set {nameof(VideoInfo.VideoScript)} = null");
-            //ObjectSpace.CommitChanges();
-
-            if (ViewCurrentObject.Model == null)
-            {
-                ViewCurrentObject.Model = ObjectSpace.GetObjectsQuery<AIModel>().FirstOrDefault(t => t.IsDefault);
-            }
-
-            if (ViewCurrentObject.SubtitleTranscriptionAgent == null)
-            {
-                ViewCurrentObject.SubtitleTranscriptionAgent = ObjectSpace.GetObjectsQuery<SubtitleTranscriptionAgent>().FirstOrDefault(t => t.IsDefault);
-            }
-
-            ArgumentNullException.ThrowIfNull(ViewCurrentObject.Model);
-            ArgumentNullException.ThrowIfNull(ViewCurrentObject.SubtitleTranscriptionAgent);
-
-            准备();
-            if (string.IsNullOrEmpty(ViewCurrentObject.VideoFile))
-            {
-#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
-                GetVideoInfoCore();
-#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
-                await YE.Download(ViewCurrentObject);
-            }
-
-            if (!File.Exists(ViewCurrentObject.AudioFile))
-            {
-                GetAudioFromVideo();
-            }
-
-            if (!File.Exists(ViewCurrentObject.VideoJsonSRT))
-            {
-                GetSrtJsonFromAudio();
-            }
-
-            if (!File.Exists(ViewCurrentObject.VideoChineseSRT))
-            {
-                await TranslateSrtToChinese();
-            }
         }
 
         public async static Task CreateVideoProduct(IObjectSpace objectSpace, VideoInfo video, int? forceDuration = null)
@@ -406,7 +354,12 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             // Get the video ID
             var videoId = VideoId.Parse(url);
 #pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
-            GetVideoInfo(youtube, videoId);
+            async void GetVideo(VideoId videoId)
+            {
+                var rst = await youtube.Videos.GetAsync(videoId);
+                ViewCurrentObject.UpdateSourceVideoInfo(rst);
+            }
+            GetVideo(videoId);
 #pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
 
             // Get available streams and choose the best muxed (audio + video) stream
@@ -416,7 +369,6 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             foreach (var item in list)
             {
                 //await youtube.Videos.GetAsync(item.Url);
-
                 var info = ObjectSpace.CreateObject<YoutubeVideoInfo>();
                 info.Url = item.Url;
                 info.尺寸 = item.Size.ToString();
@@ -462,53 +414,53 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             Encoding.RegisterProvider(provider);
         }
 
-        private async Task GetVideoInfo(YoutubeClient youtube, VideoId videoId)
-        {
-            var mvideo = await youtube.Videos.GetAsync(videoId);
+        //private async Task GetVideoInfo(YoutubeClient youtube, VideoId videoId)
+        //{
+        //    var mvideo = await youtube.Videos.GetAsync(videoId);
 
-            ViewCurrentObject.Title = mvideo.Title;
-            ViewCurrentObject.Description = (mvideo.Description + "").Replace("\n", Environment.NewLine);
-            CreateChapters(mvideo.Duration.Value);
-            ViewCurrentObject.Keywords = string.Join("\n", mvideo.Keywords);
+        //    ViewCurrentObject.Title = mvideo.Title;
+        //    ViewCurrentObject.Description = (mvideo.Description + "").Replace("\n", Environment.NewLine);
+        //    CreateChapters(mvideo.Duration.Value);
+        //    ViewCurrentObject.Keywords = string.Join("\n", mvideo.Keywords);
 
-            ViewCurrentObject.Duration = mvideo.Duration.ToString();
-            ViewCurrentObject.CnVideoDuration = mvideo.Duration ?? TimeSpan.Zero;
+        //    ViewCurrentObject.Duration = mvideo.Duration.ToString();
+        //    ViewCurrentObject.CnVideoDuration = mvideo.Duration ?? TimeSpan.Zero;
 
-            ViewCurrentObject.Like = (int)mvideo.Engagement.LikeCount;
-            ViewCurrentObject.DisLike = (int)mvideo.Engagement.DislikeCount;
-            ViewCurrentObject.ViewCount = (int)mvideo.Engagement.ViewCount;
-            ViewCurrentObject.AverageRating = (decimal)mvideo.Engagement.AverageRating;
-            ViewCurrentObject.UploadDate = mvideo.UploadDate.LocalDateTime;
-            ViewCurrentObject.ImageTitle = mvideo.Thumbnails.OrderByDescending(t => t.Resolution.Width).FirstOrDefault()?.Url;
-            #region 作者
-            var findAuthor = ObjectSpace.GetObjectsQuery<YoutubeChannel>().FirstOrDefault(t => t.ChannelUrl == mvideo.Author.ChannelUrl);
-            if (findAuthor == null)
-            {
-                findAuthor = ObjectSpace.CreateObject<YoutubeChannel>();
-                findAuthor.ChannelID = mvideo.Author.ChannelId;
-                findAuthor.ChannelUrl = mvideo.Author.ChannelUrl;
-                findAuthor.ChannelName = mvideo.Author.ChannelTitle;
-            }
-            ViewCurrentObject.Channel = findAuthor;
-            #endregion
-            //ViewCurrentObject.VideoFile = $"{videoId}.{mvideo.Duration.ToString()}.mp4";
-        }
+        //    ViewCurrentObject.Like = (int)mvideo.Engagement.LikeCount;
+        //    ViewCurrentObject.DisLike = (int)mvideo.Engagement.DislikeCount;
+        //    ViewCurrentObject.ViewCount = (int)mvideo.Engagement.ViewCount;
+        //    ViewCurrentObject.AverageRating = (decimal)mvideo.Engagement.AverageRating;
+        //    ViewCurrentObject.UploadDate = mvideo.UploadDate.LocalDateTime;
+        //    ViewCurrentObject.ImageTitle = mvideo.Thumbnails.OrderByDescending(t => t.Resolution.Width).FirstOrDefault()?.Url;
+        //    #region 作者
+        //    var findAuthor = ObjectSpace.GetObjectsQuery<YoutubeChannel>().FirstOrDefault(t => t.ChannelUrl == mvideo.Author.ChannelUrl);
+        //    if (findAuthor == null)
+        //    {
+        //        findAuthor = ObjectSpace.CreateObject<YoutubeChannel>();
+        //        findAuthor.ChannelID = mvideo.Author.ChannelId;
+        //        findAuthor.ChannelUrl = mvideo.Author.ChannelUrl;
+        //        findAuthor.ChannelName = mvideo.Author.ChannelTitle;
+        //    }
+        //    ViewCurrentObject.Channel = findAuthor;
+        //    #endregion
+        //    //ViewCurrentObject.VideoFile = $"{videoId}.{mvideo.Duration.ToString()}.mp4";
+        //}
 
-        private void CreateChapters(TimeSpan duration)
-        {
-            var descs = new VideoDescription(ViewCurrentObject.Description).ParseChapters();
-            if (!ViewCurrentObject.Chapters.Any())
-            {
-                foreach (var item in descs)
-                {
-                    var c = ObjectSpace.CreateObject<Chapter>();
-                    c.Title = item.Name;
-                    c.StartTime = item.StartTimespan;
-                    c.EndTime = item.EndTimespan ?? duration;
-                    ViewCurrentObject.Chapters.Add(c);
-                }
-            }
-        }
+        //private void CreateChapters(TimeSpan duration)
+        //{
+        //    var descs = new VideoDescription(ViewCurrentObject.Description).ParseChapters();
+        //    if (descs!=null && !ViewCurrentObject.Chapters.Any())
+        //    {
+        //        foreach (var item in descs)
+        //        {
+        //            var c = ObjectSpace.CreateObject<Chapter>();
+        //            c.Title = item.Name;
+        //            c.StartTime = item.StartTimespan;
+        //            c.EndTime = item.EndTimespan ?? duration;
+        //            ViewCurrentObject.Chapters.Add(c);
+        //        }
+        //    }
+        //}
         #endregion
 
         #region 2.下载视频
@@ -1118,6 +1070,78 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
 
         #region 8.发布
 
+        #endregion
+
+        #region 11.一键生成
+        private async void OneKey_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            //1.验证
+            //是否选择了声音方案
+            ViewCurrentObject.准备();
+            ViewCurrentObject.GetCnAudioSolution();
+
+            if (!ViewCurrentObject.CnAudioSolution.Roles.Any())
+            {
+                await ViewCurrentObject.CnAudioSolution.FindOrCreateDefaultRole();                
+            }
+
+            if (!ViewCurrentObject.CnAudioSolution.Roles.Any())
+            {
+                throw new ArgumentOutOfRangeException("默认声音方案", "没有默认声音方案，无法生成翻译后的音频!");
+            }
+
+            //2.生成
+            await OneKeyTranslate();
+            await TranslateResultToVideo();
+        }
+        //11.1
+        private async Task OneKeyTranslate()
+        {
+            if (ViewCurrentObject.SubtitleTranscriptionAgent == null)
+            {
+                var configs = ObjectSpace.GetObjectsQuery<SubtitleTranscriptionAgent>().ToArray();
+                ViewCurrentObject.SubtitleTranscriptionAgent = configs.FirstOrDefault(t => t.IsDefault);
+            }
+
+            if (ViewCurrentObject.TranslateAgent == null)
+            {
+                ViewCurrentObject.TranslateAgent = ObjectSpace.GetObjectsQuery<TranslateAgent>().FirstOrDefault(t => t.IsDefault);
+            }
+
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.Model);
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.SubtitleTranscriptionAgent);
+            ArgumentNullException.ThrowIfNull(ViewCurrentObject.TranslateAgent);
+
+            准备();
+            if (string.IsNullOrEmpty(ViewCurrentObject.VideoFile))
+            {
+#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+                GetVideoInfoCore();
+#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+                await YE.Download(ViewCurrentObject);
+            }
+
+            if (!File.Exists(ViewCurrentObject.AudioFile))
+            {
+                GetAudioFromVideo();
+            }
+
+            if (!File.Exists(ViewCurrentObject.VideoJsonSRT))
+            {
+                GetSrtJsonFromAudio();
+            }
+
+            if (!File.Exists(ViewCurrentObject.VideoChineseSRT))
+            {
+                await TranslateSrtToChinese();
+            }
+        }
+
+        //11.2
+        private async void TranslateToVideo_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            await TranslateResultToVideo();
+        }
         #endregion
     }
 }

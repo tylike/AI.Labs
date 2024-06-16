@@ -262,7 +262,7 @@ namespace AI.Labs.Module.BusinessObjects
             Action<ChatMessage> processResult,
             bool streamOut = true,
             float temperature = 0.7f,
-            int n_ctx = 2048,
+            int n_ctx = 0,
             AIModel aiModel = null,
             PredefinedRole role = null,
             string systemPrompt = null,
@@ -384,6 +384,7 @@ namespace AI.Labs.Module.BusinessObjects
             {
                 // ChatGPT Official API
                 var completionResult = openAiService.ChatCompletion.CreateCompletionAsStream(request);
+                
                 if (completionResult != null)
                 {
                     await foreach (var x in completionResult)

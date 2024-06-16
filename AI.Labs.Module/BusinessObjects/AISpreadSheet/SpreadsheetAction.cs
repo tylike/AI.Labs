@@ -1,6 +1,14 @@
-﻿using DevExpress.ExpressApp.DC;
+﻿using DevExpress.Data.Filtering;
+using DevExpress.Data.Linq;
+using DevExpress.Data.Linq.Helpers;
+using DevExpress.ExpressApp.DC;
+using DevExpress.ExpressApp.Editors;
+using DevExpress.ExpressApp.Xpo;
 using DevExpress.Persistent.Base;
 using DevExpress.Xpo;
+using DevExpress.XtraReports.Design.View;
+using RagServer.Module.BusinessObjects;
+using System.Text;
 
 namespace AI.Labs.Module.BusinessObjects.AISpreadSheet
 {
@@ -24,6 +32,26 @@ namespace AI.Labs.Module.BusinessObjects.AISpreadSheet
         {
 
         }
+        public string RefsCache;
+        public string GetReferences()
+        {
+            if (RefsCache != null)
+                return RefsCache;
+
+            var converter = new CriteriaToExpressionConverter();
+            var references = Session.Query<记忆分区>()
+                .AppendWhere(converter,CriteriaOperator.Parse(this.Criterion)) as IQueryable<记忆分区>;
+
+            var refs = references.Select(t=>t.内容).OrderByDescending(t => Guid.NewGuid().ToString()).Take(ReferenceCount).ToArray();
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in refs.Select((t, i) => (t, i)))
+            {
+                sb.AppendLine($"{item.i} {item.t}");
+            }
+            RefsCache = sb.ToString();
+            return RefsCache;
+        }
 
         public override void AfterConstruction()
         {
@@ -31,6 +59,46 @@ namespace AI.Labs.Module.BusinessObjects.AISpreadSheet
             ImageName = "ModelEditor_GenerateContent";
             UserPrompt = "内容:{T}";
         }
+
+        [XafDisplayName("引用数量")]
+        [ToolTip("将会使用引用内容中的N条做为参考回答")]
+        public int ReferenceCount
+        {
+            get { return GetPropertyValue<int>(nameof(ReferenceCount)); }
+            set { SetPropertyValue(nameof(ReferenceCount), value); }
+        }
+
+
+        //[Browsable(false)]
+        //public virtual string ObjectTypeName
+        //{
+        //    get { return objectType == null ? string.Empty : objectType.FullName; }
+        //    set
+        //    {
+        //        ITypeInfo typeInfo = XafTypesInfo.Instance.FindTypeInfo(value);
+        //        objectType = typeInfo == null ? null : typeInfo.Type;
+        //    }
+        //}
+
+        //[NotMapped, ImmediatePostData]
+        public Type ObjectType
+        {
+            get { return typeof(记忆分区); }
+            //set
+            //{
+            //    if (objectType == value)
+            //        return;
+            //    objectType = value;
+            //    Criterion = string.Empty;
+            //}
+        }
+
+        [CriteriaOptions(nameof(ObjectType))]
+        [FieldSize(FieldSizeAttribute.Unlimited)]
+        [EditorAlias(EditorAliases.PopupCriteriaPropertyEditor)]
+        public string Criterion { get; set; }
+
+
 
         [XafDisplayName("快捷方式")]
         [ToolTip("快捷键")]

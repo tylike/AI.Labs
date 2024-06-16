@@ -223,16 +223,19 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
 
         private VoiceSolution GetFinalSolution()
         {
+            //第一优先级:从字幕上设置的中文音色角色上取
             var sln = Subtitle?.CnVoiceRole?.VoiceSolution;
             if (sln != null)
                 return sln;
-
+            //第二优先级:从当前设定上取
             var vs = this.Solution ?? this.AudioRole?.VoiceSolution;
             if (vs == null)
             {
+                var rst = this.AudioBook.Roles.FirstOrDefault();
+                if (rst != null)
+                    return rst.VoiceSolution;
                 throw new UserFriendlyException("没有选择声音方案!");
             }
-
             return vs;
         }
 

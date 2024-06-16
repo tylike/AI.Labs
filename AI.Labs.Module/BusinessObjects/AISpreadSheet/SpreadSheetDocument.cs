@@ -1,18 +1,25 @@
 ﻿using DevExpress.Xpo;
 using DevExpress.Persistent.Base;
 using DevExpress.ExpressApp.DC;
+using DevExpress.ExpressApp;
 
 namespace AI.Labs.Module.BusinessObjects.AISpreadSheet
 {
     [XafDisplayName("文档")]
     [NavigationItem("Excel")]
-    public class SpreadSheetDocument : XPObject, IAssistant
+    [DefaultListViewOptions(true, NewItemRowPosition.None)]
+    public class SpreadSheetDocument : SimpleXPObject, IAssistant
     {
         public SpreadSheetDocument(Session s) : base(s)
         {
 
         }
 
+        [Action(Caption ="设置标题")]
+        public void SetTitle(string title)
+        {
+            Title = title;
+        }
         [XafDisplayName("标题")]
         public string Title
         {
@@ -45,4 +52,6 @@ namespace AI.Labs.Module.BusinessObjects.AISpreadSheet
 
 
     }
+
+    
 }

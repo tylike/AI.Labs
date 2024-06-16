@@ -1,4 +1,5 @@
 ﻿using AI.Labs.Module.BusinessObjects.TTS;
+using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.DC;
 using DevExpress.Persistent.Base;
 using DevExpress.Xpo;
@@ -15,7 +16,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
 
 
 
-        [XafDisplayName("角色名称"),ToolTip("为了区分不同角色而给角色取的一个名字")]
+        [XafDisplayName("角色名称"), ToolTip("为了区分不同角色而给角色取的一个名字")]
         public string Name
         {
             get { return GetPropertyValue<string>(nameof(Name)); }
@@ -52,7 +53,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             set { SetPropertyValue(nameof(AudioBook), value); }
         }
 
-        [XafDisplayName("朗读段落"),ToolTip("此角色朗读了这些段落")]
+        [XafDisplayName("朗读段落"), ToolTip("此角色朗读了这些段落")]
         [Association]
         public XPCollection<AudioBookTextAudioItem> SpreakItems
         {
@@ -69,13 +70,17 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             set { SetPropertyValue(nameof(TryReadingText), value); }
         }
 
-        [Action(Caption ="试听")]
+        [Action(Caption = "试听")]
         public async void TryReading()
         {
+            if (string.IsNullOrEmpty(TryReadingText))
+            {
+                throw new UserFriendlyException("没有填写试读文字！");
+            }
             if (this.VoiceSolution != null)
             {
                 await this.VoiceSolution.Read(TryReadingText);
-            }            
+            }
         }
 
     }

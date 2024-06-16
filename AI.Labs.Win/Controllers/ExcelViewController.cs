@@ -5,9 +5,12 @@ using DevExpress.ExpressApp.Actions;
 using DevExpress.ExpressApp.Office.Win;
 using DevExpress.XtraGauges.Presets.PresetManager;
 using DevExpress.XtraSpreadsheet.Services.Implementation;
+using RagServer.Module.BusinessObjects;
+using System.Text;
 
 namespace AI.Labs.Win.Controllers
 {
+
     public class ExcelViewController : CustomizeDialogViewController<DetailView, SpreadSheetDocument>
     {
         public ExcelViewController()
@@ -24,6 +27,7 @@ namespace AI.Labs.Win.Controllers
                 actions.Add(act);
             }
         }
+
         List<SimpleAction> actions = new List<SimpleAction>();
         ActionBase GetHideAction()
         {
@@ -143,6 +147,7 @@ namespace AI.Labs.Win.Controllers
                 act.Active["visible"] = true;
             }
         }
+        
 
         private async void RuntimeExcel_Executed(object sender, ActionBaseEventArgs e)
         {
@@ -160,12 +165,21 @@ namespace AI.Labs.Win.Controllers
             var ui = SynchronizationContext.Current;
             foreach (var item in ranges)
             {
-
                 foreach (var c in item.ExistingCells)
                 {
+                    if (c.Value.IsEmpty)
+                        continue;
 
                     var userPrompt = actionInfo.UserPrompt;
                     userPrompt = userPrompt.Replace("{T}", c.Value.TextValue);
+                    var refs = actionInfo.GetReferences();
+
+                    if (refs != null)
+                    {
+                        userPrompt = userPrompt.Replace("{R}", refs);
+                    }
+
+
                     var targetCell = isRow ?
                         editor.SpreadsheetControl.ActiveWorksheet[c.RowIndex + actionInfo.OutputOffset, c.ColumnIndex] :
                         editor.SpreadsheetControl.ActiveWorksheet[c.RowIndex, c.ColumnIndex + actionInfo.OutputOffset];
@@ -193,8 +207,6 @@ namespace AI.Labs.Win.Controllers
 
                 }
             }
-
-
 
             var selectedCellFormula = editor.SpreadsheetControl.SelectedCell.Formula;
             var selectedCellText = editor.SpreadsheetControl.SelectedCell.Value.TextValue;

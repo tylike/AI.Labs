@@ -58,7 +58,8 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
         public IReadOnlyCollection<VideoChapter> ParseChapters()
         {
             if (Description == null)
-                throw new Exception("Could not parse any chapter");
+                return null;
+                //throw new Exception("Could not parse any chapter");
 
             var chapters = new List<VideoChapter>();
 
@@ -69,7 +70,8 @@ namespace AI.Labs.Module.BusinessObjects.VideoTranslate
             var index = lines.IndexOf(firstLine);
 
             if (index == -1 || lines.Count == 0)
-                throw new Exception("Could not parse any chapter");
+                return null ;
+                //throw new Exception("Could not parse any chapter");
 
             var chapterIndex = -1;
             while (lines.Count > index)

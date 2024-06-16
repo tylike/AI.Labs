@@ -354,7 +354,7 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
         /// </summary>
         /// <param name="roleName"></param>
         /// <returns></returns>
-        public async Task<AudioBookRole> CreateOrFindAudioRole(string roleName)
+        public async Task<AudioBookRole> FindOrCreateAudioRole(string roleName)
         {
             var find = Roles.FirstOrDefault(t => t.Name == roleName);
             if (find == null)
@@ -369,6 +369,12 @@ namespace AI.Labs.Module.BusinessObjects.AudioBooks
             await Task.CompletedTask;
             return find;
         }
+
+        public async Task<AudioBookRole> FindOrCreateDefaultRole()
+        {
+            return await FindOrCreateAudioRole("default");            
+        }
+
 
         #region 3.创建书籍
         /// <summary>

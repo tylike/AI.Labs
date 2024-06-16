@@ -71,6 +71,7 @@
 		<PackageReference Include="AutoGen" Version="0.0.14" />
 		<PackageReference Include="AutoGen.DotnetInteractive" Version="0.0.14" />
 		<PackageReference Include="AutoGen.OpenAI" Version="0.0.14" />
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
 		<PackageReference Include="org.k2fsa.sherpa.onnx" Version="*" />
 
 		<PackageReference Include="Betalgo.OpenAI" Version="8.2.2" />
