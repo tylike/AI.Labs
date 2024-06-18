@@ -10,6 +10,7 @@ using DevExpress.XtraRichEdit.API.Native;
 using NAudio.CoreAudioApi;
 using System.Security.Cryptography;
 using System.Windows.Interop;
+using AI.Labs.Module.Controllers;
 
 namespace AI.Labs.Win.Controllers
 {

@@ -7,7 +7,7 @@ using DevExpress.XtraGauges.Presets.PresetManager;
 using DevExpress.XtraSpreadsheet.Services.Implementation;
 using RagServer.Module.BusinessObjects;
 using System.Text;
-
+using AI.Labs.Module.Controllers;
 namespace AI.Labs.Win.Controllers
 {
 
