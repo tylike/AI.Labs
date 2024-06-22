@@ -84,6 +84,7 @@
 
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
+		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
 		<PackageReference Include="WebView2.DevTools.Dom" Version="3.0.1" />
 
 	</ItemGroup>

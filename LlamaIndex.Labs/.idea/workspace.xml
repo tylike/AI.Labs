@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="839926e7-a39b-4a3d-814b-e5552a3967cd" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/AI.Labs.Module.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/AI.Labs.Module.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/AIHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/AIHelper.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/AudioBooks/AudioBook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/AudioBooks/AudioBook.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/AudioBooks/AudioBookRole.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/AudioBooks/AudioBookRole.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/AudioBooks/AudioBookTextAudioItem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/AudioBooks/AudioBookTextAudioItem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/Chat/Chat.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/Chat/Chat.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/Chat/ChatViewController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/Chat/ChatViewController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/DataBaseCommander.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/DataBaseCommander.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/PredefinedRole.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/PredefinedRole.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/STT/AutoStartSTTServiceController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/STT/AutoStartSTTServiceController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/STT/AzureASR.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/STT/AzureASR.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/STT/RealTimeSpeechRecognitionViewController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/STT/RealTimeSpeechRecognitionViewController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/STT/STTService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/STT/STTService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/STT/UserVoiceViewController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/STT/UserVoiceViewController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/Sales/Book.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/Sales/Book.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/Sales/Product.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/Sales/Product.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/SpreadSheetDocument.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/SpreadSheetDocument.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/TTS/ReadTextInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/TTS/ReadTextInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/TTS/VoiceSolution.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/TTS/VoiceSolution.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/VoiceController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/VoiceController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/WordDocumentRecord.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/BusinessObjects/WordDocumentRecord.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/Model.DesignedDiffs.Localization.zh-Hans.xafml" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/Model.DesignedDiffs.Localization.zh-Hans.xafml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/Model.DesignedDiffs.xafml" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/Model.DesignedDiffs.xafml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/TTS/AzureTTSEngine.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/TTS/AzureTTSEngine.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/TTS/TTSEngine.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/TTS/TTSEngine.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes10.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes11.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes12.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes13.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes14.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes15.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes1_zh-Hans.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes2_zh-Hans.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes3_zh-Hans.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes4.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes4_zh-Hans.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes5.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes5_zh-Hans.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes6.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes6_zh-Hans.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes7.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes8.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes9.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Module/UnusableNodes_zh-Hans.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Win/AI.Labs.Win.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Win/AI.Labs.Win.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Win/Controllers/WordDocumentViewController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Win/Controllers/WordDocumentViewController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Win/Model.xafml" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Win/Model.xafml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Win/Model_zh-Hans.xafml" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Win/Model_zh-Hans.xafml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.Win/ai.labs.s3db" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.Win/ai.labs.s3db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AI.Labs.sln" beforeDir="false" afterPath="$PROJECT_DIR$/../AI.Labs.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Edge_tts_sharp/EdgeTTS.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Edge_tts_sharp/EdgeTTS.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../LlamaConsole48/App.config" beforeDir="false" afterPath="$PROJECT_DIR$/../LlamaConsole48/App.config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../LlamaConsole48/LlamaConsole48.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../LlamaConsole48/LlamaConsole48.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../LlamaConsoleSharp/LlamaConsoleSharp.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../LlamaConsoleSharp/LlamaConsoleSharp.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../LlamaConsoleSharp/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../LlamaConsoleSharp/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/privateGPT/private_gpt/components/embedding/embedding_component.py" beforeDir="false" afterPath="$PROJECT_DIR$/privateGPT/private_gpt/components/embedding/embedding_component.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/privateGPT/private_gpt/components/llm/llm_component.py" beforeDir="false" afterPath="$PROJECT_DIR$/privateGPT/private_gpt/components/llm/llm_component.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/privateGPT/settings.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/privateGPT/settings.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../OpenAI.SDK/OpenAI.SDK/Managers/OpenAIService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../OpenAI.SDK/OpenAI.SDK/Managers/OpenAIService.cs" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2aUUX5peJGy4q2mPTElpLVmBFv0" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.main.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/dev/AI.Labs/LlamaIndex.Labs&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="LlamaIndex.Labs" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/privateGPT/private_gpt" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/privateGPT/private_gpt/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-50da183f06c8-2887949eec09-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.13135.95" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="839926e7-a39b-4a3d-814b-e5552a3967cd" name="更改" comment="" />
+      <created>1704372687980</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1704372687980</updated>
+      <workItem from="1704372688983" duration="3615000" />
+      <workItem from="1704412114327" duration="5236000" />
+      <workItem from="1705328934426" duration="417000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/venv/Lib/site-packages/transformers/models/auto/tokenization_auto.py</url>
+          <line>750</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/LlamaIndex_Labs$main.coverage" NAME="main 覆盖结果" MODIFIED="1704425110624" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/privateGPT/private_gpt" />
+  </component>
+</project>

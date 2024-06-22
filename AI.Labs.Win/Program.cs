@@ -32,7 +32,10 @@ static class Program
     public static int Main(string[] args)
     {
 
-        //AITask.RunAsync().Wait();
+        //using (var game = new Game1())
+        //    game.Run();
+
+        //return 0;
 
 
         if (ContainsArgument(args, "help") || ContainsArgument(args, "h"))
