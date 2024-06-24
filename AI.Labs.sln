@@ -19,7 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		VideoScript.csx = VideoScript.csx
-		小约翰写作方法素材整理.xlsx = 小约翰写作方法素材整理.xlsx
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pinyin4net", "Pinyin4net\Pinyin4net.csproj", "{35922882-85B8-4745-936D-C76505ED00A5}"
