@@ -1,0 +1,639 @@
+﻿// --------------------------------------------------------------------------------------
+// 
+// ChatGPT_APIMZ.js v1.2
+//
+// 版权所有 (c) kotonoha*（https://aokikotori.com/）
+// 本软件在MIT许可下发布。
+// 许可证详情请见：http://opensource.org/licenses/mit-license.php
+//
+// 2023/04/13 ver1.0β 插件公开
+// 2023/04/28 ver1.07 功能添加、修正
+//				－添加了支持问题和支持回答。
+//				－将助手角色的生成调整到回答时进行。
+//				－当窗口的滚动条在顶部时，Enter键可以起作用。
+//				－可以通过光标键操作窗口的滚动条。
+// 2023/04/29 ver1.08 功能添加、修正
+//				－除了memory_talk的回答之外，也反映支持问题和支持回答。
+//				－添加并修正了帮助内容。
+// 2023/05/01 ver1.09 功能修正
+//				－提前了消息窗口的显示时机。
+//				－修复了从保存数据重新开始时，memory_talk的第一次对话无法响应的故障。
+// 2023/05/05 ver1.10 功能修正
+//				－修复了当超过memory_talk的设置次数时，system角色被删除的故障。
+// 2023/05/06 ver1.11 功能修正
+//				－修复了不使用memory_talk的回答无法进入变量的故障。
+//				－调整了等待回答的处理。
+// 2023/05/09 ver1.2 功能添加
+//				－可以在插件参数中设置自定义字体。
+//				－可以在插件命令中设置角色名、脸图以及索引。
+//
+// --------------------------------------------------------------------------------------
+/*
+ * @target MZ
+ * @plugindesc 与ChatGPT API通信，让AI为角色生成对话的插件
+ * @author kotonoha*
+ * @url https://github.com/kotonoha0109/kotonoha_tkoolMZ_Plugins/blob/main/plugins/ChatGPT_APIMZ.js
+ *
+ * @param ChatGPT_Model
+ * @type string
+ * @default gpt-3.5-turbo
+ * @desc ChatGPT的AI模型
+ *
+ * @param ChatGPT_URL
+ * @type string
+ * @default https://api.openai.com/v1/chat/completions
+ * @desc ChatGPT的URL
+ * 如果使用服务器端，则为该文件的URL
+ *
+ * @param ChatGPT_APIkey
+ * @type string
+ * @default sk-
+ * @desc ChatGPT的API密钥（纯数字为变量ID，字符串则为API密钥）
+ * ※可以将API密钥存储在变量中。
+ *
+ * @param UserMessageVarId
+ * @type variable
+ * @default 1
+ * @desc 存储玩家问题的变量ID
+ *
+ * @param AnswerMessageVarId
+ * @type variable
+ * @default 2
+ * @desc 存储AI答案的变量ID
+ *
+ * @param MemoryMessageVarId
+ * @type variable
+ * @default 3
+ * @desc 存储对话历史的变量ID
+ *
+ * @param VisibleSwitchID
+ * @type switch
+ * @default 
+ * @desc 隐藏答案的开关ID
+ * 当只想记录答案而不显示时使用。
+ *
+ * @param BrStr
+ * @type boolean
+ * @default true
+ * @desc 自动换行
+ * 如果回答中包含换行码，则执行换行处理。
+ *
+ * @param ReplaceStr
+ * @type string
+ * @default 
+ * @desc 过滤字符
+ * 逐个字符判断。例如写入"\"会隐藏引号。
+ *
+ * @param SystemMessage
+ * @type multiline_string
+ * @default 请用日语回答。
+ * @desc 对AI的通用指令（如“用日语书写”或“简洁地总结在120字内”）
+ *
+ * @param FontFileName
+ * @desc 指定使用的字体文件名。
+ * 包括扩展名。
+ * @type string
+ * @default 
+ * 
+ * @command chat
+ * @text 发送聊天消息
+ * @desc 向API发送查询的命令
+ *
+ * @arg system
+ * @type multiline_string
+ * @default 
+ * @desc 对该事件的指示
+ *
+ * @arg message
+ * @type multiline_string
+ * @default 
+ * @desc 该事件的问题内容
+ * 当CustomQuestionMessageVarId为0或变量为空时，使用此问题。
+ *
+ * @arg message_before
+ * @type multiline_string
+ * @default 
+ * @desc 在问题之前添加的内容
+ * 用于补充说明。
+ * 
+ * @arg message_after
+ * @type multiline_string
+ * @default
+ * @desc 在问题之后添加的内容
+ * 用于补充说明。
+ * 
+ * @arg displayHeader
+ * @type string
+ * @default
+ * @desc 在回答前显示的内容
+ * 写入"userMessage"会替换为问题(message)内容。
+ * 
+ * @arg temperature
+ * @type Number
+ * @default 1
+ * @desc 采样温度（0～1）
+ * 值越低相关性越高，越高则产生更多样化的词汇
+ *
+ * @arg top_p
+ * @type Number
+ * @default 0.9
+ * @desc 文本多样性（0～1）
+ * 值越低一致性越高，越高则文本越多样
+ *
+ * @arg max_tokens
+ * @type Number
+ * @default 512
+ * @desc AI回答的最大令牌数（gpt-3.5-turbo最高4096）
+ * 日语每字符约等于2～3个令牌
+ *
+ * @arg memory_talk
+ * @type Number
+ * @default 10
+ * @desc 对话历史保存量
+ * 记忆的对话轮数（一次提问+回答计为1）
+ *
+ * @arg CuatomQuestionMessageVarId
+ * @type variable
+ * @default
+ * @desc 用于存储对该事件问题的变量ID
+ * 空则使用插件参数设置。
+ *
+ * @arg CustomAnswerMessageVarId
+ * @type variable
+ * @default
+ * @desc 用于存储该事件答案的变量ID
+ * 空则使用插件参数设置。
+ *
+ * @arg CustomMemoryMessageVarId
+ * @type variable
+ * @default
+ * @desc 用于存储该事件对话历史的变量ID
+ *
+ * @arg support_message
+ * @type multiline_string
+ * @default
+ * @desc 支持问题
+ * 创建对事件问题的示例。
+ * 
+ * @arg support_answer
+ * @type multiline_string
+ * @default
+ * @desc 支持答案
+ * 对支持问题的示例回答。
+ * 
+ * @arg characterName
+ * @type string
+ * @default
+ * @desc 角色名称
+ * 在消息窗口上显示。
+ * 
+ * @arg faceImage
+ * @type file
+ * @default
+ * @desc 角色面部图形
+ * 不显示时留空。
+ * @dir img/faces/
+ * 
+ * @arg faceIndex
+ * @type number
+ * @default
+ * @desc 面部图形索引
+ * 按照MZ的规则，左上为0～3，右下为4～7。
+ * 
+ * @help 该插件通过与ChatGPT API通信，让AI为游戏中的角色生成对话。
+ * 需要自行获取并设置专属的API密钥。
+ *
+ * 【注意事项】
+ * 请确保使用游戏玩家自己的API密钥！
+ * 直接在作品中公开API密钥会导致密钥泄露！
+ * 因API密钥泄露或使用费用产生的任何问题，责任自负！
+ * 
+ * 【基本使用方法】
+ * (1) 将从OpenAI获取的API密钥设置到ChatGPT_APIkey中。
+ *
+ * (2) 至少需要3个空闲变量。
+ *   - 临时存放玩家问题的变量ID，
+ *     请设置到UserMessageVarId。
+ *   - 临时存放AI答案的变量ID，
+ *     请设置到AnswerMessageVarId。
+ *   - 临时存放对话历史的变量ID，
+ *     请设置到MemoryMessageVarId。
+ *
+ * (3) 在想要AI生成台词的事件中，使用插件命令选择
+ * "ChatGPT_APIMZ"并进行角色设置。
+ * 
+ * # system
+ * 对事件的具体指示，作为插件参数SystemMessage的补充。
+ *
+ * 例如，如果参数已设为“用日语回答”，则在此可添加如“但请使用敬语”的补充说明。
+ * 
+ *
+ * # message
+ * 询问AI的问题内容。
+ * 如果使用CuatomQuestionMessageVarId存储问题，则此栏应为空。
+ * 
+ * 
+ * # message_before, message_after
+ * 当使用变量输入问题时，message会被变量值取代。
+ * system中的内容在GPT-3模型中可能被忽略，因此，
+ * 如果AI未按预期回答，可尝试在这两个字段中加入前后文。
+ * 在问题前后添加的文字内容，AI将据此生成回答。
+ * 例如，若变量值为“你好”，message_before设为“请问”，
+ * message_after设为“吗？”，那么AI面对的问题将是“请问你好吗？”。
+ * 
+ * 
+ * # displayHeader
+ * 消息窗口中显示的标题。
+ * 要显示变量ID1的值，输入\V[1]即可。
+ * 或者，输入"userMessage"将仅显示去除message_before和message_after后的质问。
+ * 
+ * # temperature, top_p
+ * 控制AI回答多样性的数值。
+ * 请设置0到1之间的数值。
+ * 
+ * # max_tokens
+ * 设置最大令牌数（日语每字符大约2～3令牌）。
+ * 设定文字长度上限，但如果响应字符数超过最大令牌数，则回答会被截断。
+ *
+ * # memory_talk
+ * 对话历史保存的数量。
+ * 设置的数值代表保存的交互轮数。
+ * 数值越大，越能进行连贯对话，但也会增加API调用成本。
+ * 无需保存历史时，设置为0。
+ *
+ * # CuatomQuestionMessageVarId
+ * 存储事件问题的变量ID。
+ * 如果问题已通过如姓名输入窗口或聊天窗口输入并存储在变量中，请指定该变量ID。
+ * ※当同时设置此变量和message时，message优先。
+ * ※这与插件参数UserMessageVarId不同。
+ *
+ * # CustomAnswerMessageVarId
+ * 存储该事件答案的变量ID。
+ * 答案会保存至插件参数AnswerMessageVarId中，但若希望为每个事件单独记录答案，
+ * 则指定此变量ID。
+ *
+ * # CustomMemoryMessageVarId
+ * 存储该事件对话历史的变量ID。
+ * 作为API通信所需的数组被记录，无法直接调用。
+ * 若要手动清除历史，请清空此变量ID对应的变量。
+ * 
+ * # support_message, support_answer
+ * 创建对话示例。
+ * AI在回答时会参考这些示例。
+ * 如：support_message设为“自我介绍”，
+ * support_answer设为“我是暹罗猫！五岁喵~”。
+ * 这样设置后，后续对话中AI更倾向于以第一人称“我”和结尾词“喵~”来回答。
+ * 
+ * # characterName, faceName, faceIndex
+ * 设置角色名、面部图形文件名及其显示索引。
+ * 面部图形文件位于img/faces/目录中，输入文件名。
+ * 不显示面部图形则留空。
+ * 索引从左到右，第一行0～3，第二行4～7。
+ * 
+ * 【关于网页版的运行】
+ * 本插件生成的消息窗口使用了HTML。
+ * 在网页浏览器中游玩时，消息窗口可能会超出游戏区域显示。
+ * 此时，请另外准备一个包含了iframe并加载了由Maker生成的index.html的HTML文件。
+ * 
+ * 【消息窗口的自定义】
+ * 若要自定义消息窗口的宽度、高度、位置、背景色等，请修改
+ * function createStreamingTextElement() 的内容。
+ * 请使用窗口调整工具。
+ * ▼窗口调整工具
+ * https://aokikotori.com/chatgpt_apimz_window/
+ * 
+ * 【与服务器端的联动】
+ * 可以在服务器上放置PHP、Python等文件，并将API密钥等请求头信息保密。
+ * ▼PHP示例见：
+ * https://github.com/kotonoha0109/kotonoha_tkoolMZ_Plugins/blob/main/plugins/php/request.php
+ * 
+ * 将API密钥配置于PHP文件中，上传至服务器后，将
+ * 插件参数中的ChatGPT_URL设置为PHP文件的URL。
+ * 插件参数中的ChatGPT_APIkey不再需要，请务必删除。
+ *
+ */
+
+ // --------------------------------------------------------------------------------------
+//
+// ChatGPT_APIMZ.js v1.2
+//
+// Copyright (c) kotonoha*（https://aokikotori.com/）
+// This software is released under the MIT License.
+// http://opensource.org/licenses/mit-license.php
+//
+// 2023/04/13 ver1.0β プラグイン公開
+// 2023/04/28 ver1.07 仕様追加、修正
+//				－サポート質問、サポート回答を追加しました。
+//				－assistantロールの生成を回答のタイミングで行う様にしました。
+//				－ウィンドウのスクロールバーが上にある時、Enterキーが機能する様にしました。
+//				－ウィンドウのスクロールバーをカーソルキーで操作出来る様にしました。
+// 2023/04/29 ver1.08 仕様追加、修正
+//				－memory_talk以外の回答にも、サポート質問、サポート回答を反映する様にしました。
+//				－ヘルプを追記、修正しました。
+// 2023/05/01 ver1.09 仕様修正
+//				－メッセージウィンドウの表示タイミングを早めました。
+//				－セーブデータから再開した時に、memory_talkの最初の会話が反応しない不具合を修正しました。
+// 2023/05/05 ver1.10 仕様修正
+//				－memory_talkの設定回数を超えた時にsystemロールが削除される不具合を修正しました。
+// 2023/05/06 ver1.11 仕様修正
+//				－memory_talkを使わない回答が変数に入らない不具合を修正しました。
+//				－回答待機中の処理を調整しました。
+// 2023/05/09 ver1.2 仕様追加
+//				－プラグインパラメータにカスタムフォントを設定できる様にしました。
+//				－プラグインコマンドにキャラ名、顔グラフィック、およびインデックスを設定できる様にしました。
+//
+// --------------------------------------------------------------------------------------
+/*:
+ * @target MZ
+ * @plugindesc ChatGPT APIと通信し、AIに台詞を作成してもらうプラグイン
+ * @author kotonoha*
+ * @url https://github.com/kotonoha0109/kotonoha_tkoolMZ_Plugins/blob/main/plugins/ChatGPT_APIMZ.js
+ *
+ * @param ChatGPT_Model
+ * @type string
+ * @default gpt-3.5-turbo
+ * @desc ChatGPTのAIモデル
+ *
+ * @param ChatGPT_URL
+ * @type string
+ * @default https://api.openai.com/v1/chat/completions
+ * @desc ChatGPTのURL
+ * サーバーサイドを利用する場合はそのファイルのURL
+ *
+ * @param ChatGPT_APIkey
+ * @type string
+ * @default sk-
+ * @desc ChatGPTのAPIキー（数値だけの場合は変数ID、文字列の場合はAPIキー）
+ * ※変数内にAPIキーを格納することが出来ます。
+ *
+ * @param UserMessageVarId
+ * @type variable
+ * @default 1
+ * @desc プレイヤーの質問を格納する変数ID
+ *
+ * @param AnswerMessageVarId
+ * @type variable
+ * @default 2
+ * @desc AIからの回答を格納する変数ID
+ *
+ * @param MemoryMessageVarId
+ * @type variable
+ * @default 3
+ * @desc 回答履歴を格納する変数ID
+ *
+ * @param VisibleSwitchID
+ * @type switch
+ * @default 
+ * @desc 回答を非表示にするスイッチID
+ * 回答を表示せず、変数に格納したいだけの時に。
+ *
+ * @param BrStr
+ * @type boolean
+ * @default true
+ * @desc 自動改行
+ * 回答に改行コードが出力された時に改行処理を行います。
+ *
+ * @param ReplaceStr
+ * @type string
+ * @default 
+ * @desc NG文字
+ * 1文字ずつ判定。例えば「」と書くとカギ括弧が非表示になります。
+ *
+ * @param SystemMessage
+ * @type multiline_string
+ * @default Please answer in Japanese.
+ * @desc AIへの共通の指示（「日本語で書いて」とか「120文字以内でまとめて」とか）
+ *
+ * @param FontFileName
+ * @desc 使用するフォントのファイル名を指定します。
+ * 拡張子まで入れてください。
+ * @type string
+ * @default 
+ * 
+ * @command chat
+ * @text Send Chat Message
+ * @desc APIに問い合わせるコマンド
+ *
+ * @arg system
+ * @type multiline_string
+ * @default 
+ * @desc このイベントへの指示
+ *
+ * @arg message
+ * @type multiline_string
+ * @default 
+ * @desc このイベントへの質問　※CuatomQuestionMessageVarIdが0か、
+ * 変数が空の時この質問が反映されます。
+ *
+ * @arg message_before
+ * @type multiline_string
+ * @default 
+ * @desc この質問の手前に付加する内容
+ * 補足事項を入力する際に。
+ * 
+ * @arg message_after
+ * @type multiline_string
+ * @default
+ * @desc この質問の後ろに付加する内容
+ * 補足事項を入力する際に。
+ * 
+ * @arg displayHeader
+ * @type string
+ * @default
+ * @desc 回答の手前に表示する内容
+ * userMessage を入れると質問(message)に置き換えられます。
+ * 
+ * @arg temperature
+ * @type Number
+ * @default 1
+ * @desc サンプリング温度（0～1）
+ * 値が低いほど関連性が高くなり、高いほど多様な単語を生成
+ *
+ * @arg top_p
+ * @type Number
+ * @default 0.9
+ * @desc 文章の多様性（0～1）
+ * 値が低いほど一貫性が向上し、高いほど文章が多様に
+ *
+ * @arg max_tokens
+ * @type Number
+ * @default 512
+ * @desc AIが回答するトークンの最大数（gpt-3.5-turboは4096まで）
+ * 日本語1文字＝2～3トークン程度
+ *
+ * @arg memory_talk
+ * @type Number
+ * @default 10
+ * @desc 会話履歴の保存量
+ * 会話内容をAIが記憶する数（1回の質問＋回答を 1 とする）
+ *
+ * @arg CuatomQuestionMessageVarId
+ * @type variable
+ * @default
+ * @desc このイベントへの質問を格納する変数ID
+ * 空の場合はプラグインパラメータの設定が使用されます。
+ *
+ * @arg CustomAnswerMessageVarId
+ * @type variable
+ * @default
+ * @desc このイベントの回答を格納する変数ID
+ * 空の場合はプラグインパラメータの設定が使用されます。
+ *
+ * @arg CustomMemoryMessageVarId
+ * @type variable
+ * @default
+ * @desc このイベントの履歴保存を格納する変数ID
+ *
+ * @arg support_message
+ * @type multiline_string
+ * @default
+ * @desc サポート質問
+ * このイベントへの質問例を作成します。
+ * 
+ * @arg support_answer
+ * @type multiline_string
+ * @default
+ * @desc サポート回答
+ * サポート質問に対する回答例を作成します。
+ * 
+ * @arg characterName
+ * @type string
+ * @default
+ * @desc キャラクター名
+ * メッセージウィンドウ上に表示します。
+ * 
+ * @arg faceImage
+ * @type file
+ * @default
+ * @desc キャラクターの顔グラフィック
+ * 非表示の場合は空欄にしてください。
+ * @dir img/faces/
+ * 
+ * @arg faceIndex
+ * @type number
+ * @default
+ * @desc 顔グラフィックのインデックス
+ * ツクールMZの仕様では左上が0〜3、右下が4〜7になります。
+ * 
+ * @help ChatGPT APIと通信して、AIに台詞を作成してもらうプラグインです。
+ * 独自のAPIキーをセットする必要があります。
+ *
+ * 【注意】
+ * APIキーは必ずゲームプレイヤーが所有する物を使用する様にしてください！
+ * 作品に登録したまま公開すると、作者のAPIキーが漏洩します！
+ * APIキーの漏洩や利用料金に関するトラブルは自己責任です！
+ * 
+ * 【基本的な使い方】
+ * (1) OpenAIで取得したAPIキーを、ChatGPT_APIkey にセットしてください。
+ *
+ * (2) 空き変数IDが最低3つ必要です。
+ * ・プレイヤーの質問を一時的に変数に入れます。
+ * 　空いている変数IDを UserMessageVarId にセットしてください。
+ * ・AIからの回答を一時的に変数に入れます。
+ * 　空いている変数IDを AnswerMessageVarId にセットしてください。
+ * ・回答履歴を一時的に変数に入れます。
+ * 　空いている変数IDを MemoryMessageVarId にセットしてください。
+ *
+ * (3) AIに台詞を作ってもらいたいイベントに、プラグインコマンドで
+ * 「ChatGPT_APIMZ」を選び、キャラクターの設定を登録してください。
+ * 
+ * # system
+ * イベントへの指示です。プラグインパラメータの SystemMessage に追記されますので、
+ * このイベントには、それに補足したい指示を与えます。
+ * たとえばパラメータ側に「日本語で回答して」と設定されている場合、
+ * このイベントでは「ただし、カタカナで回答して」といった補足指示が可能です。
+ *
+ * # message
+ * イベントへの質問です。AIに回答してもらいたい質問を入力します。
+ * ただし、変数CuatomQuestionMessageVarId に質問を入力して使う場合は、
+ * この項目は空にしてください。
+ * 
+ * # message_before, message_after
+ * イベントへの質問に変数を使う時、messageは変数の値に置き換えられてしまいます。
+ * systemに記述した内容はGPT-3モデルでは重要視されないため、
+ * 命令に従わない場合は、こちらに入力してみてください。
+ * 変数の前後に、messageロールに付加する文字列を設定します。
+ * たとえば、変数の値が「こんにちは」で、message_beforeが「あなたは」、
+ * message_afterが「ですか？」の場合、AIには「あなたはこんにちはですか？」と
+ * 質問されます。
+ * 
+ * # displayHeader
+ * メッセージウィンドウに表示するヘッダーです。
+ * 変数ID1の値を表示する場合は、\V[1]と入力してください。
+ * また、userMessage を入力すると、message_before、message_afterを
+ * 除いた質問が表示されます。
+ * 
+ * # temperature, top_p
+ * それぞれ、AIからの回答における多様性を決める数値です。
+ * 0～1の数値を設定してください。
+ * 
+ * # max_tokens
+ * 最大トークン数（日本語1文字＝2～3トークン程度）を設定します。
+ * 文字数の上限を決められますが、レスポンスの文字数より最大トークン数が
+ * 低い場合は、文章の途中で切れます。
+ *
+ * # memory_talk
+ * 履歴保存の数です。数値分のやり取りを保存します。
+ * 設定する数値が 5 ならば、直前5回分のやり取りを保存します。
+ * 多ければ多いほど話題に沿った会話が可能ですが、
+ * APIに履歴ごとトークンが送信されるため、利用料金が高くなる事があります。
+ * 保存が必要無いなら 0 を設定します。
+ *
+ * # CuatomQuestionMessageVarId
+ * イベントへの質問が入力されている変数IDです。
+ * 名前入力ウィンドウやチャットウィンドウでの質問入力などで、
+ * 変数内に質問が保存されている場合、その変数IDを指定してください。
+ * ※この変数とmessageが同時に設定されている時は、messageが優先されます。
+ * ※プラグインパラメータの UserMessageVarId とは別です。
+ *
+ * # CustomAnswerMessageVarId
+ * このイベントの回答が格納されている変数IDです。
+ * プラグインパラメータの AnswerMessageVarId に保存されますが、
+ * イベントごとに回答を個別に記録したい場合、この変数IDを指定してください。
+ *
+ * # CustomMemoryMessageVarId
+ * このイベントの履歴が保存されている変数IDです。
+ * APIに通信するための配列としてが記録されていますので、
+ * 直接的なコールは出来ません。
+ * 履歴を手動で削除したい場合はこの変数IDの変数を空にしてください。
+ * 
+ * # support_message, support_answer
+ * 会話の例文を作成します。
+ * AIが返答する際、この例文を参考にして返答します。
+ * support_messageに「自己紹介」
+ * support_answerに「アタシはシャム猫！　５歳にゃっ！」
+ * この様に入力すると、次の会話以降はsupport_answerの例文を参考にするので、
+ * 一人称が「アタシ」で、語尾を「にゃっ」にした返答がされやすくなります。
+ * 
+ * # characterName, faceName, faceIndex
+ * キャラクターの名前、顔グラフィックと、その表示インデックスを設定します。
+ * 顔グラフィックは、img/faces/にあるファイル名を入力してください。
+ * 顔グラフィックを表示しない場合は、空にしてください。
+ * インデックスは、顔グラフィックの左から何番目かを設定します。
+ * 一段目は0〜3、二段目は4〜7となります。
+ * 
+ * 【ブラウザ版での動作について】
+ * 本プラグインで生成されるメッセージウィンドウはHTMLを利用しています。
+ * Webブラウザでプレイする際、メッセージウィンドウがゲーム領域外に
+ * 大きくはみ出して表示される事がありますので、
+ * その際は iframeを記述したHTMLを別途用意し、
+ * その中でツクールが生成したindex.htmlを読み込んでください。
+ * 
+ * 【メッセージウィンドウのカスタマイズ】
+ * メッセージウィンドウの幅や高さ、位置、背景色をカスタマイズしたい場合は、
+ * function createStreamingTextElement() の中身を修正してください。
+ * ウィンドウ調整ツールをご利用ください。
+ * ▼ウィンドウ調整ツール
+ * https://aokikotori.com/chatgpt_apimz_window/
+ * 
+ * 【サーバーサイドとの連携】
+ * サーバー上にPHPやPython等のファイルを設置し、
+ * APIキーなど、ChatGPTへのリクエストヘッダをシークレットにする事が出来ます。
+ * ▼PHPサンプルはこちら
+ * https://github.com/kotonoha0109/kotonoha_tkoolMZ_Plugins/blob/main/plugins/php/request.php
+ * 
+ * PHPファイルにAPIキーを設定し、サーバにアップ後、
+ * プラグインパラメータのChatGPT_URLをPHPファイルのURLにしてください。
+ * プラグインパラメータのChatGPT_APIkeyは不要です。必ず削除願います。
+ *
+ */

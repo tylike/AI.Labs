@@ -1,0 +1,6 @@
+[
+null,
+{"id":1,"autoRemovalTiming":0,"chanceByDamage":100,"iconIndex":1,"maxTurns":1,"message1":"%1は倒れた！","message2":"%1を倒した！","message3":"","message4":"%1は立ち上がった！","minTurns":1,"motion":3,"name":"戦闘不能","note":"ステート1番はHP0のときに付加されます。","overlay":0,"priority":100,"releaseByDamage":false,"removeAtBattleEnd":false,"removeByDamage":false,"removeByRestriction":false,"removeByWalking":false,"restriction":4,"stepsToRemove":100,"traits":[{"code":23,"dataId":9,"value":0}],"messageType":1},
+{"id":2,"autoRemovalTiming":2,"chanceByDamage":100,"iconIndex":0,"maxTurns":1,"message1":"","message2":"","message3":"","message4":"","minTurns":1,"motion":0,"name":"防御","note":"","overlay":0,"priority":0,"removeAtBattleEnd":true,"removeByDamage":false,"removeByRestriction":true,"removeByWalking":false,"restriction":0,"stepsToRemove":100,"traits":[{"code":62,"dataId":1,"value":0}],"messageType":1},
+{"id":3,"autoRemovalTiming":0,"chanceByDamage":100,"iconIndex":0,"maxTurns":1,"message1":"","message2":"","message3":"","message4":"","minTurns":1,"motion":0,"name":"不死身","note":"","overlay":0,"priority":0,"removeAtBattleEnd":true,"removeByDamage":false,"removeByRestriction":false,"removeByWalking":false,"restriction":0,"stepsToRemove":100,"traits":[{"code":14,"dataId":1,"value":0}],"messageType":1}
+]

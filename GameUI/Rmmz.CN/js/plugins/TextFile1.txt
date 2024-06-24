@@ -1,0 +1,545 @@
+﻿// --------------------------------------------------------------------------
+// 
+// InputDialog_Custom.js ver1.03b
+//
+// Copyright (c) kotonoha*（https://aokikotori.com/）
+// 本软件以 MIT 许可证发布。
+// http://opensource.org/licenses/mit-license.php
+//
+// 2023/04/27 ver1.0 发布
+// 2023/04/28 ver1.01 规格添加
+//             - 删除多余的插件参数
+//             - 启用方向键移动
+//             - 在帮助中添加有关等待的描述
+// 2023/04/29 ver1.02 规格添加
+//             - 添加可指定最大字符数的功能
+//             - 删除多余代码
+// 2023/04/29 ver1.03 规格添加
+//             - 添加可指定字体文件的功能
+// 2023/05/01 ver1.03b 规格修正
+//             - 为避免字体重复加载，已注释相关代码
+// 2023/05/05 ver1.04 规格修正
+//             - 改善窗口输出时的等待处理
+// 
+// --------------------------------------------------------------------------
+/*:
+ * @target MZ
+ * @plugindesc 在游戏中放置文本输入窗口的插件
+ * 可创建自定义的输入窗口。
+ *
+ * @param fontFileName
+ * @text 字体文件名
+ * @desc 指定要使用的字体文件名。
+ * 包括扩展名。
+ * @type string
+ * @default 
+ * 
+ * @param formWidth
+ * @text 窗口宽度
+ * @desc 指定窗口的宽度。
+ * @default 400px
+ * 
+ * @param formHeight
+ * @text 窗口高度
+ * @desc 指定窗口的高度。
+ * @default auto
+ *
+ * @param formBackgroundColor
+ * @text 窗口背景色
+ * @desc 指定窗口的背景色。
+ * @default rgba(0, 0, 0, 0.5)
+ *
+ * @param formBorder
+ * @text 窗口边框信息
+ * @desc 指定窗口的边框信息。
+ * @default 3px solid #fff
+ *
+ * @param formBorderRadius
+ * @text 窗口边框半径
+ * @desc 指定窗口的边框半径。
+ * @default 5px
+ *
+ * @param formPadding
+ * @text 窗口内边距
+ * @desc 指定窗口的内边距。
+ * @default 30px
+ *
+ * @param labelTextColor
+ * @text 文本颜色
+ * @desc 指定文本的颜色。
+ * @default #FFFFFF
+ * 
+ * @param labelTextFontSize
+ * @text 文本字体大小
+ * @desc 指定文本的字体大小。
+ * @default 18px
+ *
+ * @param labelTextMarginBottom
+ * @text 文本底部边距
+ * @desc 指定文本的底部边距。
+ * @default 10px
+ *
+ * @param inputWidth
+ * @text 文本框宽度
+ * @desc 指定文本框的宽度。
+ * @default 100%
+ *
+ * @param inputHeight
+ * @text 文本框高度
+ * @desc 指定文本框的高度。
+ * @default 80px
+ * 
+ * @param inputFontSize
+ * @text 文本框字体大小
+ * @desc 指定文本框的字体大小。
+ * @default 18px
+ * 
+ * @param inputColor
+ * @text 文本框颜色
+ * @desc 指定文本框的颜色。
+ * @default #FFFFFF
+ *  
+ * @param inputBackgroundColor
+ * @text 文本框背景色
+ * @desc 指定文本框的背景色。
+ * @default rgba(0, 0, 0, 0.5)
+ * 
+ * @param inputBorder
+ * @text 文本框边框信息
+ * @desc 指定文本框的边框信息。
+ * @default 1px solid #fff
+ * 
+ * @param inputBorderRadius
+ * @text 文本框边框半径
+ * @desc 指定文本框的边框半径。
+ * @default 5px
+ *
+ * @param inputPadding
+ * @text 文本框内边距
+ * @desc 指定文本框的内边距。
+ * @default 5px
+ * 
+ * @param inputFontSize
+ * @text 文本框字体大小
+ * @desc 指定文本框的字体大小。
+ * @default 18px
+ *
+ * @param buttonContainerWidth
+ * @text 按钮容器宽度
+ * @desc 指定按钮容器的宽度。
+ * @default 100%
+ *
+* @param buttonContainerMargin
+* @text 按钮容器边距
+* @desc 指定按钮容器的边距。
+* @default 15px 0 0 0
+* 
+* @param okButtonWidth
+* @text OK按钮宽度
+* @desc 指定OK按钮的宽度。
+* @default 120px
+* 
+* @param okButtonHeight
+* @text OK按钮高度
+* @desc 指定OK按钮的高度。
+* @default 40px
+* 
+* @param okButtonFontSize
+* @text OK按钮字体大小
+* @desc 指定OK按钮的字体大小。
+* @default 18px
+* 
+* @param okButtonColor
+* @text OK按钮文字颜色
+* @desc 指定OK按钮的文字颜色。
+* @default #FFFFFF
+* 
+* @param okButtonBackgroundColor
+* @text OK按钮背景色
+* @desc 指定OK按钮的背景色。
+* @default rgba(0, 0, 0, 0.5)
+* 
+* @param okButtonBorder
+* @text OK按钮边框信息
+* @desc 指定OK按钮的边框信息。
+* @default 1px solid #fff
+*
+* @param okButtonBorderRadius
+* @text OK按钮边框半径
+* @desc 指定OK按钮的边框半径。
+* @default 5px
+*
+* @param okButtonPadding
+* @text OK按钮内边距
+* @desc 指定OK按钮的内边距。
+* @default 5px 10px
+* 
+* @param cancelButtonWidth
+* @text 取消按钮宽度
+* @desc 指定取消按钮的宽度。
+* @default 120px
+* 
+* @param cancelButtonHeight
+* @text 取消按钮高度
+* @desc 指定取消按钮的高度。
+* @default 40px
+*
+* @param cancelButtonFontSize
+* @text 取消按钮字体大小
+* 
+* @desc 指定取消按钮的字体大小。
+* @default 18px
+* 
+* @param cancelButtonColor
+* @text 取消按钮文字颜色
+* @desc 指定取消按钮的文字颜色。
+* @default #FFFFFF
+* 
+* @param cancelButtonBackgroundColor
+* @text 取消按钮背景色
+* @desc 指定取消按钮的背景色。
+* @default rgba(0, 0, 0, 0.5)
+*
+* @param cancelButtonBorder
+* @text 取消按钮边框信息
+* @desc 指定取消按钮的边框信息。
+* @default 1px solid #fff
+*
+* @param cancelButtonBorderRadius
+* @text 取消按钮边框半径
+* @desc 指定取消按钮的边框半径。
+* @default 5px
+*
+* @param cancelButtonPadding
+* @text 取消按钮内边距
+* @desc 指定取消按钮的内边距。
+* @default 5px 10px
+*
+* @param cancelButtonMarginLeft
+* @text 取消按钮左侧边距
+* @desc 指定取消按钮的左侧边距。
+* @default 10px
+*
+* @command openDialog
+* @text 显示文本输入
+* @desc 显示文本输入窗口。
+*
+* @arg varId
+* @text 变量ID
+* @desc 存储输入文本的变量ID
+* @type variable
+* @default
+*
+* @arg defaultText
+* @text 消息
+* @desc 指定提示输入文本的消息。
+* @default 请输入您的文本。
+*
+* @arg defaultValue
+* @text 默认值
+* @desc 指定输入栏显示的初始值。
+* @default
+*
+* @arg okButtonLavel
+* @text OK按钮文字
+* @desc 指定OK按钮的文字。
+* @default OK
+* 
+* @arg cancelButtonLavel
+* @text 取消按钮文字
+* @desc 指定取消按钮的文字。
+* @default 取消
+*
+* @arg maxLength
+* @text 最大字符数
+* @desc 指定可输入的最大字符数。
+* @default 64
+* 
+* @help
+* 在插件命令中选择“InputDialog_Custom”，并设置变量ID、消息和默认值。
+* 游戏屏幕上将显示文本输入窗口，并且可以使用键盘输入文本。
+* 
+* 使用键盘确认输入时，请按Shift键+Enter键而不是Enter键。
+* 方便起见，可以在某处显示此说明。
+* 输入的文本将存储在指定的变量ID中。
+* 如果输入为空或取消，将存储0
+* 
+* 【　！注意！　】
+* 如果在插件命令之后立即执行其他插件或脚本，有可能会同时执行。
+* 如果您希望按顺序执行，请在此插件命令和下一个事件之间插入几帧的等待。
+* 
+*/
+// --------------------------------------------------------------------------
+// 
+// InputDialog_Custom.js ver1.03b
+//
+// Copyright (c) kotonoha*（https://aokikotori.com/）
+// This software is released under the MIT License.
+// http://opensource.org/licenses/mit-license.php
+//
+// 2023/04/27 ver1.0 公開
+// 2023/04/28 ver1.01 仕様追加
+//             ープラグインパラメータに余分な設定があったので削除
+//             ーカーソルキーでの移動を有効化
+//             ーウェイトに関する記述をヘルプに追記
+// 2023/04/29 ver1.02 仕様追加
+//             ー最大文字数を指定できる様に変更
+//             ー余分なコードを削除
+// 2023/04/29 ver1.03 仕様追加
+//             ーフォントファイルを指定できる様に変更
+// 2023/05/01 ver1.03b 仕様修正
+//             ーフォントのロードが重複していたのでコメントアウト
+// 2023/05/05 ver1.04 仕様修正
+//             ーウィンドウ出力中の待機処理を改善
+// 
+// --------------------------------------------------------------------------
+/*:
+ * @target MZ
+ * @plugindesc ゲーム内に文字入力ウィンドウを配置するプラグイン
+ * オリジナルの入力ウィンドウを作成出来ます。
+ *
+ * @param fontFileName
+ * @text フォントファイル名
+ * @desc 使用するフォントのファイル名を指定します。
+ * 拡張子まで入れてください。
+ * @type string
+ * @default 
+ * 
+ * @param formWidth
+ * @text フォームの幅
+ * @desc フォームの幅を指定します。
+ * @default 400px
+ * 
+ * @param formHeight
+ * @text フォームの高さ
+ * @desc フォームの高さを指定します。
+ * @default auto
+ *
+ * @param formBackgroundColor
+ * @text フォームの背景色
+ * @desc フォームの背景色を指定します。
+ * @default rgba(0, 0, 0, 0.5)
+ *
+ * @param formBorder
+ * @text フォームのボーダー情報
+ * @desc フォームのボーダー情報を指定します。
+ * @default 3px solid #fff
+ *
+ * @param formBorderRadius
+ * @text フォームのボーダー半径
+ * @desc フォームのボーダー半径を指定します。
+ * @default 5px
+ *
+ * @param formPadding
+ * @text フォームのパディング
+ * @desc フォームのパディングを指定します。
+ * @default 30px
+ *
+ * @param labelTextColor
+ * @text 表示テキストの文字色
+ * @desc 表示テキストの文字色を指定します。
+ * @default #FFFFFF
+ * 
+ * @param labelTextFontSize
+ * @text 表示テキストの文字サイズ
+ * @desc 表示テキストの文字サイズを指定します。
+ * @default 18px
+ *
+ * @param labelTextMarginBottom
+ * @text 表示テキストの下のマージン
+ * @desc 表示テキストの下のマージンを指定します。
+ * @default 10px
+ *
+ * @param inputWidth
+ * @text テキストフォームの幅
+ * @desc テキストフォームの幅を指定します。
+ * @default 100%
+ *
+ * @param inputHeight
+ * @text テキストフォームの高さ
+ * @desc テキストフォームの高さを指定します。
+ * @default 40px
+ * 
+ * @param inputFontSize
+ * @text テキストフォームの文字サイズ
+ * @desc テキストフォームの文字サイズを指定します。
+ * @default 18px
+ * 
+ * @param inputColor
+ * @text テキストフォームの文字色
+ * @desc テキストフォームの文字色を指定します。
+ * @default #FFFFFF
+ *  
+ * @param inputBackgroundColor
+ * @text テキストフォームの背景色
+ * @desc テキストフォームの背景色を指定します。
+ * @default rgba(0, 0, 0, 0.5)
+ * 
+ * @param inputBorder
+ * @text テキストフォームのボーダー情報
+ * @desc テキストフォームのボーダーを指定します。
+ * @default 1px solid #fff
+ * 
+ * @param inputBorderRadius
+ * @text テキストフォームのボーダー半径
+ * @desc テキストフォームのボーダー半径を指定します。
+ * @default 5px
+ *
+ * @param inputPadding
+ * @text テキストフォームのパディング
+ * @desc テキストフォームのパディングを指定します。
+ * @default 5px
+ * 
+ * @param inputFontSize
+ * @text テキストフォームのフォントサイズ
+ * @desc テキストフォームのフォントサイズを指定します。
+ * @default 18px
+ *
+ * @param buttonContainerWidth
+ * @text ボタンコンテナの幅
+ * @desc ボタンコンテナの幅を指定します。
+ * @default 100%
+ * 
+ * @param buttonContainerMargin
+ * @text ボタンコンテナのマージン
+ * @desc ボタンコンテナのマージンを指定します。
+ * @default 15px 0 0 0
+ * 
+ * @param okButtonWidth
+ * @text OKボタンの幅
+ * @desc OKボタンの幅を指定します。
+ * @default 120px
+ * 
+ * @param okButtonHeight
+ * @text OKボタンの高さ
+ * @desc OKボタンの高さを指定します。
+ * @default 40px
+ * 
+ * @param okButtonFontSize
+ * @text OKボタンの文字サイズ
+ * @desc OKボタンの文字サイズを指定します。
+ * @default 18px
+ * 
+ * @param okButtonColor
+ * @text OKボタンの文字色
+ * @desc OKボタンの文字色を指定します。
+ * @default #FFFFFF
+ * 
+ * @param okButtonBackgroundColor
+ * @text OKボタンの背景色
+ * @desc OKボタンの背景色を指定します。
+ * @default rgba(0, 0, 0, 0.5)
+ * 
+ * @param okButtonBorder
+ * @text OKボタンのボーダー情報
+ * @desc OKボタンのボーダーを指定します。
+ * @default 1px solid #fff
+ *
+ * @param okButtonBorderRadius
+ * @text OKボタンのボーダー半径
+ * @desc OKボタンのボーダー半径を指定します。
+ * @default 5px
+ *
+ * @param okButtonPadding
+ * @text OKボタンのパディング
+ * @desc OKボタンのパディングを指定します。
+ * @default 5px 10px
+ * 
+ * @param cancelButtonWidth
+ * @text キャンセルボタンの幅
+ * @desc キャンセルボタンの幅を指定します。
+ * @default 120px
+ * 
+ * @param cancelButtonHeight
+ * @text キャンセルボタンの高さ
+ * @desc キャンセルボタンの高さを指定します。
+ * @default 40px
+ *
+ * @param cancelButtonFontSize
+ * @text キャンセルボタン
+ * @text キャンセルボタンの文字サイズ
+ * @desc キャンセルボタンの文字サイズを指定します。
+ * @default 18px
+ * 
+ * @param cancelButtonColor
+ * @text キャンセルボタンの文字色
+ * @desc キャンセルボタンの文字色を指定します。
+ * @default #FFFFFF
+ * 
+ * @param cancelButtonBackgroundColor
+ * @text キャンセルボタンの背景色
+ * @desc キャンセルボタンの背景色を指定します。
+ * @default rgba(0, 0, 0, 0.5)
+ *
+ * @param cancelButtonBorder
+ * @text キャンセルボタンのボーダー情報
+ * @desc キャンセルボタンのボーダー情報を指定します。
+ * @default 1px solid #fff
+ *
+ * @param cancelButtonBorderRadius
+ * @text キャンセルボタンのボーダー半径
+ * @desc キャンセルボタンのボーダー半径を指定します。
+ * @default 5px
+ *
+ * @param cancelButtonPadding
+ * @text キャンセルボタンのパディング
+ * @desc キャンセルボタンのパディングを指定します。
+ * @default 5px 10px
+ *
+ * @param cancelButtonMarginLeft
+ * @text キャンセルボタンの左マージン
+ * @desc キャンセルボタンの左マージンを指定します。
+ * @default 10px
+ *
+ * @command openDialog
+ * @text テキスト入力を表示
+ * @desc テキスト入力ウィンドウを表示します。
+ *
+ * @arg varId
+ * @text 変数ID
+ * @desc 入力されたテキストを格納する変数ID
+ * @type variable
+ * @default
+ *
+ * @arg defaultText
+ * @text メッセージ
+ * @desc テキスト入力を促すメッセージを指定します。
+ * @default Please enter your text.
+ *
+ * @arg defaultValue
+ * @text デフォルト値
+ * @desc 入力欄に表示する初期値を指定します。
+ * @default
+ *
+ * @arg okButtonLavel
+ * @text OKボタンの文字
+ * @desc OKボタンの文字を指定します。
+ * @default OK
+ * 
+ * @arg cancelButtonLavel
+ * @text キャンセルボタンの文字
+ * @desc キャンセルボタンの文字を指定します。
+ * @default キャンセル
+ *
+ * @arg maxLength
+ * @text 最大文字数
+ * @desc 入力可能な最大文字数を指定します。
+ * @default 64
+ * 
+ * @help
+ * プラグインコマンドで「InputDialog_Custom」を選び、
+ * 変数ID・メッセージ・デフォルト値をそれぞれ設定してください。
+ * ゲーム画面内にテキスト入力ウィンドウが表示され、
+ * キーボード上で文字入力が可能になります。
+ * 
+ * 入力確定をキーボードで行う場合はEnterでは無く、Shiftキー+Enterキーです。
+ * その旨どこかに表示しておくと便利です。
+ * 入力した文字は指定した変数IDに入ります。
+ * 空入力、キャンセルの場合は 0 が入ります。
+ * 
+ * 【　！注意！　】
+ * プラグインコマンド直後に別のプラグインやスクリプトを実行する場合、
+ * 同時に実行されることがあります。順番通り実行させたい場合は、
+ * このプラグインコマンドと次のイベントの間に ウェイトを 数フレーム 挟んでください。
+ * 
+ */

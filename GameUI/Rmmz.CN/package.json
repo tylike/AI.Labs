@@ -1,0 +1,12 @@
+{
+    "name": "rmmz-game",
+    "main": "index.html",
+    "chromium-args": "--force-color-profile=srgb",
+    "window": {
+        "title": "ChatGPT_APIMZ サンプルプロジェクト",
+        "width": 816,
+        "height": 624,
+        "position": "center",
+        "icon": "icon/icon.png"
+    }
+}

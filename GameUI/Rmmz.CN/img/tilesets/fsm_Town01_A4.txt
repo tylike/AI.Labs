@@ -1,0 +1,48 @@
+﻿Ledge A (Meadow)|段差A（草地）
+Ledge B (Meadow)|段差B（草地）
+Building A (Brick)|建物A（レンガ）
+Building B (Stone)|建物B（石造）
+Wall A (Stone)|壁A（石）
+Wall B (Stone)|壁B（石）
+Wall C (Stone)|壁C（石）
+Wall D (Stone)|壁D（石）
+Cliff (Meadow)|崖（草地）
+Cliff (Sand)|崖（砂地）
+Building A (Brick)|建物A（レンガ）
+Building B (Stone)|建物B（石造）
+Wall A (Stone)|壁A（石）
+Wall B (Stone)|壁B（石）
+Wall C (Stone)|壁C（石）
+Wall D (Stone)|壁D（石）
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|

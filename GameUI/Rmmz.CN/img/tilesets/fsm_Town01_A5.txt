@@ -1,0 +1,128 @@
+﻿Darkness|暗闇
+Stepping Stones A(Meadow)|踏み石A（草地）
+Stepping Stones A(Dirt)|踏み石A（土）
+Road A (Ruins)|道A（廃墟）
+Road B (Ruins)|道B（廃墟）
+Cobblestones A (Ruins)|石畳A（廃墟）
+Cobblestones A (Ruins)|石畳A（廃墟）
+Cobblestones B|石畳B
+Transparent|透明
+Stepping Stones B(Meadow)|踏み石B（草地）
+Stepping Stones B(Dirt)|踏み石B（土）
+Road A (Ruins)|道A（廃墟）
+Road B (Ruins)|道B（廃墟）
+Cobblestones A (Ruins)|石畳A（廃墟）
+Cobblestones A (Ruins)|石畳A（廃墟）
+Cobblestones B (Ruins)|石畳B（廃墟）
+Stepping Stones B(Meadow)|踏み石B（草地）
+Stepping Stones B(Meadow)|踏み石B（草地）
+Stepping Stones B(Dirt)|踏み石B（土）
+Stepping Stones B(Dirt)|踏み石B（土）
+Wood Deck|ウッドデッキ
+Cobblestones C|石畳C
+Rock (Sand)|岩（砂地）
+Pebble (Sand)|小石（砂地）
+Stepping Stones B(Meadow)|踏み石B（草地）
+Stepping Stones B(Meadow)|踏み石B（草地）
+Stepping Stones B(Dirt)|踏み石B（土）
+Stepping Stones B(Dirt)|踏み石B（土）
+Wood Deck (Ruins)|ウッドデッキ（廃墟）
+Cobblestones D|石畳D
+Shell (Sand)|貝殻（砂地）
+Driftwood (Sand)|流木（砂地）
+Ledge A (Meadow)|段差A（草地）
+Ledge A (Meadow)|段差A（草地）
+Ledge A (Meadow)|段差A（草地）
+Ledge A (Meadow)|段差A（草地）
+Ledge A (Meadow)|段差A（草地）
+Ledge B (Meadow)|段差B（草地）
+Ledge B (Meadow)|段差B（草地）
+Ledge B (Meadow)|段差B（草地）
+Ledge A (Meadow)|段差A（草地）
+Ledge A (Meadow)|段差A（草地）
+Ledge A (Meadow)|段差A（草地）
+Ledge A (Meadow)|段差A（草地）
+Ledge A (Meadow)|段差A（草地）
+Ledge B (Meadow)|段差B（草地）
+Ledge B (Meadow)|段差B（草地）
+Ledge B (Meadow)|段差B（草地）
+Cliff|崖
+Cliff|崖
+Cliff|崖
+Ledge B (Meadow)|段差B（草地）
+Ledge B (Meadow)|段差B（草地）
+Cliff (Hole)|崖（穴）
+Cliff (Hole)|崖（穴）
+Cliff (Hole)|崖（穴）
+Cliff (Meadow)|崖（草地）
+Cliff (Meadow)|崖（草地）
+Cliff (Meadow)|崖（草地）
+Ledge B (Meadow)|段差B（草地）
+Ledge B (Meadow)|段差B（草地）
+Cliff (Hole)|崖（穴）
+Cliff (Hole)|崖（穴）
+Cliff (Hole)|崖（穴）
+Cliff (Ledge A, Left)|崖（段差A・左）
+Cliff (Meadow)|崖（草地）
+Cliff (Ledge A, Right)|崖（段差A・右）
+Ledge A (Shadow, Center)|段差A（影・中央）
+Ledge A (Shadow, Right)|段差A（影・右）
+Cliff (Ledge B, Left)|崖（段差B・左）
+Cliff (Meadow)|崖（草地）
+Cliff (Ledge B, Right)|崖（段差B・右）
+Ledge A (Meadow)|段差A（草地）
+Cliff (Grass)|崖（草）
+Cliff (Grass)|崖（草）
+Ledge B (Shadow, Center)|段差B（影・中央）
+Ledge B (Shadow, Right)|段差B（影・右）
+Cave Entrance|洞窟入口
+Cave Entrance|洞窟入口
+Cave Entrance|洞窟入口
+Ledge A (Meadow)|段差A（草地）
+Cliff (Grass)|崖（草）
+Cliff (Grass)|崖（草）
+Cliff (Shadow, Center)|崖（影・中央）
+Cliff (Shadow, Right)|崖（影・右）
+Cave Entrance|洞窟入口
+Cave Entrance|洞窟入口
+Cave Entrance|洞窟入口
+Cliff (Meadow)|崖（草地）
+Cliff (Meadow)|崖（草地）
+Cliff (Meadow)|崖（草地）
+Cliff (Meadow, Shadow, Center)|崖（草地・影・中央）
+Cliff (Meadow, Shadow, Right)|崖（草地・影・右）
+Cave Entrance (Meadow)|洞窟入口（草地）
+Cave Entrance (Meadow)|洞窟入口（草地）
+Cave Entrance (Meadow)|洞窟入口（草地）
+Stairs A (Meadow, Left)|階段A（草地・左）
+Stairs A (Meadow, Center)|階段A（草地・中央）
+Stairs A (Meadow, Right)|階段A（草地・右）
+Stairs B (Meadow)|階段B（草地）
+Cliff (Meadow, Shadow)|崖（草地・影）
+Cave Entrance (Dirt)|洞窟入口（土）
+Cave Entrance (Dirt)|洞窟入口（土）
+Cave Entrance (Dirt)|洞窟入口（土）
+Stairs A (Meadow, Left)|階段A（草地・左）
+Stairs A (Meadow, Center)|階段A（草地・中央）
+Stairs A (Meadow, Right)|階段A（草地・右）
+Stairs B (Meadow)|階段B（草地）
+Stairs B (Meadow, Ruins)|階段B（廃墟）
+Cave Entrance (Sand)|洞窟入口（砂地）
+Cave Entrance (Sand)|洞窟入口（砂地）
+Cave Entrance (Sand)|洞窟入口（砂地）
+Stairs A (Meadow, Left)|階段A（草地・左）
+Stairs A (Meadow, Center)|階段A（草地・中央）
+Stairs A (Meadow, Right)|階段A（草地・右）
+Stairs B (Meadow)|階段B（草地）
+Stairs A (Meadow, Ruins, Center)|階段A（草地・廃墟・中央）
+Wood Floor A|木の床A
+Stone Floor A|石床A
+Wood Floor B|木の床B
+Paved Stairs A (Left)|舗装された階段A（左）
+Paved Stairs A (Center)|舗装された階段A（中央）
+Paved Stairs A (Right)|舗装された階段A（右）
+Paved Stairs B|舗装された階段B
+Paved Stairs A (Center)|舗装された階段A（中央）
+Wood Floor C|木の床C
+Stone Floor C|石床C
+Stone Floor D|石床D

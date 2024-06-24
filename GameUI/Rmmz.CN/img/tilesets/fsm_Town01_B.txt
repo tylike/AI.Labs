@@ -1,0 +1,256 @@
+﻿Transparent|透明
+Shop Sign (Item Shop)|看板（道具屋）
+Shop Sign (Pub)|看板（酒場）
+Shop Sign (Cafe)|看板（カフェ）
+Shop Sign (Inn)|看板（宿屋）
+Wood Bridge A (V)|木の橋A（縦）
+Wood Bridge A (H, Top)|木の橋A（横・上）
+Wood Bridge B (H, Top)|木の橋B（横・上）
+Shop Sign (Weapon Shop)|看板（武器屋）
+Shop Sign (Armor Shop)|看板（防具屋）
+Shop Sign (Weapon & Armor Shop)|看板（武器・防具屋）
+Shop Sign (Magic Shop)|看板（魔法屋）
+Shop Sign (Accessory Shop)|看板（アクセサリーショップ）
+Wood Bridge A (H)|木の橋A（横）
+Wood Bridge A (H, Center)|木の橋A（横・中央）
+Wood Bridge B (H, Center)|木の橋B（横・中央）
+Shop Sign (Coin Shop)|看板（コインショップ）
+Shop Sign (Pharmacy)|看板（薬屋）
+Shop Sign (Bakery)|看板（パン屋）
+Wood Bridge A (V, Left)|木の橋A（縦・左）
+Wood Bridge A (V, Center)|木の橋A（縦・中）
+Wood Bridge A (V, Right)|木の橋A（縦・右）
+Wood Bridge A (H, Bottom)|木の橋A（横・下）
+Wood Bridge B (H, Bottom)|木の橋B（横・下）
+Shop Sign A|看板A
+Shop Sign B|看板B
+Shop Sign C|看板C
+Wood Bridge B (V, Left)|木の橋B（縦・左）
+Wood Bridge B (V, Center)|木の橋B（縦・中）
+Wood Bridge B (V, Right)|木の橋B（縦・右）
+Wood Bridge B (V, Joint)|木の橋B（縦・継ぎ目）
+Wood Bridge B (H, Joint)|木の橋B（横・継ぎ目）
+Grass A|草A
+Grass B|草B
+Grass C|草C
+Grass D|草D
+Flowers A|花A
+Flowers B|花B
+Bush|植え込み
+Tree|木
+Sign A|立て札A
+Sign B|立て札B
+Stump A|切り株A
+Stump B|切り株B
+Stump (Axe)|切り株（オノ）
+Stump (Firewood)|切り株（薪）
+Bush (Flowers)|植え込み（花）
+Tree|木
+Sign C|立て札C
+Sign D|立て札D
+Stump C|切り株C
+Firewood A|薪A
+Firewood B|薪B
+Firewood C|薪C
+Boulder A|岩A
+Boulder B|岩B
+Crate A|木箱A
+Crate B|木箱B
+Crate C|木箱C
+Stacked Crates A (Upper left)|積まれた木箱A（左上）
+Stacked Crates A (Upper right)|積まれた木箱A（右上）
+Stacked Crates B|積まれた木箱B
+Stacked Crates B|積まれた木箱B
+Barrel A|樽A
+Crate D|木箱D
+Crate E|木箱E
+Crate F|木箱F
+Stacked Crates A (Lower left)|積まれた木箱A（左下）
+Stacked Crates A (Lower right)|積まれた木箱A（右下）
+Stacked Crates B|積まれた木箱B
+Stacked Crates B|積まれた木箱B
+Barrel B|樽B
+Basin A|桶A
+Basin B|桶B
+Basin C|桶C
+Planter A|プランターA
+Planter B|プランターB
+Planter C|プランターC
+Planter D|プランターD
+Basket A|カゴA
+Tub A|たらいA
+Tub B|たらいB
+Tub C|たらいC
+Flower Pot A|植木鉢A
+Flower Pot B|植木鉢B
+Planter E|プランターE
+Planter F|プランターF
+Basket B|カゴB
+Logs (H)|丸太（横）
+Logs (H)|丸太（横）
+Logs (V)|丸太（縦）
+Grave A|墓A
+Grave B|墓B
+Grave C|墓C
+Offered Flowers|お供えの花
+Scarecrow A|かかしA
+Logs (H)|丸太（横）
+Logs (H)|丸太（横）
+Logs (V)|丸太（縦）
+Grave A|墓A
+Grave B|墓B
+Grave C|墓C
+Grave C|墓C
+Scarecrow A|かかしA
+Large Tree A|大きな木A
+Large Tree A|大きな木A
+Dead Tree|枯れ木
+Dead Tree|枯れ木
+Large Tree B|大きな木B
+Large Tree B|大きな木B
+Crops A (Radish)|農作物A（ダイコン）
+Crops B (Cherry Tomato)|農作物B（ミニトマト）
+Large Tree A|大きな木A
+Large Tree A|大きな木A
+Dead Tree|枯れ木
+Dead Tree|枯れ木
+Large Tree B|大きな木B
+Large Tree B|大きな木B
+Crops A (Radish)|農作物A（ダイコン）
+Crops C (Radish)|農作物C（ダイコン）
+Large Tree A|大きな木A
+Large Tree A|大きな木A
+Dead Tree|枯れ木
+Dead Tree|枯れ木
+Large Tree B|大きな木B
+Large Tree B|大きな木B
+Crops A (Radish)|農作物A（ダイコン）
+Crops D (Cabbage)|農作物D（キャベツ）
+Large Tree C|大きな木C
+Large Tree C|大きな木C
+Large Tree C|大きな木C
+Fruit Tree A|果樹A
+Fruit Tree A|果樹A
+Fruit Tree A|果樹A
+Crops E (Pumpkin)|農作物E（カボチャ）
+Crops E (Pumpkin)|農作物E（カボチャ）
+Large Tree C|大きな木C
+Large Tree C|大きな木C
+Large Tree C|大きな木C
+Fruit Tree A|果樹A
+Fruit Tree A|果樹A
+Fruit Tree A|果樹A
+Fruit Tree B|果樹B
+Fruit Tree B|果樹B
+Large Tree C|大きな木C
+Large Tree C|大きな木C
+Large Tree C|大きな木C
+Fruit Tree A|果樹A
+Fruit Tree A|果樹A
+Fruit Tree A|果樹A
+Fruit Tree B|果樹B
+Fruit Tree B|果樹B
+Ledge A (Top)|段差A（上端）
+Ledge A (Top)|段差A（上端）
+Ledge A (Top)|段差A（上端）
+Wall Vines A|壁のツタA
+Wall Vines B|壁のツタB
+Wall Grass A|壁の草A
+Bridge Rail (V, Left Side)|橋の欄干（縦・左側）
+Bridge Rail (V, Right Side)|橋の欄干（縦・右側）
+Ledge B (Top)|段差B（上端）
+Ledge B (Top)|段差B（上端）
+Ledge B (Top)|段差B（上端）
+Wall Vines A|壁のツタA
+Wall Vines B|壁のツタB
+Wall Grass B|壁の草B
+Bridge Rail (V, Left Side)|橋の欄干（縦・左側）
+Bridge Rail (V, Right Side)|橋の欄干（縦・右側）
+Ledge A (Top, Shadow)|段差A（上端・影）
+Ledge A (Top, Shadow)|段差A（上端・影）
+Ledge A (Top, Shadow)|段差A（上端・影）
+Ledge B (Top, Shadow)|段差B（上端・影）
+Ledge B (Top, Shadow)|段差B（上端・影）
+Ledge B (Top, Shadow)|段差B（上端・影）
+Bridge Rail (V, Left Side)|橋の欄干（縦・左側）
+Bridge Rail (V, Right Side)|橋の欄干（縦・右側）
+Cliff (Bottom)|崖（下端）
+Cliff (Bottom)|崖（下端）
+Cliff (Bottom)|崖（下端）
+Cliff (Bottom, Shadow)|崖（下端・影）
+Cliff (Bottom, Shadow)|崖（下端・影）
+Cliff (Bottom, Shadow)|崖（下端・影）
+Bridge Rail (V, Left Side)|橋の欄干（縦・左側）
+Bridge Rail (V, Right Side)|橋の欄干（縦・右側）
+Dirt Stairs A (Bottom)|土の階段A（下端）
+Dirt Stairs A (Bottom)|土の階段A（下端）
+Dirt Stairs A (Bottom)|土の階段A（下端）
+Dirt Stairs B (Bottom)|土の階段B（下端）
+Barricade|バリケード
+Bridge Rail (H, Top Side)|橋の欄干（横・上側）
+Bridge Rail (H, Top Side)|橋の欄干（横・上側）
+Bridge Rail (H, Top Side)|橋の欄干（横・上側）
+Paved Stairs A (Bottom)|舗装された階段A（下端）
+Paved Stairs A (Bottom)|舗装された階段A（下端）
+Paved Stairs A (Bottom)|舗装された階段A（下端）
+Paved Stairs B (Bottom)|舗装された階段B（下端）
+Paved Stairs A (Bottom)|舗装された階段A（下端）
+Bridge Rail (H, Top Side)|橋の欄干（横・上側）
+Bridge Rail (H, Top Side)|橋の欄干（横・上側）
+Bridge Rail (H, Top Side)|橋の欄干（横・上側）
+Slope|坂
+Slope|坂
+Slope|坂
+Shadow (Slope)|坂の影
+Mooring Bollard A|ビットA
+Bridge Rail (H, Bottom Side)|橋の欄干（横・下側）
+Bridge Rail (H, Bottom Side)|橋の欄干（横・下側）
+Bridge Rail (H, Bottom Side)|橋の欄干（横・下側）
+Slope|坂
+Slope|坂
+Slope|坂
+Shadow (Slope)|坂の影
+Mooring Bollard B|ビットB
+Bridge Rail (H, Bottom Side)|橋の欄干（横・下側）
+Bridge Rail (H, Bottom Side)|橋の欄干（横・下側）
+Bridge Rail (H, Bottom Side)|橋の欄干（横・下側）
+Slope|坂
+Slope|坂
+Slope|坂
+Shadow (Slope)|坂の影
+Statue A|石像A
+Bridge Spar (Shadow)|橋げた（影）
+Bridge Spar (Center)|橋げた（中央）
+Bridge Spar|橋げた
+Clothes Drying Stand|物干しスタンド
+Clothes Drying Stand|物干しスタンド
+Clothes Drying Stand|物干しスタンド
+Bench (V)|ベンチ（縦）
+Statue A|石像A
+Stone Pillar (Plant A)|石の柱（植物A）
+Stone Pillar (Plant B)|石の柱（植物B）
+Bridge Spar|橋げた
+Clothes Drying Stand|物干しスタンド
+Clothes Drying Stand|物干しスタンド
+Clothes Drying Stand|物干しスタンド
+Bench (V)|ベンチ（縦）
+Statue B|石像B
+Statue C|石像C
+Stone Pillar|石の柱
+Bridge Spar|橋げた
+Clothes Drying Stand (Towel A)|物干しスタンド（タオルA）
+Clothes Drying Stand (Clothes)|物干しスタンド（服）
+Clothes Drying Stand (Towel B)|物干しスタンド（タオルB）
+Bench (V)|ベンチ（縦）
+Statue B|石像B
+Statue C|石像C
+Stone Pillar|石の柱
+Monument|モニュメント
+Clothes Drying Stand (Towel A)|物干しスタンド（タオルA）
+Clothes Drying Stand (Clothes)|物干しスタンド（服）
+Clothes Drying Stand (Towel B)|物干しスタンド（タオルB）
+Bench (H)|ベンチ（横）
+Bench (H)|ベンチ（横）
+Bench (H)|ベンチ（横）
+Stone Pillar|石の柱
+Monument|モニュメント

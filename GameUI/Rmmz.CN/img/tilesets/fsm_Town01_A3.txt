@@ -1,0 +1,32 @@
+﻿Roof A (Green Tile)|屋根A（緑瓦）
+Roof B (Wood)|屋根B（木造）
+Roof C (Red Tile)|屋根C（赤瓦）
+Roof D (Brown Tile)|屋根D（茶瓦）
+Roof E (Wood)|屋根E（木造）
+Roof F (Log)|屋根F（丸太）
+Roof G (Orange Tile)|屋根G（橙瓦）
+Roof H (Blue Tile)|屋根H（青瓦）
+Outer Wall A (Wood)|外壁A（木造）
+Outer Wall B (Wood)|外壁B（木造）
+Outer Wall C (Brick)|外壁C（レンガ）
+Outer Wall D (Plaster)|外壁D（白壁）
+Outer Wall E (Wood)|外壁E（木造）
+Outer Wall F (Log)|外壁F（丸太）
+Outer Wall G (Rock Wall)|外壁G（石壁）
+Outer Wall H (Rock Wall)|外壁H（石壁）
+Roof I (Brown Tile)|屋根I（茶瓦）
+Roof J (Purple Tile)|屋根J（紫瓦）
+Roof K (Purple Tile)|屋根K（紫瓦）
+Roof L (Blue Tile)|屋根L（青瓦）
+Roof M (Green Tile)|屋根M（緑瓦）
+Roof N (Orange Tile)|屋根N（橙瓦）
+Roof O (Blue Tile)|屋根O（青瓦）
+Roof P (Brown Tile)|屋根P（茶瓦）
+Outer Wall I (Wood)|外壁I（木造）
+Outer Wall J (Wood)|外壁J（木造）
+Outer Wall K (Brick)|外壁K（レンガ）
+Outer Wall L (Plaster)|外壁L（白壁）
+Outer Wall M (Rock Wall)|外壁M（石壁）
+Outer Wall N (Plaster)|外壁N（白壁）
+Outer Wall O (Rock Wall)|外壁O（石壁）
+Outer Wall P (Rock Wall)|外壁P（石壁）

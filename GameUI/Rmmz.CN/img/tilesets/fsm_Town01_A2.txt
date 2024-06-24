@@ -1,0 +1,32 @@
+﻿Meadow|草地
+Deep Meadow A|濃い草地A
+Deep Meadow B|濃い草地B
+Road A (Meadow)|道A（草地）
+Bush A|茂みA
+Road A|道A
+Hole (Meadow)|穴（草地）
+Fencepost A|柵A
+Dirt|土
+Dirt (Meadow)|土（草地）
+Deep Dirt|濃い土
+Dried Dirt|乾いた土
+Bush B|茂みB
+Dirt|土
+Hole (Dirt)|穴（土）
+Fencepost B|柵B
+Ledge (Meadow)|段差（草地）
+Flower Zone A|花畑A
+Flower Zone B|花畑B
+Road B (Meadow)|道B（草地）
+Flower Zone C|花畑C
+Rocky Area|岩場
+Farm Field (V)|畑（縦）
+Fencepost C|柵C
+Sand|砂地
+Deep Sand|濃い砂地
+Sand (Meadow)|砂地（草地）
+Cobblestones A|石畳A
+Meadow|草地
+Garden|花壇
+Farm Field (H)|畑（横）
+Fencepost D|柵D

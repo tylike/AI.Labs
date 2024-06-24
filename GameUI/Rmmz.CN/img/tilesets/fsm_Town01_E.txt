@@ -1,0 +1,256 @@
+﻿Pillar (Pier)|桟橋の支柱
+Pillar (Pier)|桟橋の支柱
+Pillar (Pier)|桟橋の支柱
+Pillar (Pier)|桟橋の支柱
+Pier (V)|桟橋（縦）
+Pillar (Pier)|桟橋の支柱
+Planter G|プランターG
+Scarecrow B|かかしB
+Pillar (Pier)|桟橋の支柱
+Pillar (Pier)|桟橋の支柱
+Pillar (Pier)|桟橋の支柱
+Pier (H)|桟橋（横）
+Pier (V)|桟橋（縦）
+|
+Flower Pot C|植木鉢C
+Scarecrow B|かかしB
+Pillar (Pier)|桟橋の支柱
+Pillar (Pier)|桟橋の支柱
+Pillar (Pier)|桟橋の支柱
+Pier (H)|桟橋（横）
+|
+|
+Planter I|プランターI
+Planter I|プランターI
+Boat (Left)|ボート（左）
+Boat (Left)|ボート（左）
+Boat (Left)|ボート（左）
+Boat (Top)|ボート（上）
+Boat (Top)|ボート（上）
+Boat (Bottom)|ボート（下）
+Boat (Bottom)|ボート（下）
+|
+Boat (Left)|ボート（左）
+Boat (Left)|ボート（左）
+Boat (Left)|ボート（左）
+Boat (Top)|ボート（上）
+Boat (Top)|ボート（上）
+Boat (Bottom)|ボート（下）
+Boat (Bottom)|ボート（下）
+|
+Boat (Right)|ボート（右）
+Boat (Right)|ボート（右）
+Boat (Right)|ボート（右）
+Boat (Top)|ボート（上）
+Boat (Top)|ボート（上）
+Boat (Bottom)|ボート（下）
+Boat (Bottom)|ボート（下）
+|
+Boat (Right)|ボート（右）
+Boat (Right)|ボート（右）
+Boat (Right)|ボート（右）
+|
+|
+|
+|
+|
+Ledge|段差
+Ledge|段差
+Ledge|段差
+Ledge|段差
+Ledge|段差
+Stairs (Ledge)|階段（段差）
+Stairs (Ledge)|階段（段差）
+|
+Ledge|段差
+Ledge (Shadow)|段差（影）
+Ledge|段差
+Ledge|段差
+Ledge|段差
+Stairs (Ledge, Top)|階段（段差・上）
+Stairs (Ledge, Top)|階段（段差・上）
+|
+Ledge|段差
+Ledge|段差
+Ledge|段差
+Ledge (Shadow)|段差（影）
+|
+Stairs (Ledge, Center)|階段（段差・中央）
+Stairs (Ledge, Center)|階段（段差・中央）
+|
+|
+Stairs (Ledge)|階段（段差）
+Stairs (Ledge, Left)|階段（段差・左）
+Stairs (Ledge, Center)|階段（段差・中央）
+Stairs (Ledge, Right)|階段（段差・右）
+Stairs (Ledge, Bottom)|階段（段差・下）
+Stairs (Ledge, Bottom)|階段（段差・下）
+|
+|
+Stairs (Ledge)|階段（段差）
+Stairs (Ledge, Left)|階段（段差・左）
+Stairs (Ledge, Center)|階段（段差・中央）
+Stairs (Ledge, Right)|階段（段差・右）
+Stone Pillar (Top)|石の柱（上）
+Dais A|台座A
+Dais B|台座B
+Cave Entrance|洞窟入口
+Cave Entrance|洞窟入口
+Cave Entrance|洞窟入口
+Roof (Green Tile)|屋根（緑瓦）
+Roof (Green Tile)|屋根（緑瓦）
+Roof (Green Tile)|屋根（緑瓦）
+Roof (Green Tile)|屋根（緑瓦）
+Dais C|台座C
+Outer Wall Detail (Gradation)|外壁装飾（グラデーション）
+Outer Wall Detail (Gradation)|外壁装飾（グラデーション）
+Outer Wall Detail (Gradation)|外壁装飾（グラデーション）
+Roof (Green Tile)|屋根（緑瓦）
+Roof (Green Tile)|屋根（緑瓦）
+Roof (Green Tile)|屋根（緑瓦）
+Roof (Green Tile)|屋根（緑瓦）
+Dais D|台座D
+Paved Stairs A (Top)|舗装された階段A（上端）
+Paved Stairs A (Top)|舗装された階段A（上端）
+Paved Stairs A (Top)|舗装された階段A（上端）
+Paved Stairs B (Top)|舗装された階段B（上端）
+Grave B (Flower)|墓B（花）
+|
+Tree|木
+Tree|木
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Grave B (Petal)|墓B（花びら）
+Grave D|墓D
+Tree|木
+Tree|木
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+|
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+|
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+|
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+|
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+|
+|
+|
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+Fence (Cliff)|崖沿いの柵
+|
+|
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+|
+|
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+|
+|
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+Dirt (Meadow)|土（草地）
+Shadow|影
+Shadow (Quarter Size)|影（1/4サイズ）
+|
+|
+Shop Sign A|看板A
+Shop Sign B|看板B
+Shop Sign C|看板C
+Shop Sign D|看板D
+Shop Sign E|看板E
+Shop Sign F|看板F
+|
+|
+Roof A (Green Tile, Left)|屋根A（緑瓦・左）
+Roof A (Green Tile, Right)|屋根A（緑瓦・右）
+Roof C (Wood, Left)|屋根C（木造・左）
+Roof C (Wood, Right)|屋根C（木造・右）
+Roof B (Red Tile, Left)|屋根B（赤瓦・左）
+Roof B (Red Tile, Right)|屋根B（赤瓦・右）
+|
+|
+Roof A (Green Tile, Left)|屋根A（緑瓦・左）
+Roof A (Green Tile, Right)|屋根A（緑瓦・右）
+Roof C (Wood, Left)|屋根C（木造・左）
+Roof C (Wood, Right)|屋根C（木造・右）
+Roof B (Red Tile, Left)|屋根B（赤瓦・左）
+Roof B (Red Tile, Right)|屋根B（赤瓦・右）
+|
+|
+Roof D (Brown Tile, Center)|屋根D（茶瓦・中央）
+Roof E (Wood, Center)|屋根E（木造・中央）
+Roof F (Log, Center)|屋根F（丸太・中央）
+Roof G (Orange Tile, Center)|屋根G（橙瓦・中央）
+Roof H (Blue Tile, Center)|屋根H（青瓦・中央）
+Roof L (Blue Tile, Center)|屋根L（青瓦・中央）
+Roof N (Orange Tile, Center)|屋根N（橙瓦・中央）
+Roof O (Blue Tile, Center)|屋根O（青瓦・中央）
+Roof D (Brown Tile, Center)|屋根D（茶瓦・中央）
+Roof E (Wood, Center)|屋根E（木造・中央）
+Roof F (Log, Center)|屋根F（丸太・中央）
+Roof G (Orange Tile, Center)|屋根G（橙瓦・中央）
+Roof H (Blue Tile, Center)|屋根H（青瓦・中央）
+Roof L (Blue Tile, Center)|屋根L（青瓦・中央）
+Roof N (Orange Tile, Center)|屋根N（橙瓦・中央）
+Roof O (Blue Tile, Center)|屋根O（青瓦・中央）
+Grass A|草A
+Grass B|草B
+Grass C|草C
+|
+|
+|
+|
+|

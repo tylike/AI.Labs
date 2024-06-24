@@ -1,0 +1,256 @@
+﻿|
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+|
+Chimney A|煙突A
+Chimney A|煙突A
+Chimney A|煙突A
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Chimney A|煙突A
+Roof Detail (Green Tile)|屋根飾り（緑瓦）
+Roof Detail (Green Tile)|屋根飾り（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Window A (Under the Roof)|窓A（屋根の下）
+Roof Detail (Green Tile)|屋根飾り（緑瓦）
+Roof Detail (Green Tile)|屋根飾り（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof (Watch Tower)|屋根（物見塔）
+Roof Detail A (Green Tile)|屋根飾りA（緑瓦）
+Roof Detail A (Green Tile)|屋根飾りA（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Watch Tower|物見塔
+Roof Detail B (Green Tile)|屋根飾りB（緑瓦）
+Roof Detail B (Green Tile)|屋根飾りB（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Shadow (Roof)|影（屋根）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+|
+Church Symbol (Watch Tower)|教会のシンボル（物見塔）
+|
+Roof A (Green Tile)|屋根A（緑瓦）
+Shadow (Roof)|影（屋根）
+Window B (Under the Roof)|窓B（屋根の下）
+Shadow (Roof)|影（屋根）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof (Watch Tower)|屋根（物見塔）
+Roof (Watch Tower)|屋根（物見塔）
+Roof (Watch Tower)|屋根（物見塔）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof (Watch Tower)|屋根（物見塔）
+Roof (Watch Tower)|屋根（物見塔）
+Roof (Watch Tower)|屋根（物見塔）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile, Bottom)|屋根A（緑瓦・下端）
+Roof A (Green Tile, Bottom)|屋根A（緑瓦・下端）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Watch Tower|物見塔
+Bell (Watch Tower)|鐘（物見塔）
+Watch Tower|物見塔
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof Detail C (Green Tile)|屋根飾りC（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Roof A (Green Tile)|屋根A（緑瓦）
+Watch Tower|物見塔
+Watch Tower|物見塔
+Watch Tower|物見塔
+|
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+|
+Chimney B|煙突B
+Chimney B|煙突B
+Chimney B|煙突B
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Chimney B|煙突B
+Roof Detail (Red Tile)|屋根飾り（赤瓦）
+Roof Detail (Red Tile)|屋根飾り（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Church Symbol (Roof)|教会のシンボル（屋根）
+Roof Detail (Red Tile)|屋根飾り（赤瓦）
+Roof Detail (Red Tile)|屋根飾り（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Church Symbol (Roof)|教会のシンボル（屋根）
+Roof Detail A (Red Tile)|屋根飾りA（赤瓦）
+Roof Detail A (Red Tile)|屋根飾りA（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Weathercock|風見鶏
+Roof Detail B (Red Tile)|屋根飾りB（赤瓦）
+Roof Detail B (Red Tile)|屋根飾りB（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Shadow (Roof)|影（屋根）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof Detail C (Red Tile)|屋根飾りC（赤瓦）
+Roof Detail C (Red Tile)|屋根飾りC（赤瓦）
+Roof Detail C (Red Tile)|屋根飾りC（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Shadow (Roof)|影（屋根）
+Window C (Under the Roof)|窓C（屋根の下）
+Shadow (Roof)|影（屋根）
+Roof B (Red Tile)|屋根B（赤瓦）
+Entrance Detail|玄関装飾
+Entrance Detail|玄関装飾
+Entrance Detail|玄関装飾
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Entrance Detail|玄関装飾
+Entrance Detail|玄関装飾
+Entrance Detail|玄関装飾
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile, Bottom)|屋根B（赤瓦・下端）
+Roof B (Red Tile, Bottom)|屋根B（赤瓦・下端）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Entrance Detail|玄関装飾
+Entrance Detail|玄関装飾
+Entrance Detail|玄関装飾
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof Detail D (Red Tile)|屋根飾りD（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Roof B (Red Tile)|屋根B（赤瓦）
+Entrance Detail|玄関装飾
+Entrance Detail|玄関装飾
+Entrance Detail|玄関装飾
+|
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+|
+Chimney C|煙突C
+Chimney C|煙突C
+Chimney C|煙突C
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Chimney C|煙突C
+Storeroom Eaves (V, Left)|物置用庇（縦・左）
+Storeroom Eaves (V, Right)|物置用庇（縦・右）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Chimney D|煙突D
+Storeroom Eaves (V, Left)|物置用庇（縦・左）
+Storeroom Eaves (V, Right)|物置用庇（縦・右）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Chimney D|煙突D
+Storeroom Eaves (V, Left)|物置用庇（縦・左）
+Storeroom Eaves (V, Right)|物置用庇（縦・右）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Chimney D|煙突D
+Storeroom Eaves (V, Left)|物置用庇（縦・左）
+Storeroom Eaves (V, Right)|物置用庇（縦・右）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Shadow (Roof)|影（屋根）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Chimney D|煙突D
+Storeroom Eaves (V, Left)|物置用庇（縦・左）
+Storeroom Eaves (V, Right)|物置用庇（縦・右）
+Roof C (Wood)|屋根C（木造）
+Shadow (Roof)|影（屋根）
+Clock (Under the Roof)|時計（屋根の下）
+Shadow (Roof)|影（屋根）
+Roof C (Wood)|屋根C（木造）
+Storeroom Eaves (H)|物置用庇（横）
+Storeroom Eaves (H)|物置用庇（横）
+Storeroom Eaves (H)|物置用庇（横）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Storeroom Eaves (H)|物置用庇（横）
+Storeroom Eaves (H)|物置用庇（横）
+Storeroom Eaves (H)|物置用庇（横）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood, Bottom)|屋根C（木造・下端）
+Roof C (Wood, Bottom)|屋根C（木造・下端）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Storeroom Eaves (H)|物置用庇（横）
+Storeroom Eaves (H)|物置用庇（横）
+Storeroom Eaves (H)|物置用庇（横）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Roof Detail (Wood)|屋根飾り（木造）
+Roof C (Wood)|屋根C（木造）
+Roof C (Wood)|屋根C（木造）
+Storeroom Eaves (H)|物置用庇（横）
+Storeroom Eaves (H)|物置用庇（横）
+Storeroom Eaves (H)|物置用庇（横）
+Corner Roof A (Green Tile)|コーナー屋根A（緑瓦）
+Corner Roof A (Green Tile)|コーナー屋根A（緑瓦）
+Corner Roof B (Red Tile)|コーナー屋根B（赤瓦）
+Corner Roof B (Red Tile)|コーナー屋根B（赤瓦）
+Outer Wall C Detail (Center, Shadow)|外壁C装飾（中央・影）
+Outer Wall C Detail (Left Side)|外壁C装飾（左端）
+Outer Wall C Detail (Center)|外壁C装飾（中央）
+Outer Wall C Detail (Right Side)|外壁C装飾（右端）
+Corner Roof (Wood)|コーナー屋根（木造）
+Corner Roof (Wood)|コーナー屋根（木造）
+Corner Roof (Wood)|コーナー屋根（木造）
+|
+Outer Wall A Detail (Center, Shadow)|外壁A装飾（中央・影）
+Outer Wall A Detail (Left Side)|外壁A装飾（左端）
+Outer Wall A Detail (Center)|外壁A装飾（中央）
+Outer Wall A Detail (Right Side)|外壁A装飾（右端）

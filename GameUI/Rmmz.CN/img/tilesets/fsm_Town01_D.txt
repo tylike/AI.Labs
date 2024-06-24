@@ -1,0 +1,256 @@
+﻿Entrance A|入口A
+Entrance B|入口B
+Entrance C|入口C
+Entrance C|入口C
+Entrance C|入口C
+Entrance D|入口D
+Entrance D|入口D
+Entrance D|入口D
+Entrance A|入口A
+Entrance B|入口B
+Entrance C|入口C
+Entrance C|入口C
+Entrance C|入口C
+Entrance D|入口D
+Entrance D|入口D
+Entrance D|入口D
+Window A|窓A
+Window A|窓A
+Window A|窓A
+Window A|窓A
+Window A (Shutter)|窓A（雨戸）
+Window A (Shutter)|窓A（雨戸）
+Window B|窓B
+Window B (Shutter)|窓B（雨戸）
+Window A|窓A
+Window A|窓A
+Window A|窓A
+Window A|窓A
+Window A (Shutter)|窓A（雨戸）
+Window A (Shutter)|窓A（雨戸）
+Window B|窓B
+Window B (Shutter)|窓B（雨戸）
+Window C|窓C
+Window C (Shutter)|窓C（雨戸）
+Window C|窓C
+Window C (Shutter)|窓C（雨戸）
+Window D (Grate)|窓D（鉄格子）
+Window D (Shutter)|窓D（雨戸）
+Window B|窓B
+Window B|窓B
+Window C|窓C
+Window C (Shutter)|窓C（雨戸）
+Window C|窓C
+Window C (Shutter)|窓C（雨戸）
+Window D|窓D
+Window D|窓D
+Window E|窓E
+Window E (Shutter)|窓E（雨戸）
+Large Window|大型窓
+Large Window|大型窓
+Large Window (Curtain)|大型窓（カーテン）
+Large Window (Curtain)|大型窓（カーテン）
+Eaves A (Large Window)|大型窓の庇A
+Eaves A (Large Window)|大型窓の庇A
+Window E|窓E
+Window E (Shutter)|窓E（雨戸）
+Large Window|大型窓
+Large Window|大型窓
+Large Window (Curtain)|大型窓（カーテン）
+Large Window (Curtain)|大型窓（カーテン）
+Eaves B (Large Window)|大型窓の庇B
+Eaves B (Large Window)|大型窓の庇B
+Window E|窓E
+Window E|窓E
+Stained Glass Window A|ステンドグラスA
+Church Entrance|教会の入口
+Church Entrance|教会の入口
+Church Entrance|教会の入口
+Stained Glass Window B|ステンドグラスB
+Stall|露店
+Stall|露店
+Stall|露店
+Stained Glass Window A|ステンドグラスA
+Church Entrance|教会の入口
+Stained Glass Window D|ステンドグラスD
+Church Entrance|教会の入口
+Stained Glass Window B|ステンドグラスB
+Stall|露店
+Stall|露店
+Stall|露店
+Stained Glass Window A|ステンドグラスA
+Stained Glass Window C|ステンドグラスC
+Stained Glass Window D|ステンドグラスD
+Stained Glass Window E|ステンドグラスE
+Stained Glass Window B|ステンドグラスB
+Stall|露店
+Stall|露店
+Stall|露店
+Concession Stand|売店
+Concession Stand|売店
+Concession Stand|売店
+Gate Lamp A|門灯A
+Gate Lamp B|門灯B
+Stall|露店
+Stall|露店
+Stall|露店
+Concession Stand|売店
+Concession Stand|売店
+Concession Stand|売店
+Mat A (Stall, Concession Stand)|マットA（露店・売店）
+Lamp (Stall, Concession Stand)|ランプ（露店・売店）
+Small Box A (Stall, Concession Stand)|小箱A（露店・売店）
+Sack (Stall, Concession Stand)|袋（露店・売店）
+Small Box B (Stall, Concession Stand)|小箱B（露店・売店）
+Concession Stand|売店
+Concession Stand|売店
+Concession Stand|売店
+Mat B (Stall, Concession Stand)|マットB（露店・売店）
+Lamp (Stall, Concession Stand)|ランプ（露店・売店）
+Small Box A (Stall, Concession Stand)|小箱A（露店・売店）
+Breads (Stall, Concession Stand)|パン（露店・売店）
+Signboard (Plain)|立て看板（無地）
+Signboard|立て看板
+Signboard (Item Shop)|立て看板（道具屋）
+Signboard (Pub)|立て看板（酒場）
+Signboard (Cafe)|立て看板（カフェ）
+Signboard (Inn)|立て看板（宿屋）
+Signboard (Weapon Shop)|立て看板（武器屋）
+Signboard (Armor Shop)|立て看板（防具屋）
+Signboard (Weapon & Armor Shop)|立て看板（武器・防具屋）
+Signboard (Magic Shop)|立て看板（魔法屋）
+Signboard (Accessory Shop)|立て看板（アクセサリーショップ）
+Signboard (Coin Shop)|立て看板（コインショップ）
+Signboard (Pharmacy)|立て看板（薬屋）
+Signboard (Bakery)|立て看板（パン屋）
+Signboard (Bookstore)|立て看板（本屋）
+Signboard (Restaurant)|立て看板（レストラン）
+Signboard (Church)|立て看板（教会）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Shadow (Stairs)|階段の影
+Flowers A (Garden)|花壇の花A
+Flowers B (Garden)|花壇の花B
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Shadow (Stairs)|階段の影
+Flowers A (Garden)|花壇の花A
+Flowers B (Garden)|花壇の花B
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Shadow (Stairs)|階段の影
+Flowers A (Garden)|花壇の花A
+Flowers B (Garden)|花壇の花B
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+|
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Stairs (Wood Deck)|階段（ウッドデッキ）
+Stairs (Wood Deck)|階段（ウッドデッキ）
+Stairs (Wood Deck)|階段（ウッドデッキ）
+Board Fence (V, Left Side)|板塀（縦・左側）
+Board Fence|板塀
+Board Fence (V, Right Side)|板塀（縦・右側）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Fence (Wood Deck)|柵（ウッドデッキ）
+Stairs (Wood Deck, Left)|階段（ウッドデッキ・左）
+Stairs (Wood Deck, Center)|階段（ウッドデッキ・中央）
+Stairs (Wood Deck, Right)|階段（ウッドデッキ・右）
+Board Fence (V, Left Side)|板塀（縦・左側）
+Board Fence|板塀
+Board Fence (V, Right Side)|板塀（縦・右側）
+Building Detail (Left)|建物装飾（左）
+Building Detail (Center)|建物装飾（中央）
+Building Detail (Center, Impassable)|建物装飾（中央・通行不可）
+Building Detail (Center, Pillar)|建物装飾（中央・柱あり）
+Building Detail (Right)|建物装飾（右）
+Board Fence (V, Left Side)|板塀（縦・左側）
+Board Fence (Shadow)|板塀（影）
+Board Fence (V, Right Side)|板塀（縦・右側）
+Building Detail (Left)|建物装飾（左）
+Building Detail (Center)|建物装飾（中央）
+Building Detail (Center, Impassable)|建物装飾（中央・通行不可）
+Building Detail (Center, Pillar)|建物装飾（中央・柱あり）
+Building Detail (Right)|建物装飾（右）
+Board Fence (V, Left Side)|板塀（縦・左側）
+Board Fence (Shadow)|板塀（影）
+Board Fence (V, Right Side)|板塀（縦・右側）
+Building Detail (Left)|建物装飾（左）
+Building Detail (Center)|建物装飾（中央）
+Building Detail (Center, Impassable)|建物装飾（中央・通行不可）
+Building Detail (Center, Pillar)|建物装飾（中央・柱あり）
+Building Detail (Right)|建物装飾（右）
+Gate A|門A
+Gate A|門A
+Gate A|門A
+Gate A (Light)|門A（明かり）
+Gate B|門B
+Gate B|門B
+Gate B|門B
+Gate B (Light)|門B（明かり）
+Gate A|門A
+|
+Gate A|門A
+Gate A (Light)|門A（明かり）
+Gate B|門B
+|
+Gate B|門B
+Gate B (Light)|門B（明かり）
+Gate A|門A
+Shadow (Gate A)|影（門A）
+Gate A|門A
+Shadow (Gate A)|影（門A）
+Gate B|門B
+Shadow (Gate B)|影（門B）
+Gate B|門B
+Shadow (Gate B)|影（門B）
+Fence (Gate A)|柵（門A）
+Fence (Gate B, Left Side)|柵（門B・左側）
+Fence (Gate B, Right Side)|柵（門B・右側）
+Well B|井戸B
+Well B|井戸B
+Well B|井戸B
+|
+|
+Fence (Gate A)|柵（門A）
+Fence (Gate B, Left Side)|柵（門B・左側）
+Fence (Gate B, Right Side)|柵（門B・右側）
+Well B|井戸B
+Well B|井戸B
+Well B|井戸B
+Street Light A|街灯A
+Street Light B|街灯B
+Well A|井戸A
+Well A|井戸A
+Well A|井戸A
+Well B|井戸B
+Well B|井戸B
+Well B|井戸B
+Street Light A|街灯A
+Street Light B|街灯B
+Well A|井戸A
+Well A|井戸A
+Well A|井戸A
+Well B|井戸B
+Well B|井戸B
+Well B|井戸B
+Street Light A|街灯A
+Street Light B|街灯B
