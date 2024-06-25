@@ -425,7 +425,7 @@ namespace AI.Labs.Module.BusinessObjects.ChatInfo
                     }
                     finally
                     {
-                        replyChatItem.Message = await MicrosoftTranslate.Main(replyChatItem.EnglishMessage, false);
+                        //replyChatItem.Message = await MicrosoftTranslate.Main(replyChatItem.EnglishMessage, false);
                         replyChatItem.EndVerb();
                         Application.UIThreadDoEvents();
                     }

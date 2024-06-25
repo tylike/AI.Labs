@@ -3,9 +3,9 @@
     "main": "index.html",
     "chromium-args": "--force-color-profile=srgb",
     "window": {
-        "title": "ChatGPT_APIMZ サンプルプロジェクト",
-        "width": 816,
-        "height": 624,
+        "title": "大模型对话演示",
+        "width": 1920,
+        "height": 1080,
         "position": "center",
         "icon": "icon/icon.png"
     }
