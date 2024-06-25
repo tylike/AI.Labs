@@ -131,7 +131,7 @@
 
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Edge_tts_sharp\Edge_tts_sharp.csproj" />
+		<ProjectReference Include="..\Edge_tts_sharp\EdgeTTS.csproj" />
 		<ProjectReference Include="..\Pinyin4net\Pinyin4net.csproj" />
 		<ProjectReference Include="..\STT.Utils\STT.Utils.csproj" />
 	</ItemGroup>

@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "STT", "STT\STT.csproj", "{C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhisperNet", "WhisperNet\WhisperNet.csproj", "{618391F7-12DD-4728-B2E1-F43342035E6F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge_tts_sharp", "Edge_tts_sharp\Edge_tts_sharp.csproj", "{F53204BB-85CC-4B19-A7D2-3A26980A4C4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdgeTTS", "Edge_tts_sharp\EdgeTTS.csproj", "{F53204BB-85CC-4B19-A7D2-3A26980A4C4B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B1E5E805-C7BE-4DB2-8775-2546AEFFDCC8}"
 	ProjectSection(SolutionItems) = preProject

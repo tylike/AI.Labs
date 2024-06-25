@@ -21,6 +21,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="EdgeTTS.cs" />
+	  <Compile Remove="Wss.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Remove="Source\VoiceList.json" />
 	</ItemGroup>
 
