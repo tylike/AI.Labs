@@ -2,8 +2,9 @@
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+await ProgramBing.Main(null);
 
-class Program
+class ProgramC
 {
     const string inputDirectory = @"D:\WalkMan\RPG\RPG.Client\wwwroot\js\";
     const string outputDirectory = @"D:\WalkMan\RPG\RPG.Client\split.js";
